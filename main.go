@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"gocms/pkg/command"
+	"log"
+	"os"
+)
 
-func main()  {
-	fmt.Println("Start")
+func main() {
+
+	// step1： 随便写点什么
+	app := command.InitApp()
+	err := app.Run(os.Args)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
