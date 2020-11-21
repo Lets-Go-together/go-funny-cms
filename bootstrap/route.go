@@ -7,7 +7,8 @@ import (
 
 // 初始化路由
 func SteupRoute() {
-	r := gin.Default()
+	router := gin.Default()
+	routes.RegisterWebRoutes(router)
 
-	routes.RegisterWebRoutes(r)
+	_ = router.Run(":8080")
 }

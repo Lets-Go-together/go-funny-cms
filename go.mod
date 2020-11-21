@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/cosmtrek/air v1.12.4 // indirect
 	github.com/creack/pty v1.1.11 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
@@ -20,4 +21,5 @@ require (
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
 	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
+	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

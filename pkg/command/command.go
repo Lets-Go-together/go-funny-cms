@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"github.com/urfave/cli/v2"
+	"gocms/bootstrap"
 )
 
 func InitApp() *cli.App {
@@ -10,7 +11,7 @@ func InitApp() *cli.App {
 		Name:  "Start server",
 		Usage: "--",
 		Action: func(c *cli.Context) error {
-			fmt.Println("Server")
+			AppServer()
 			return nil
 		},
 		Commands: []*cli.Command{
@@ -27,4 +28,9 @@ func InitApp() *cli.App {
 	}
 
 	return app
+}
+
+// 服务器
+func AppServer() {
+	bootstrap.SteupRoute()
 }
