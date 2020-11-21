@@ -1,0 +1,18 @@
+[App]
+AppName = "Go Funny CMS"
+Owner = "-"
+Debug = true
+AllowHost = "*"
+AdminEmail = []
+Port = 8000
+Chareset = "UTF-8"
+
+[DB]
+Engine = "mysql"
+UserName = "root"
+Host = "127.0.0.1"
+Port = 3306
+Database = "funy-cms"
+Password = "root"
+Charset = "utf8"
+
