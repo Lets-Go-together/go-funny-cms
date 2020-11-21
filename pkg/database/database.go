@@ -10,6 +10,13 @@ import (
 	"gocms/pkg/logger"
 )
 
+func init() {
+	config.Db = MysqlClient()
+	config.Redis = RedisClient()
+}
+
+func Initialize() {}
+
 // 初始化 Redis 服务器
 func RedisClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
@@ -34,6 +41,7 @@ func MysqlClient() *gorm.DB {
 	database := config.GetEnv("DB_DATABASE")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", username, password, host, port, database)
+	fmt.Println(dsn)
 	Db, err := gorm.Open("mysql", dsn)
 	logger.PanicError(err, "mysql connect err", true)
 

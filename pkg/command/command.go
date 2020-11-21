@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/pkg/config"
+	"gocms/pkg/database"
 )
 
 func InitApp() *cli.App {
@@ -33,4 +34,5 @@ func InitApp() *cli.App {
 func AppServer() {
 	bootstrap.SteupRoute()
 	config.Initialize()
+	database.Initialize()
 }

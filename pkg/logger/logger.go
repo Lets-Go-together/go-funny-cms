@@ -20,6 +20,7 @@ func PanicError(err error, source string, isExit bool) {
 	if err != nil {
 		dispatchNotice(err.Error(), source)
 		if isExit == true {
+			fmt.Println("错误消息:"+err.Error(), "\n"+"来源: "+source+"\n-----------")
 			os.Exit(-1)
 		}
 	}
