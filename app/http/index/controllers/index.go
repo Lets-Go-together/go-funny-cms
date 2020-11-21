@@ -23,6 +23,7 @@ func (*IndexController) Index(c *gin.Context) {
 			"code": 403,
 			"msg":  "解析失败: " + err.Error(),
 		})
+		return
 	}
 
 	c.JSON(200, gin.H{
