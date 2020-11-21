@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/users"
 )
@@ -30,8 +29,8 @@ func (*JwtAction) GetToken(user users.AuthUser) string {
 			ExpiresAt: 0,
 		},
 		authUser: struct {
-			user
-		}{},
+			users.AuthUser
+		}{user},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -39,18 +38,20 @@ func (*JwtAction) GetToken(user users.AuthUser) string {
 	return tokenString
 }
 
-func (*JwtAction) ParseToken(tokenString string) (string, bool) {
+func (*JwtAction) ParseToken(tokenString string) (users.AuthUser, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return signKey, e
 	})
 
+	user := users.AuthUser{}
+
 	if err != nil {
-		return err.Error()
+		return user, err
 	}
 
-	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
-		//return claims.Name
+	if userClaims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+		return userClaims.authUser.AuthUser, nil
 	} else {
-		return err.Error()
+		return user, err
 	}
 }
