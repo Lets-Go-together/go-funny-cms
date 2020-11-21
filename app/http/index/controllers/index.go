@@ -17,10 +17,16 @@ func (*IndexController) Index(c *gin.Context) {
 		Id:   10,
 		Name: "chenf",
 	})
-	data := gin.H{
-		"msg":   "Hello Word",
-		"token": token,
-		"parse": jwtAction.ParseToken(token),
+	user, err := jwtAction.ParseToken(token)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"code": 403,
+			"msg":  "解析失败: " + err.Error(),
+		})
 	}
-	c.JSON(403, data)
+
+	c.JSON(200, gin.H{
+		"code": 200,
+		"user": user,
+	})
 }
