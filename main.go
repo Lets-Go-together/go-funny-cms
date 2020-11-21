@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-
 	// step1： 随便写点什么
 	app := command.InitApp()
 	err := app.Run(os.Args)
