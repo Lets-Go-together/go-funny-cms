@@ -38,3 +38,7 @@
 
 目录地址: `resource/views`
     
+    
+### 第一次操作
+
+    cp .env.example .env
