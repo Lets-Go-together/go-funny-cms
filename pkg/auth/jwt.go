@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"gocms/app/models/users"
 )
 
 var (
@@ -11,13 +12,11 @@ var (
 
 type JwtAction struct{}
 
-type UserInfo struct {
-	Name string
-}
-
 type UserClaims struct {
-	*jwt.StandardClaims
-	UserInfo
+	jwt.StandardClaims
+	authUser struct {
+		users.AuthUser
+	}
 }
 
 func init() {
@@ -25,44 +24,33 @@ func init() {
 	signKey = []byte(key)
 }
 
-func (*JwtAction) GetToken() string {
-	token, err := createToken("chenf")
-	if err != nil {
-
-	}
-
-	return token
-}
-
-func (*JwtAction) ParseToken(tokenString string) string {
-	token, e := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (i interface{}, e error) {
-		return signKey, nil
-	})
-	if e != nil {
-		return "error-"
-	}
-
-	fmt.Println(token)
-
-	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
-		fmt.Printf("%v %v", claims.Name, claims.StandardClaims.ExpiresAt)
-		return claims.Name
-	} else {
-		return e.Error()
-	}
-}
-
-// 创建Token
-func createToken(user string) (string, error) {
-	t := jwt.New(jwt.GetSigningMethod("HS256"))
-
-	// 配置
-	t.Claims = &UserClaims{
-		&jwt.StandardClaims{
+func (*JwtAction) GetToken(user users.AuthUser) string {
+	claims := &UserClaims{
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: 0,
 		},
-		UserInfo{Name: user},
+		authUser: struct {
+			user
+		}{},
 	}
 
-	return t.SignedString(signKey)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(signKey)
+	return tokenString
+}
+
+func (*JwtAction) ParseToken(tokenString string) (string, bool) {
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (i interface{}, e error) {
+		return signKey, e
+	})
+
+	if err != nil {
+		return err.Error()
+	}
+
+	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+		//return claims.Name
+	} else {
+		return err.Error()
+	}
 }
