@@ -41,9 +41,8 @@ func MysqlClient() *gorm.DB {
 	database := config.GetEnv("DB_DATABASE")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", username, password, host, port, database)
-	fmt.Println(dsn)
 	Db, err := gorm.Open("mysql", dsn)
-	logger.PanicError(err, "mysql connect err", true)
+	logger.PanicError(err, "mysql connect err \n dns : "+dsn, true)
 
 	logger.Info("连接Mysql 成功", "mysql connect")
 	return Db
