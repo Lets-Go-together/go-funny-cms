@@ -32,7 +32,8 @@ func InitApp() *cli.App {
 
 // 服务器
 func AppServer() {
-	bootstrap.SteupRoute()
 	config.Initialize()
 	database.Initialize()
+
+	bootstrap.SteupRoute()
 }

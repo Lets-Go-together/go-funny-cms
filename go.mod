@@ -17,7 +17,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/cast v1.3.1
-	github.com/spf13/viper v1.7.1 // indirect
+	github.com/spf13/viper v1.7.1
 	github.com/ugorji/go v1.2.0 // indirect
 	github.com/urfave/cli v1.22.5 // indirect
 	github.com/urfave/cli/v2 v2.3.0

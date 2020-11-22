@@ -11,5 +11,5 @@ func SteupRoute() {
 	router := gin.Default()
 	routes.RegisterWebRoutes(router)
 
-	_ = router.Run(":" + config.GetEnv("APP_PORT"))
+	_ = router.Run(":" + config.GetString("APP_PORT"))
 }

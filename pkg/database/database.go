@@ -5,24 +5,21 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/spf13/cast"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 )
 
-func init() {
+func Initialize() {
 	config.Db = MysqlClient()
 	config.Redis = RedisClient()
 }
 
-func Initialize() {}
-
 // 初始化 Redis 服务器
 func RedisClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     config.GetEnv("REDIS_HOST") + ":" + config.GetEnv("REDIS_PORT"),
-		Password: config.GetEnv("REDIS_PASSWORD"),
-		DB:       cast.ToInt(config.GetEnv("REDIS_DB")),
+		Addr:     config.GetString("REDIS_HOST") + ":" + config.GetString("REDIS_PORT"),
+		Password: config.GetString("REDIS_PASSWORD"),
+		DB:       config.GetInt("REDIS_DB"),
 	})
 
 	_, err := client.Ping().Result()
@@ -34,11 +31,11 @@ func RedisClient() *redis.Client {
 
 // mysql 服务器
 func MysqlClient() *gorm.DB {
-	username := config.GetEnv("DB_USERNAME")
-	password := config.GetEnv("DB_PASSWORD")
-	host := config.GetEnv("DB_HOST")
-	port := config.GetEnv("DB_PORT")
-	database := config.GetEnv("DB_DATABASE")
+	username := config.GetString("DB_USERNAME")
+	password := config.GetString("DB_PASSWORD")
+	host := config.GetString("DB_HOST")
+	port := config.GetString("DB_PORT")
+	database := config.GetString("DB_DATABASE")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", username, password, host, port, database)
 	Db, err := gorm.Open("mysql", dsn)
