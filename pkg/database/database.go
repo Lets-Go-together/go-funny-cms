@@ -36,8 +36,9 @@ func MysqlClient() *gorm.DB {
 	host := config.GetString("DB_HOST")
 	port := config.GetString("DB_PORT")
 	database := config.GetString("DB_DATABASE")
+	charset := config.GetString("DB_CHARSET")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", username, password, host, port, database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=true", username, password, host, port, database, charset)
 	Db, err := gorm.Open("mysql", dsn)
 	logger.PanicError(err, "mysql connect err \n dns : "+dsn, true)
 
