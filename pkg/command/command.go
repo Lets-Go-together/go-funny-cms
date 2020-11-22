@@ -3,6 +3,8 @@ package command
 import (
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
+	"gocms/example/pkg1"
+	"gocms/example/pkg2"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
 )
@@ -21,6 +23,16 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "可以在这里触发一些自定义脚本",
 				Action: func(c *cli.Context) error {
+					return nil
+				},
+			},
+			{
+				Name:    "example-init",
+				Aliases: []string{"s"},
+				Usage:   "可以在这里触发一些自定义脚本",
+				Action: func(c *cli.Context) error {
+					pkg1.Echo()
+					pkg2.Echo()
 					return nil
 				},
 			},
