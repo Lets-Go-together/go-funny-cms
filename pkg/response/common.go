@@ -3,14 +3,10 @@ package response
 import "github.com/gin-gonic/gin"
 
 const (
-	StatusSuccess = 0
+	MaskNeedAuthor   = 8
+	MaskParamMissing = 7
+	StatusSuccess    = 0
 )
-
-type StatusCode struct {
-	StatusSuccess int
-	StatusError   int
-	StatusRefused int
-}
 
 type JsonResponse struct {
 	Status  int         `json:"status"`
@@ -34,14 +30,17 @@ func ErrorResponse(status int, message string) *JsonResponse {
 	}
 }
 
+// 将 json 设为响应体.
+// HTTP 状态码由应用状态码决定
 func (that *JsonResponse) WriteTo(ctx *gin.Context) {
-	code := StatusSuccess
+	code := 200
 	if that.Status != StatusSuccess {
 		code = that.responseCode()
 	}
 	ctx.JSON(code, that)
 }
 
+// 获取 HTTP 状态码. HTTP 状态码由 应用状态码映射
 func (that *JsonResponse) responseCode() int {
 	if that.Status != StatusSuccess {
 		return 500
