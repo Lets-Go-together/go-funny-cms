@@ -50,3 +50,8 @@ func (*JwtAction) ParseToken(tokenString string) (users.AuthUser, error) {
 func (*JwtAction) refreshToken() (token string, err error) {
 	return "", nil
 }
+
+// 生成密钥
+func GenerateSign() {
+
+}
