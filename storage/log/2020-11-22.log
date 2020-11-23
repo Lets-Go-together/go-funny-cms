@@ -1,13 +1,6 @@
-2020/11/22 13:40:25 logger.go:47: [Error] error : 加载env配置 : Config File ".env" Not Found in "[/Users/aday/Desktop/go-funny-cms]" 
-2020/11/22 13:41:38 logger.go:47: [Error] error : 加载env配置 : Config File ".env" Not Found in "[/Users/aday/Desktop/go-funny-cms]" 
-2020/11/22 13:42:14 logger.go:47: [Error] error : 加载env配置 : Config File ".env" Not Found in "[/Users/aday/Desktop/go-funny-cms]" 
-2020/11/22 13:43:07 logger.go:47: [Error] error : mysql connect err 
- dns : funy_cms:@tcp(175.24.233.215:3306)/funy_cms?charset=utf8&parseTime=true : Error 1045: Access denied for user 'funy_cms'@'223.73.185.77' (using password: NO) 
-2020/11/22 13:44:06 logger.go:47: [Error] error : mysql connect err 
- dns : funy_cms:@tcp(175.24.233.215:3306)/funy_cms?charset=utf8&parseTime=true : Error 1045: Access denied for user 'funy_cms'@'223.73.185.77' (using password: NO) 
-2020/11/22 13:55:12 logger.go:47: [Error] error : mysql connect err 
- dns : funy_cms:HHJd%jsd565445@tcp(cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8&parseTime=true : Error 1045: Access denied for user 'funy_cms'@'223.73.185.77' (using password: YES) 
-2020/11/22 13:55:52 logger.go:47: [Error] error : mysql connect err 
- dns : root:HHJd%jsd565445@tcp(cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8&parseTime=true : Error 1045: Access denied for user 'root'@'223.73.185.77' (using password: YES) 
-2020/11/22 14:05:28 logger.go:47: [Error] error : mysql connect err 
- dns : root:HHJd%jsd565445@tcp(cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8&parseTime=true : Error 1045: Access denied for user 'root'@'120.229.94.182' (using password: YES) 
+2020/11/22 21:20:58 logger.go:47: [Error] error : mysql connect err 
+ dns : root:HHJd%jsd565445@tcp(https://cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : dial tcp: lookup https://cdb-r2ct43gg.cd.tencentcdb.com:10092: no such host 
+2020/11/22 21:21:59 logger.go:47: [Error] error : mysql connect err 
+ dns : root:HHJd%jsd565445@tcp(https://cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : dial tcp: lookup https://cdb-r2ct43gg.cd.tencentcdb.com:10092: no such host 
+2020/11/22 21:22:26 logger.go:47: [Error] error : mysql connect err 
+ dns : root:HHJd%jsd565445@tcp(cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : Error 1045: Access denied for user 'root'@'120.229.94.182' (using password: YES) 
