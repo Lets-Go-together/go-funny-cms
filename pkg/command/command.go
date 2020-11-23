@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
+	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
@@ -9,7 +10,7 @@ import (
 )
 
 func InitApp() *cli.App {
-	app := &cli.App{
+	return &cli.App{
 		Name:  "Start server",
 		Usage: "--",
 		Action: func(c *cli.Context) error {
@@ -44,16 +45,24 @@ func InitApp() *cli.App {
 					return nil
 				},
 			},
+			{
+				Name: "wyy_music",
+				Aliases: []string{"s"},
+				Usage: "网易云自动打卡听歌",
+				Action: func(c *cli.Context) error {
+					config.Initialize()
+					database.Initialize()
+					wyyMusic.Run()
+					return nil
+				},
+			},
 		},
 	}
-
-	return app
 }
 
 // 服务器
 func AppServer() {
 	config.Initialize()
 	database.Initialize()
-
 	bootstrap.SteupRoute()
 }
