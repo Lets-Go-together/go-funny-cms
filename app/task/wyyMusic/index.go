@@ -12,8 +12,8 @@ func init() {
 
 func Run() {
 
-	WyyMusicUserModel := wyy_music.WyyMusicUserModel{}
+	WyyMusicUserModel := wyy_music.WyyMusicUser{}
 
-	log.Fatal(config.Db.Model(&WyyMusicUserModel).Find(&WyyMusicUserModel))
+	log.Fatal(config.Db.Model(&WyyMusicUserModel).First(&WyyMusicUserModel))
 
 }

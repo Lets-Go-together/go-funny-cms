@@ -1,6 +1,0 @@
-2020/11/22 21:20:58 logger.go:47: [Error] error : mysql connect err 
- dns : root:HHJd%jsd565445@tcp(https://cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : dial tcp: lookup https://cdb-r2ct43gg.cd.tencentcdb.com:10092: no such host 
-2020/11/22 21:21:59 logger.go:47: [Error] error : mysql connect err 
- dns : root:HHJd%jsd565445@tcp(https://cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : dial tcp: lookup https://cdb-r2ct43gg.cd.tencentcdb.com:10092: no such host 
-2020/11/22 21:22:26 logger.go:47: [Error] error : mysql connect err 
- dns : root:HHJd%jsd565445@tcp(cdb-r2ct43gg.cd.tencentcdb.com:10092)/funy_cms?charset=utf8mb4&parseTime=true : Error 1045: Access denied for user 'root'@'120.229.94.182' (using password: YES) 

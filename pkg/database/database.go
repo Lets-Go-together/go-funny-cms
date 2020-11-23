@@ -12,7 +12,7 @@ import (
 
 func Initialize() {
 	config.Db = MysqlClient()
-	config.Redis = RedisClient()
+	//config.Redis = RedisClient()
 }
 
 // 初始化 Redis 服务器
@@ -51,6 +51,9 @@ func MysqlClient() *gorm.DB {
 	Db.DB().SetConnMaxIdleTime(time.Duration(config.GetInt64("DB_CONN_MAX_IDLE_TIME")))
 	//连接可以重用最长时间
 	Db.DB().SetConnMaxLifetime(time.Duration(config.GetInt64("DB_CONN_MAX_LIFE_TIME")))
+
+	// 全局禁用表名复数
+	Db.SingularTable(true)
 
 	logger.Info("连接Mysql 成功", "mysql connect")
 
