@@ -51,6 +51,7 @@ func MysqlClient() *gorm.DB {
 	Db.DB().SetConnMaxIdleTime(time.Duration(config.GetInt64("DB_CONN_MAX_IDLE_TIME")))
 	//连接可以重用最长时间
 	Db.DB().SetConnMaxLifetime(time.Duration(config.GetInt64("DB_CONN_MAX_LIFE_TIME")))
+	Db.LogMode(true)
 
 	// 全局禁用表名复数
 	Db.SingularTable(true)

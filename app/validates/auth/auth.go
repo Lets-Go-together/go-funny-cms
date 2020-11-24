@@ -17,8 +17,8 @@ type LoginAction struct{}
 
 func (*LoginAction) Validate(c *gin.Context) string {
 	LoginData = &LoginParams{
-		Account:  c.Param("account"),
-		Password: c.Param("password"),
+		Account:  c.PostForm("account"),
+		Password: c.PostForm("password"),
 	}
 
 	if msg, isSuccess := validate.BaseValidate(LoginData); isSuccess == false {
