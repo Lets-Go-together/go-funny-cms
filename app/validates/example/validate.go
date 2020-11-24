@@ -12,14 +12,14 @@ func Validate() {
 		FirstName      string `validate:"required"`
 		LastName       string `validate:"required"`
 		Age            uint8  `validate:"gte=0,lte=130"`
-		Email          string `validate:"required,email"`
+		Email          string `validate:"required,phone"`
 		FavouriteColor string `validate:"iscolor"`
 	}
 
 	user := &User{
 		FirstName:      "好的",
 		LastName:       "222",
-		Age:            135,
+		Age:            130,
 		Email:          "1563",
 		FavouriteColor: "",
 	}

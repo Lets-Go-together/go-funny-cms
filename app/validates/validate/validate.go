@@ -1,15 +1,9 @@
 package validate
 
 import (
-	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
-)
-
-var (
-	trans    ut.Translator
-	validate *validator.Validate
 )
 
 func init() {
@@ -18,16 +12,12 @@ func init() {
 
 // 初始化翻译器
 func getTrans() ut.Translator {
-	zh := zh.New()
-	uni := ut.New(zh, zh)
-
-	trans, _ := uni.GetTranslator("zh")
-	return trans
+	return registerCustomTrans()
 }
 
 // 获取验证器
 func getValidate() *validator.Validate {
-	return validator.New()
+	return registerCustomValidate()
 }
 
 // 注册翻译器
