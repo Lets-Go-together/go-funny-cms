@@ -5,6 +5,7 @@ import (
 	validate "gocms/app/validates/validate"
 )
 
+// https://github.com/go-playground/validator
 // 验证齐使用参考如下方法
 func Validate() {
 	type User struct {
