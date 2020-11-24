@@ -29,16 +29,16 @@ func registerTrans() {
 
 // 验证器
 // 返回验证器验证结果错误消息 和 bool (是否验证成功)
-func Validate(validatModel interface{}) (string, bool) {
+func BaseValidate(validatModel interface{}) (string, bool) {
 	errs := validate.Struct(validatModel)
 
 	if errs != nil {
 		errs := errs.(validator.ValidationErrors)
 		if len(errs) > 0 {
 			err := errs[0]
-			return err.Translate(trans), true
+			return err.Translate(trans), false
 		}
 	}
 
-	return "", false
+	return "", true
 }

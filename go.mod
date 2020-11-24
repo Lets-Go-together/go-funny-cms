@@ -3,7 +3,7 @@ module gocms
 go 1.15
 
 require (
-	github.com/cosmtrek/air v1.12.4 // indirect
+	github.com/cosmtrek/air v1.15.1 // indirect
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.10.0 // indirect

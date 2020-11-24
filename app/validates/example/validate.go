@@ -17,13 +17,10 @@ func Validate() {
 	}
 
 	user := &User{
-		FirstName:      "好的",
-		LastName:       "222",
-		Age:            130,
-		Email:          "1563",
-		FavouriteColor: "",
+		FirstName: "好的",
+		LastName:  "222",
 	}
 
-	msg, isSuccess := validate.Validate(user)
+	msg, isSuccess := validate.BaseValidate(user)
 	fmt.Println(msg, isSuccess)
 }

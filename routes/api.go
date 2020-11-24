@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	adminContro "gocms/app/http/admin/controllers"
 	"gocms/app/http/index/controllers"
 )
 
@@ -12,4 +13,7 @@ func RegisterWebRoutes(router *gin.Engine) {
 
 	indexControler := new(controllers.IndexController)
 	router.GET("/", indexControler.Index)
+
+	authController := new(adminContro.AuthController)
+	router.POST("/admin/login", authController.Login)
 }
