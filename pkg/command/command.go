@@ -5,6 +5,7 @@ import (
 	"gocms/app/task/wyyMusic"
 	validateExample "gocms/app/validates/example"
 	"gocms/bootstrap"
+	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
 )
@@ -44,7 +45,7 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "初始化生成jwt密钥",
 				Action: func(c *cli.Context) error {
-					//auth.GerateSign()
+					auth.GerateSign()
 					return nil
 				},
 			},
