@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/users"
+	"gocms/pkg/config"
 )
 
 var (
@@ -13,7 +14,7 @@ var (
 type JwtAction struct{}
 
 func init() {
-	key := "AllYourBase"
+	key := config.GetString("JWT_SIGN")
 	signKey = []byte(key)
 }
 
@@ -49,9 +50,4 @@ func (*JwtAction) ParseToken(tokenString string) (users.AuthUser, error) {
 // 刷新token， 参数同getToken'
 func (*JwtAction) refreshToken() (token string, err error) {
 	return "", nil
-}
-
-// 生成密钥
-func GenerateSign() {
-
 }
