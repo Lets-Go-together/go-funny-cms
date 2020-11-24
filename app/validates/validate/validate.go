@@ -20,7 +20,7 @@ func getValidate() *validator.Validate {
 	return registerCustomValidate()
 }
 
-// 注册翻译器
+// 初始化注册验证器和翻译器
 func registerTrans() {
 	trans = getTrans()
 	validate = getValidate()
