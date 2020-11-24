@@ -1,6 +1,8 @@
 package response
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 const (
 	MaskNeedAuthor   = 8
@@ -42,6 +44,7 @@ func (that *JsonResponse) WriteTo(ctx *gin.Context) {
 
 // 获取 HTTP 状态码. HTTP 状态码由 应用状态码映射
 func (that *JsonResponse) responseCode() int {
+	// todo 完善应用状态码对应 http 状态码
 	if that.Status != StatusSuccess {
 		return 500
 	}

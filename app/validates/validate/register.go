@@ -12,6 +12,19 @@ var (
 	trans    ut.Translator
 )
 
+type Validator struct {
+	tag string
+}
+
+func (that Validator) validate(fl validator.FieldLevel) bool {
+	return false
+}
+
+func Register(custom Validator) error {
+	v := validate.RegisterValidation(custom.tag, custom.validate)
+	return v
+}
+
 // 注册自定义验证器
 func registerCustomValidate() *validator.Validate {
 	validate = validator.New()
