@@ -9,6 +9,11 @@ import (
 	"gocms/pkg/database"
 )
 
+func init() {
+	config.Initialize()
+	//database.Initialize()
+}
+
 func InitApp() *cli.App {
 	return &cli.App{
 		Name:  "Start server",
@@ -41,14 +46,14 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "初始化生成jwt密钥",
 				Action: func(c *cli.Context) error {
-					auth.Encrypto()
+					auth.GerateSign()
 					return nil
 				},
 			},
 			{
-				Name: "wyy_music",
+				Name:    "wyy_music",
 				Aliases: []string{"s"},
-				Usage: "网易云自动打卡听歌",
+				Usage:   "网易云自动打卡听歌",
 				Action: func(c *cli.Context) error {
 					config.Initialize()
 					database.Initialize()
@@ -62,7 +67,5 @@ func InitApp() *cli.App {
 
 // 服务器
 func AppServer() {
-	config.Initialize()
-	database.Initialize()
 	bootstrap.SteupRoute()
 }
