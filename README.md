@@ -42,10 +42,22 @@
 ### 第一次操作
 
     cp .env.example .env
+    go build main.go && ./main generate-jwt
+    # 或者
+    go run main.go generate-jwt
+    :按提示操作
     
+    # 开发环境配置
+    # 安装air
+    # 根目录运行
+    air
     
 ### 进度
 
 **11-21**: 
 
     jwt、响应、日志、db等操作基本完成
+    
+**11-24**
+
+    配置jwt密钥生成

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/users"
+	"gocms/pkg/config"
 )
 
 var (
@@ -13,7 +14,7 @@ var (
 type JwtAction struct{}
 
 func init() {
-	key := "AllYourBase"
+	key := config.GetString("JWT_SIGN")
 	signKey = []byte(key)
 }
 

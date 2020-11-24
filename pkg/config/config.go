@@ -15,8 +15,12 @@ var (
 	Viper *viper.Viper
 )
 
-func Initialize() {
+func init() {
 	InitViper()
+}
+
+func Initialize() {
+
 }
 
 // 初始化全局容器
@@ -25,7 +29,7 @@ func InitViper() {
 	Viper = viper.New()
 
 	// step2: 设置文件名称
-	Viper.SetConfigName(".env")
+	Viper.SetConfigName(GetEnvFile())
 
 	// step3: 设置配置文件类型
 	Viper.SetConfigType("env")
@@ -40,6 +44,11 @@ func InitViper() {
 
 	Viper.AutomaticEnv()
 	Viper.AllowEmptyEnv(true)
+}
+
+// 获取env文件
+func GetEnvFile() string {
+	return ".env"
 }
 
 // 读取env 配置
