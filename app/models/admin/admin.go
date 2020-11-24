@@ -10,7 +10,3 @@ type Admin struct {
 	Email       string `json:"email"`
 	Phone       string `json:"phone"`
 }
-
-func (Admin) TableName() string {
-	return "admins"
-}

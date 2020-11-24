@@ -54,7 +54,7 @@ func MysqlClient() *gorm.DB {
 	Db.LogMode(true)
 
 	// 全局禁用表名复数
-	Db.SingularTable(true)
+	// Db.SingularTable(true)
 
 	logger.Info("连接Mysql 成功", "mysql connect")
 
