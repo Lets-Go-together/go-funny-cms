@@ -28,7 +28,7 @@ func GerateAdminUser(account string) {
 	password := CreatePassword(p)
 	adminModel := admin.Admin{
 		Account:  account,
-		Password: string(password),
+		Password: password,
 	}
 	fmt.Println(adminModel)
 	config.Db.FirstOrCreate(&adminModel, admin.Admin{
