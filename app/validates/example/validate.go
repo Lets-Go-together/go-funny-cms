@@ -2,7 +2,8 @@ package example
 
 import (
 	"fmt"
-	validate "gocms/app/validates/validate"
+	"gocms/app/validates/validate"
+	"gocms/pkg/logger"
 )
 
 // https://github.com/go-playground/validator
@@ -14,13 +15,16 @@ func Validate() {
 		Age            uint8  `validate:"gte=0,lte=130"`
 		Email          string `validate:"required,phone"`
 		FavouriteColor string `validate:"iscolor"`
+		Phone          string `validate:"phone"`
 	}
 
 	user := &User{
 		FirstName: "好的",
 		LastName:  "222",
+		Phone:     "123",
 	}
 
 	msg, isSuccess := validate.BaseValidate(user)
 	fmt.Println(msg, isSuccess)
+	logger.Debug(msg)
 }
