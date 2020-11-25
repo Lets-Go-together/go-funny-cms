@@ -8,8 +8,11 @@ import (
 
 // 初始化路由
 func SteupRoute() {
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Logger())
+
 	routes.RegisterWebRoutes(router)
+	routes.RegisterApiRoutes(router)
 
 	_ = router.Run(":" + config.GetString("APP_PORT"))
 }
