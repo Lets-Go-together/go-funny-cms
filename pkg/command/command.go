@@ -12,6 +12,7 @@ import (
 
 func init() {
 	config.Initialize()
+	database.Initialize()
 }
 
 func InitApp() *cli.App {
@@ -50,6 +51,22 @@ func InitApp() *cli.App {
 				},
 			},
 			{
+				Name:    "create-admin-user",
+				Aliases: []string{"cau"},
+				Usage:   "创建一个admin用户",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "account",
+						Value: "admin",
+						Usage: "账户名称",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					auth.GerateAdminUser(c.String("account"))
+					return nil
+				},
+			},
+			{
 				Name:    "wyy_music",
 				Aliases: []string{"s"},
 				Usage:   "网易云自动打卡听歌",
@@ -66,6 +83,5 @@ func InitApp() *cli.App {
 
 // 服务器
 func AppServer() {
-	database.Initialize()
 	bootstrap.SteupRoute()
 }
