@@ -36,6 +36,8 @@ func GerateAdminUser(account string) {
 	})
 
 	fmt.Printf("account: %s \npassword: %s \n", account, p)
+
+	fmt.Println(ValidatePassword(password, p))
 }
 
 // 创建密码
@@ -47,10 +49,12 @@ func CreatePassword(password string) string {
 }
 
 // 密码验证
-func ValidatePassword(oldPassword string, newPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(oldPassword), []byte(newPassword))
+func ValidatePassword(hashPassword string, newPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(newPassword))
+	logger.PanicError(err, "密码验证", false)
+	logger.Info("password validate", fmt.Sprintf("hashPassword %s - newPassword %s", hashPassword, newPassword))
 	if err != nil {
-		return true
+		return false
 	}
-	return false
+	return true
 }

@@ -8,7 +8,6 @@ import (
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
-	"net/http"
 )
 
 type AuthController struct{}
@@ -20,23 +19,22 @@ var (
 func (*AuthController) Login(c *gin.Context) {
 	authValidateAction := authValidate.LoginAction{}
 	if msg := authValidateAction.Validate(c); len(msg) > 0 {
-		c.JSON(http.StatusOK, response.JsonResponse{
-			Status:  403,
-			Message: msg,
-		})
+		response.ErrorResponse(403, msg).WriteTo(c)
 		return
 	}
 
 	params := authValidateAction.GetLoginData()
 	adminModel := admin.Admin{}
-	config.Db.Where("account = ?", params.Account).Where("password = ?", params.Password).Find(&adminModel)
-	if adminModel.ID == 0 {
-		c.JSON(http.StatusOK, response.JsonResponse{
-			Status:  403,
-			Message: "用户不存在",
-			Data:    adminModel,
-		})
+	config.Db.Where("account = ?", params.Account).Find(&adminModel)
 
+	if adminModel.ID == 0 {
+		response.ErrorResponse(403, "用户不存在").WriteTo(c)
+		return
+	}
+
+	password := adminModel.Password
+	if !auth.ValidatePassword(password, params.Password) {
+		response.ErrorResponse(403, "密码错误").WriteTo(c)
 		return
 	}
 
@@ -46,14 +44,9 @@ func (*AuthController) Login(c *gin.Context) {
 	}
 	token := jwtAction.GetToken(authAdmin)
 
-	c.JSON(http.StatusOK, response.JsonResponse{
-		Status:  200,
-		Message: "Success",
-		Data: map[string]string{
-			"token": token,
-		},
-	})
-
+	response.SuccessResponse(map[string]string{
+		"token": token,
+	}).WriteTo(c)
 }
 
 func (*AuthController) Register(c *gin.Context) {

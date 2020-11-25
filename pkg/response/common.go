@@ -18,10 +18,10 @@ type JsonResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-func SuccessResponse(data *interface{}) *JsonResponse {
+func SuccessResponse(data interface{}) *JsonResponse {
 	return &JsonResponse{
 		Status:  StatusSuccess,
-		Message: "success",
+		Message: "Success",
 		Data:    data,
 	}
 }
