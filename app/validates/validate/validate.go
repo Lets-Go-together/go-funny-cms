@@ -3,7 +3,7 @@ package validate
 import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	zh_translations "github.com/go-playground/validator/v10/translations/zh"
+	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 )
 
 func init() {
@@ -24,14 +24,13 @@ func getValidate() *validator.Validate {
 func registerTrans() {
 	trans = getTrans()
 	validate = getValidate()
-	_ = zh_translations.RegisterDefaultTranslations(validate, trans)
+	_ = zhTranslations.RegisterDefaultTranslations(validate, trans)
 }
 
 // 验证器
 // 返回验证器验证结果错误消息 和 bool (是否验证成功)
-func BaseValidate(validatModel interface{}) (string, bool) {
-	errs := validate.Struct(validatModel)
-
+func BaseValidate(validateModel interface{}) (string, bool) {
+	errs := validate.Struct(validateModel)
 	if errs != nil {
 		errs := errs.(validator.ValidationErrors)
 		if len(errs) > 0 {

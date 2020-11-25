@@ -1,7 +1,6 @@
 package example
 
 import (
-	"fmt"
 	"gocms/app/validates/validate"
 	"gocms/pkg/logger"
 )
@@ -24,7 +23,6 @@ func Validate() {
 		Phone:     "123",
 	}
 
-	msg, isSuccess := validate.BaseValidate(user)
-	fmt.Println(msg, isSuccess)
+	msg, _ := validate.BaseValidate(user)
 	logger.Debug(msg)
 }
