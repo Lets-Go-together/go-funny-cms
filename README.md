@@ -61,3 +61,16 @@
 **11-24**
 
     配置jwt密钥生成
+    
+**11-25**
+
+    # 创建账户
+    > go run main create-admin-user -h
+    > go run create-admin-user --account [你的账户名称]
+    
+    # 登陆
+    > air
+    curl --location --request POST '127.0.0.1:8082/api/admin/login' \
+    --header 'Content-Type: application/x-www-form-urlencoded' \
+    --data-urlencode 'account=chenf' \
+    --data-urlencode 'password=12345678'
