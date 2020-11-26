@@ -21,4 +21,3 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiRouter.POST("/admin/me", authController.Me)
 	}
 }
-q
