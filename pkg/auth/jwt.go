@@ -20,7 +20,7 @@ func init() {
 
 // 获取token
 // 必须传参 需要保存的用户信息
-func (*JwtAction) GetToken(userClaims admin.AuthAdmin) string {
+func (*JwtAction) GetToken(userClaims *admin.AuthAdmin) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
 	tokenString, _ := token.SignedString(signKey)
 	return tokenString

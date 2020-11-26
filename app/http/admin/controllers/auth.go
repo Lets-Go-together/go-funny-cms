@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
 	authValidate "gocms/app/validates/auth"
@@ -39,10 +38,7 @@ func (*AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	authAdmin := admin.AuthAdmin{
-		StandardClaims: jwt.StandardClaims{},
-		Admin:          adminModel,
-	}
+	authAdmin := admin.GetAuthAdmin(adminModel)
 	token := jwtAction.GetToken(authAdmin)
 
 	response.SuccessResponse(map[string]string{

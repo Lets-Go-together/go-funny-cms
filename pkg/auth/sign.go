@@ -68,7 +68,7 @@ func ValidateToken(token string) string {
 
 	t := strings.Split(token, "Bearer ")
 	if len(t) > 0 {
-		return t[0]
+		return t[1]
 	}
 	return ""
 }

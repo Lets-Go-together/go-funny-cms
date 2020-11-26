@@ -17,5 +17,19 @@ type Admin struct {
 // 此信息将写入鉴权中
 type AuthAdmin struct {
 	jwt.StandardClaims
-	Admin
+	Account     string `json:"account"`
+	Description string `json:"description"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+}
+
+// 获取安全认证的用户信息
+func GetAuthAdmin(adminModel Admin) *AuthAdmin {
+	r := &AuthAdmin{
+		Account:     adminModel.Account,
+		Description: adminModel.Description,
+		Email:       adminModel.Email,
+		Phone:       adminModel.Phone,
+	}
+	return r
 }
