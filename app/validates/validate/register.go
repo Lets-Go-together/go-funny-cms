@@ -9,6 +9,7 @@ import (
 
 var CustomValidator *customValidator
 
+// 所有验证器
 var validations []Validation
 
 type customValidator struct {
@@ -62,10 +63,6 @@ func New() (cv *customValidator, err error) {
 		trans:    translator,
 	}
 	return
-}
-
-func Validate(s interface{}) (bool, string) {
-	return CustomValidator.verify(s)
 }
 
 func (that *customValidator) verify(s interface{}) (bool, string) {

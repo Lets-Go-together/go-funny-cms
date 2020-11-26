@@ -21,7 +21,7 @@ func (*LoginAction) Validate(c *gin.Context) string {
 		Password: c.PostForm("password"),
 	}
 
-	if msg, isSuccess := validate.BaseValidate(LoginData); isSuccess == false {
+	if isSuccess, msg := validate.Validate(LoginData); !isSuccess {
 		return msg
 	}
 	return ""

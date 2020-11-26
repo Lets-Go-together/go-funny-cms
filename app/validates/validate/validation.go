@@ -7,15 +7,25 @@ import (
 	"regexp"
 )
 
+// 表示 validator.Validate 和 ut.Translator 的组合.
+// 包含验证标签, 方式, 翻译器等基本要素
+// 其中, tag 和 translation 为必要字段, 其余为非必要
 type Validation struct {
-	tag           string
-	translation   string
-	override      bool
-	validateFn    validator.Func
-	registerFn    validator.RegisterTranslationsFunc
+	// 标签名称
+	tag string
+	// 表示该标 Validate 的描述/解释
+	translation string
+	// 是否覆盖已存在的验证器
+	override bool
+	// 用于验证字段的函数
+	validateFn validator.Func
+	// 翻译注册函数
+	registerFn validator.RegisterTranslationsFunc
+	// 翻译函数
 	translationFn validator.TranslationFunc
 }
 
+// 注册关联验证器
 func (that *Validation) register(v *validator.Validate, t ut.Translator) (err error) {
 	err = that.registerValidator(v)
 	if err == nil {
