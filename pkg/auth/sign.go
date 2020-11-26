@@ -7,6 +7,7 @@ import (
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 	"time"
 )
 
@@ -57,4 +58,17 @@ func ValidatePassword(hashPassword string, newPassword string) bool {
 		return false
 	}
 	return true
+}
+
+// 验证token
+func ValidateToken(token string) string {
+	if len(token) < 0 {
+		return ""
+	}
+
+	t := strings.Split(token, "Bearer ")
+	if len(t) > 0 {
+		return t[0]
+	}
+	return ""
 }

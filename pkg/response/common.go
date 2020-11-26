@@ -46,7 +46,7 @@ func (that *JsonResponse) WriteTo(ctx *gin.Context) {
 func (that *JsonResponse) responseCode() int {
 	// todo 完善应用状态码对应 http 状态码
 	if that.Status != StatusSuccess {
-		return 500
+		return 200
 	}
 	return 200
 }
