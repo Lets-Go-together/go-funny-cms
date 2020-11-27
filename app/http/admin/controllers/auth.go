@@ -6,7 +6,6 @@ import (
 	authValidate "gocms/app/validates/auth"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
-	"gocms/pkg/logger"
 	"gocms/pkg/response"
 )
 
@@ -48,25 +47,16 @@ func (*AuthController) Login(c *gin.Context) {
 
 // 我的信息
 func (*AuthController) Me(c *gin.Context) {
-	token := c.GetHeader("authorization")
-	logger.Info("token", token)
-	token = auth.ValidateToken(token)
-	logger.Info("validate-token", token)
-
-	if len(token) == 0 {
-		response.ErrorResponse(401, "鉴权失败").WriteTo(c)
-		return
-	}
-
-	user, err := jwtAction.ParseToken(token)
-	if err != nil {
-		response.ErrorResponse(401, err.Error()).WriteTo(c)
-		return
-	}
-
+	user := config.AuthAdmin
 	response.SuccessResponse(user).WriteTo(c)
-	return
 
+	return
+}
+
+// 注销
+func (*AuthController) Logout(c *gin.Context) {
+	user := config.AuthAdmin
+	response.SuccessResponse(user).WriteTo(c)
 }
 
 func (*AuthController) Register(c *gin.Context) {

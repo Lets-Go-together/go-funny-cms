@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"github.com/urfave/cli/v2"
 	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
@@ -38,10 +37,9 @@ func InitApp() *cli.App {
 				Usage:   "可以在这里触发一些自定义脚本",
 				Action: func(c *cli.Context) error {
 					//validateExample.Validate()
+					//r := auth.ValidateToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiY3JlYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwidXBkYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwiYWNjb3VudCI6ImNoZW5mIiwicGFzc3dvcmQiOiIkMmEkMTQkczgxYlN6MnYxdDlJTzZEV01VOFhKZWdERzV1VjZBdVgvZy9mU1laL0k3U1JTMTB6bFNzSC4iLCJkZXNjcmlwdGlvbiI6IiIsImVtYWlsIjoiIiwicGhvbmUiOiIifQ.rwtCtzzhN2xWAcjRj2cqyK5u6RLyg1eiMy4YyOrb8Xo")
 
-					r := auth.ValidateToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiY3JlYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwidXBkYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwiYWNjb3VudCI6ImNoZW5mIiwicGFzc3dvcmQiOiIkMmEkMTQkczgxYlN6MnYxdDlJTzZEV01VOFhKZWdERzV1VjZBdVgvZy9mU1laL0k3U1JTMTB6bFNzSC4iLCJkZXNjcmlwdGlvbiI6IiIsImVtYWlsIjoiIiwicGhvbmUiOiIifQ.rwtCtzzhN2xWAcjRj2cqyK5u6RLyg1eiMy4YyOrb8Xo")
-
-					fmt.Println(r)
+					//fmt.Println(r)
 					return nil
 				},
 			},

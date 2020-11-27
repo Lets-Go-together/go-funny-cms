@@ -18,6 +18,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 	// 需要鉴权的路由
 	apiRouter.Use(middleware.Authenticate)
 	{
-		apiRouter.POST("/admin/me", authController.Me)
+		apiRouter.GET("/admin/me", authController.Me)
+		apiRouter.POST("/admin/logout", authController.Logout)
 	}
 }

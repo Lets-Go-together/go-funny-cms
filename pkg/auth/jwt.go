@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/admin"
 	"gocms/pkg/config"
+	"time"
 )
 
 var (
@@ -21,6 +22,8 @@ func init() {
 // 获取token
 // 必须传参 需要保存的用户信息
 func (*JwtAction) GetToken(userClaims *admin.AuthAdmin) string {
+	expireAt := time.Duration(config.GetInt64("JWT_EXPIRE_AT", 60))
+	userClaims.ExpiresAt = time.Now().Add(time.Minute * expireAt).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
 	tokenString, _ := token.SignedString(signKey)
 	return tokenString
@@ -39,12 +42,24 @@ func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
 		return userClaims, err
 	}
 
-	if _, ok := token.Claims.(*admin.AuthAdmin); ok && token.Valid {
-		fmt.Println(userClaims)
-		return userClaims, nil
-	} else {
-		return userClaims, err
+	if token.Valid {
+		if _, ok := token.Claims.(*admin.AuthAdmin); ok && token.Valid {
+			return userClaims, nil
+		} else {
+			return userClaims, err
+		}
 	}
+
+	if ve, ok := err.(*jwt.ValidationError); ok {
+		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+			fmt.Println("错误的token")
+		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
+			fmt.Println("token过期或未启用")
+		} else {
+			fmt.Println("无法处理这个token", err)
+		}
+	}
+	return userClaims, nil
 }
 
 // 刷新token， 参数同getToken'

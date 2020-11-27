@@ -5,14 +5,16 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
+	"gocms/app/models/admin"
 	"gocms/pkg/logger"
 )
 
 // viper 作为全局的 app 容器存在
 var (
-	Db    *gorm.DB
-	Redis *redis.Client
-	Viper *viper.Viper
+	Db        *gorm.DB
+	Redis     *redis.Client
+	Viper     *viper.Viper
+	AuthAdmin *admin.AuthAdmin
 )
 
 func init() {
