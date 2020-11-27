@@ -53,7 +53,6 @@ func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
 
 	if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			fmt.Println("错误的token")
 			logger.Info("错误的token", tokenString)
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 			logger.Info("token过期", tokenString)
