@@ -1,43 +1,35 @@
 package validate
 
 import (
-	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
-	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"github.com/gin-gonic/gin"
+	"gocms/pkg/response"
 )
 
-func init() {
-	registerTrans()
-}
-
-// 初始化翻译器
-func getTrans() ut.Translator {
-	return registerCustomTrans()
-}
-
-// 获取验证器
-func getValidate() *validator.Validate {
-	return registerCustomValidate()
-}
-
-// 初始化注册验证器和翻译器
-func registerTrans() {
-	trans = getTrans()
-	validate = getValidate()
-	_ = zhTranslations.RegisterDefaultTranslations(validate, trans)
+type Validatable interface {
+	Validate(writer *gin.Context) string
 }
 
 // 验证器
 // 返回验证器验证结果错误消息 和 bool (是否验证成功)
-func BaseValidate(validateModel interface{}) (string, bool) {
-	errs := validate.Struct(validateModel)
-	if errs != nil {
-		errs := errs.(validator.ValidationErrors)
-		if len(errs) > 0 {
-			err := errs[0]
-			return err.Translate(trans), false
-		}
-	}
+func Validate(s interface{}) (bool, string) {
+	return CustomValidator.verify(s)
+}
 
-	return "", true
+// 验证 structure,
+func ValidateWithDefaultResponse(s interface{}, writer response.JSONWriter) bool {
+	success, msg := Validate(s)
+	if !success {
+		response.ErrorResponse(403, msg).WriteTo(writer)
+		return false
+	}
+	return true
+}
+
+func ValidateWithResponse(s interface{}, msg string, writer response.JSONWriter) bool {
+	success, _ := Validate(s)
+	if !success {
+		response.ErrorResponse(403, msg).WriteTo(writer)
+		return false
+	}
+	return true
 }

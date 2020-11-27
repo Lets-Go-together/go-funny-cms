@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"gocms/app/validates/validate"
 )
@@ -23,9 +22,6 @@ func (*LoginAction) Validate(c *gin.Context) string {
 	}
 
 	_ = c.BindJSON(&LoginData)
-
-	fmt.Println(LoginData)
-
 	if msg, isSuccess := validate.BaseValidate(LoginData); isSuccess == false {
 		return msg
 	}
