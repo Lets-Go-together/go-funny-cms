@@ -22,7 +22,7 @@ func (*LoginAction) Validate(c *gin.Context) string {
 	}
 
 	_ = c.BindJSON(&LoginData)
-	if msg, isSuccess := validate.BaseValidate(LoginData); isSuccess == false {
+	if isSuccess, msg := validate.Validate(LoginData); isSuccess == false {
 		return msg
 	}
 	return ""
