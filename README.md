@@ -1,3 +1,7 @@
+## Go-Funny-CMS
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/Lets-Go-together/go-funny-cms)](https://goreportcard.com/report/github.com/Lets-Go-together/go-funny-cms)
+
 ## 项目
 
 ### 项目目录整体划分
