@@ -9,7 +9,9 @@ import (
 
 // 表示 validator.Validate 和 ut.Translator 的组合.
 // 包含验证标签, 方式, 翻译器等基本要素
-// 其中, tag 和 translation 为必要字段, 其余为非必要
+// 其中, tag 为必要字段
+//
+// 当存在 translation 时, 其他均为可选, 表示重写一个 tag 的翻译器
 type Validation struct {
 	// 标签名称
 	tag string
@@ -25,17 +27,20 @@ type Validation struct {
 	translationFn validator.TranslationFunc
 }
 
+func (that Validation) register2(v customValidator) error {
+	return that.register(v.validate, v.trans)
+}
+
 // 注册关联验证器
 func (that *Validation) register(v *validator.Validate, t ut.Translator) (err error) {
-	err = that.registerValidator(v)
+
+	if that.validateFn != nil {
+		err = v.RegisterValidation(that.tag, that.validateFn)
+	}
 	if err == nil {
 		err = that.registerTranslation(v, t)
 	}
 	return
-}
-
-func (that *Validation) registerValidator(v *validator.Validate) error {
-	return v.RegisterValidation(that.tag, that.validateFn)
 }
 
 func (that *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {

@@ -32,6 +32,30 @@ func init() {
 		//validationOfRegexp("cn_postal_code", "[1-9]\\d{5}(?!\\d)", "{0} 必须是中国邮政编码"),
 		// 中国大陆身份证号
 		validationOfRegexp("cn_id_number", "^\\d{15}|\\d{18}$", "{0} 必须是中国身份证号码"),
+
+		// Example
+
+		/*
+			Validation{
+				tag:         "great_then",
+				translation: "字段 {0} 必须大于 {1}.",
+				override:    false,
+				registerFn: func(ut ut.Translator) error {
+					return ut.Add("great_then", "字段 {0} 必须大于 {1}.", false)
+				},
+				validateFn: func(fl validator.FieldLevel) bool {
+					p, _ := strconv.Atoi(fl.Param())
+					return fl.Field().Int() > int64(p)
+				},
+				translationFn: func(ut ut.Translator, fe validator.FieldError) string {
+					t, err := ut.T(fe.Tag(), fe.Field(), fe.Param())
+					if err != nil {
+						t = "翻译失败"
+					}
+					return t
+				},
+			},
+		*/
 	)
 
 	CustomValidator, _ = New()

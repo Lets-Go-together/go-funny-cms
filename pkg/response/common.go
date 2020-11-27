@@ -1,5 +1,12 @@
 package response
 
+/**
+公共响应
+
+统一定义如何将 struct 映射到响应
+统一定义应用状态码
+统一处理应用状态码与 http 状态码映射关系
+*/
 const (
 	MaskNeedAuthor   = 8
 	MaskParamMissing = 7

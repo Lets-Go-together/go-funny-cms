@@ -17,12 +17,12 @@ var (
 
 func (*AuthController) Login(c *gin.Context) {
 	authValidateAction := authValidate.LoginAction{}
-	if msg := authValidateAction.Validate(c); len(msg) > 0 {
-		response.ErrorResponse(403, msg).WriteTo(c)
+
+	var params authValidate.LoginParams
+	if !authValidateAction.Validate(c, &params) {
 		return
 	}
 
-	params := authValidateAction.GetLoginData()
 	adminModel := admin.Admin{}
 	config.Db.Where("account = ?", params.Account).Find(&adminModel)
 
