@@ -20,5 +20,15 @@ func RegisterApiRoutes(router *gin.Engine) {
 	{
 		apiRouter.GET("/admin/me", authController.Me)
 		apiRouter.POST("/admin/logout", authController.Logout)
+
+		apiRouter.Group("list")
+		{
+
+		}
+
+		apiRouter.Group("user")
+		{
+
+		}
 	}
 }
