@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/admin"
 	"gocms/pkg/config"
+	"gocms/pkg/logger"
 	"time"
 )
 
@@ -53,10 +54,12 @@ func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
 	if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			fmt.Println("错误的token")
+			logger.Info("错误的token", tokenString)
 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-			fmt.Println("token过期或未启用")
+			logger.Info("token过期", tokenString)
 		} else {
-			fmt.Println("无法处理这个token", err)
+			logger.Info("无法处理这个token", tokenString)
+
 		}
 	}
 	return userClaims, nil
