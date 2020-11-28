@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 	"gocms/app/models/admin"
@@ -15,6 +16,7 @@ var (
 	Redis     *redis.Client
 	Viper     *viper.Viper
 	AuthAdmin *admin.AuthAdmin
+	Pool      *ants.Pool
 )
 
 func init() {

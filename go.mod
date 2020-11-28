@@ -17,6 +17,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/panjf2000/ants/v2 v2.4.3
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/viper v1.7.1

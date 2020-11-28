@@ -7,11 +7,14 @@ import (
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
+	"gocms/pkg/pools"
+	"sync"
 )
 
 func init() {
 	config.Initialize()
 	database.Initialize()
+	pools.Initialize()
 }
 
 func InitApp() *cli.App {
@@ -36,10 +39,12 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "可以在这里触发一些自定义脚本",
 				Action: func(c *cli.Context) error {
-					//validateExample.Validate()
-					//r := auth.ValidateToken("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiY3JlYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwidXBkYXRlZF9hdCI6IjIwMjAtMTEtMjVUMDg6MjU6MzBaIiwiYWNjb3VudCI6ImNoZW5mIiwicGFzc3dvcmQiOiIkMmEkMTQkczgxYlN6MnYxdDlJTzZEV01VOFhKZWdERzV1VjZBdVgvZy9mU1laL0k3U1JTMTB6bFNzSC4iLCJkZXNjcmlwdGlvbiI6IiIsImVtYWlsIjoiIiwicGhvbmUiOiIifQ.rwtCtzzhN2xWAcjRj2cqyK5u6RLyg1eiMy4YyOrb8Xo")
-
-					//fmt.Println(r)
+					var wg sync.WaitGroup
+					for i := 0; i < 20; i++ {
+						wg.Add(1)
+						pools.PoolsExample(i, &wg)
+					}
+					wg.Wait()
 					return nil
 				},
 			},

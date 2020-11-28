@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/admin"
 	"gocms/pkg/config"
