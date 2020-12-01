@@ -23,9 +23,7 @@ func init() {
 	InitViper()
 }
 
-func Initialize() {
-
-}
+func Initialize() {}
 
 // 初始化全局容器
 func InitViper() {

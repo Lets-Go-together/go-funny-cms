@@ -16,6 +16,13 @@ type BaseModel struct {
 	UpdatedAt TimeAt `json:"updated_at"`
 }
 
+type Result struct {
+	Page     int         `json:"page"`
+	PageSize int         `json:"page_size"`
+	List     interface{} `json:"data"`
+	Total    int         `json:"total"`
+}
+
 type TimeAt time.Time
 
 func (t *TimeAt) UnmarshalJSON(data []byte) error {

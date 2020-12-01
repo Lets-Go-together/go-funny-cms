@@ -1,9 +1,10 @@
 package service
 
 import (
-	"fmt"
+	"gocms/app/models/admin"
 	"gocms/app/models/model"
 	"gocms/pkg/config"
+	"gocms/pkg/help"
 )
 
 type AdminService struct{}
@@ -16,11 +17,20 @@ type listStruct struct {
 	CreatedAt   model.TimeAt `json:"created_at"`
 }
 
-func (*AdminService) GetList() *[]listStruct {
+func (*AdminService) GetList(page int, pageSize int) *model.Result {
 	admins := []listStruct{}
-	config.Db.Table("admins").Select("id, account, description, email, phone, created_at").Scan(&admins)
+	offset := help.GetOffset(page, pageSize)
+	total := 0
 
-	fmt.Println(admins)
+	config.Db.Model(&admin.Admin{}).Select("id, account, description, email, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
+	config.Db.Model(&admin.Admin{}).Count(&total)
 
-	return &admins
+	data := model.Result{
+		Page:     page,
+		PageSize: pageSize,
+		List:     admins,
+		Total:    total,
+	}
+
+	return &data
 }

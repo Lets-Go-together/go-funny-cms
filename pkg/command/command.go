@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
-	"gocms/app/service"
 	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
 	"gocms/pkg/auth"
@@ -45,8 +44,8 @@ func InitApp() *cli.App {
 					//	pools.PoolsExample(i, &wg)
 					//}
 					//wg.Wait()
-					adminService := service.AdminService{}
-					adminService.GetList()
+					//adminService := service.AdminService{}
+					//adminService.GetList()
 					return nil
 				},
 			},

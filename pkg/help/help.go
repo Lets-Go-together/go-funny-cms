@@ -36,3 +36,8 @@ func Md5V(str string) string {
 
 	return hex.EncodeToString(h.Sum(nil))
 }
+
+// 获取偏移量
+func GetOffset(page int, pageSize int) int {
+	return (page - 1) * pageSize
+}
