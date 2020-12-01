@@ -16,7 +16,7 @@ func Authenticate(c *gin.Context) {
 
 	if len(token) == 0 {
 		response.ErrorResponse(401, "鉴权失败").WriteTo(c)
-		return
+		c.Abort()
 	}
 
 	user, err := jwtAction.ParseToken(token)

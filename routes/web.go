@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"gocms/app/http/index/controllers"
+	Index "gocms/app/http/index/controllers"
 	"gocms/app/http/middleware"
 )
 
@@ -12,7 +12,7 @@ func RegisterWebRoutes(router *gin.Engine) {
 
 	webRouter.Use(middleware.DefaultMiddle)
 	{
-		indexControler := new(controllers.IndexController)
-		router.GET("/", indexControler.Index)
+		IndexController := new(Index.IndexController)
+		router.GET("/", IndexController.Index)
 	}
 }

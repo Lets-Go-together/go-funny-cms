@@ -32,9 +32,7 @@ func GerateAdminUser(account string) {
 		Password: password,
 	}
 	fmt.Println(adminModel)
-	config.Db.FirstOrCreate(&adminModel, admin.Admin{
-		Account: account,
-	})
+	config.Db.Create(&adminModel)
 
 	fmt.Printf("account: %s \npassword: %s \n", account, p)
 

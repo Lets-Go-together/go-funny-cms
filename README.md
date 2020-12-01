@@ -69,8 +69,8 @@
 **11-25**
 
     # 创建账户
-    > go run main create-admin-user -h
-    > go run create-admin-user --account [你的账户名称]
+    > go run main.go create-admin-user -h
+    > go run main.go create-admin-user  --account [你的账户名称]
     
     # 登陆
     > air

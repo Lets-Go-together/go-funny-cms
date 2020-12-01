@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	adminContro "gocms/app/http/admin/controllers"
+	Admin "gocms/app/http/admin/controllers"
 	"gocms/app/http/middleware"
 )
 
@@ -12,7 +12,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 	apiRouter := router.Group("api")
 
 	// 不需要登陆的路由
-	authController := new(adminContro.AuthController)
+	authController := new(Admin.AuthController)
 	apiRouter.POST("/admin/login", authController.Login)
 
 	// 需要鉴权的路由
@@ -21,10 +21,8 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiRouter.GET("/admin/me", authController.Me)
 		apiRouter.POST("/admin/logout", authController.Logout)
 
-		apiRouter.Group("list")
-		{
-
-		}
+		AdminController := new(Admin.AdminController)
+		apiRouter.GET("/admin/list", AdminController.Index)
 
 		apiRouter.Group("user")
 		{

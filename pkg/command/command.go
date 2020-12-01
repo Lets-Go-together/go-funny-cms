@@ -2,13 +2,13 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
+	"gocms/app/service"
 	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
 	"gocms/pkg/pools"
-	"sync"
 )
 
 func init() {
@@ -39,12 +39,14 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "可以在这里触发一些自定义脚本",
 				Action: func(c *cli.Context) error {
-					var wg sync.WaitGroup
-					for i := 0; i < 20; i++ {
-						wg.Add(1)
-						pools.PoolsExample(i, &wg)
-					}
-					wg.Wait()
+					//var wg sync.WaitGroup
+					//for i := 0; i < 20; i++ {
+					//	wg.Add(1)
+					//	pools.PoolsExample(i, &wg)
+					//}
+					//wg.Wait()
+					adminService := service.AdminService{}
+					adminService.GetList()
 					return nil
 				},
 			},
