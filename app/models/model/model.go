@@ -19,7 +19,7 @@ type BaseModel struct {
 type Result struct {
 	Page     int         `json:"page"`
 	PageSize int         `json:"page_size"`
-	List     interface{} `json:"data"`
+	List     interface{} `json:"list"`
 	Total    int         `json:"total"`
 }
 

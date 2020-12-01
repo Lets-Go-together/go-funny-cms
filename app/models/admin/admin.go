@@ -12,6 +12,7 @@ type Admin struct {
 	Description string `json:"description"`
 	Email       string `json:"email"`
 	Phone       string `json:"phone"`
+	Avatar      string `json:"avatar"`
 }
 
 // 此信息将写入鉴权中

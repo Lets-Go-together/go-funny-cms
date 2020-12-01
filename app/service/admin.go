@@ -14,6 +14,7 @@ type listStruct struct {
 	Description string       `json:"description"`
 	Email       string       `json:"email"`
 	Phone       string       `json:"phone"`
+	Avatar      string       `json:"avatar"`
 	CreatedAt   model.TimeAt `json:"created_at"`
 }
 
@@ -22,7 +23,7 @@ func (*AdminService) GetList(page int, pageSize int) *model.Result {
 	offset := help.GetOffset(page, pageSize)
 	total := 0
 
-	config.Db.Model(&admin.Admin{}).Select("id, account, description, email, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
+	config.Db.Model(&admin.Admin{}).Select("id, account, description, email, avatar, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
 	config.Db.Model(&admin.Admin{}).Count(&total)
 
 	data := model.Result{
