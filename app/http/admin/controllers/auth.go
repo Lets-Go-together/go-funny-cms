@@ -67,13 +67,14 @@ func (*AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	exist := config.Db.Where("account = ?", params.Account).Find(struct{}{}).RowsAffected > 0
+	e := admin.Admin{}
+	exist := config.Db.Where("account = ?", params.Account).First(&e).RowsAffected > 0
 	if exist {
 		response.ErrorResponse(1002, "用户名已存在").WriteTo(c)
 		return
 	}
 
-	exist = config.Db.Where("email = ?", params.Account).Find(struct{}{}).RowsAffected > 0
+	exist = config.Db.Where("email = ?", params.Account).First(&e).RowsAffected > 0
 	if exist {
 		response.ErrorResponse(1002, "邮箱已注册").WriteTo(c)
 		return
