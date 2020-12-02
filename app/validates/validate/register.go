@@ -5,6 +5,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
+	"gocms/pkg/config"
 )
 
 var CustomValidator *customValidator
@@ -61,12 +62,13 @@ func init() {
 	CustomValidator, _ = New()
 }
 
+// 初始化一个验证器
+// 批量注册参数验证表达式
 func New() (cv *customValidator, err error) {
-
 	v := validator.New()
 	local := zh.New()
 	uniTrans := ut.New(local, local)
-	translator, _ := uniTrans.GetTranslator("zh")
+	translator, _ := uniTrans.GetTranslator(config.GetString("LANGUAGE", "zh"))
 
 	for i := range validations {
 		validation := validations[i]
@@ -89,6 +91,9 @@ func New() (cv *customValidator, err error) {
 	return
 }
 
+// 字段验证
+// 使用验证器验证字段
+// 当有错误时，此只返回单个错误描述
 func (that *customValidator) verify(s interface{}) (bool, string) {
 	errs := that.validate.Struct(s)
 	if errs != nil {

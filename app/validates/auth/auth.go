@@ -39,6 +39,8 @@ func (*LoginAction) Validate(c *gin.Context, params interface{}) bool {
 	return validate.WithResponse(params, 403, "Error", c)
 }
 
+// --- 注册相关
+
 type RegisterParams struct {
 	Account  string `validate:"username" json:"account"`
 	Password string `validate:"required" json:"password"`
@@ -56,4 +58,12 @@ func (that *RegisterAction) Validate(c *gin.Context, params interface{}) bool {
 		return false
 	}
 	return validate.WithResponse(params, 403, "请检查参数", c)
+}
+
+// --- 用户创建、更新相关
+type EditParams struct {
+	Account  string `validate:"username" json:"account"`
+	Password string `validate:"required" json:"password"`
+	Phone    string `validate:"required" json:"Phone"`
+	Email    string `validate:"email" json:"email"`
 }

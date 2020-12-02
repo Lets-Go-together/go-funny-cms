@@ -60,6 +60,7 @@ func (*AuthController) Logout(c *gin.Context) {
 	response.SuccessResponse(user).WriteTo(c)
 }
 
+// 注册
 func (*AuthController) Register(c *gin.Context) {
 	action := authValidate.RegisterAction{}
 	var params authValidate.RegisterParams
