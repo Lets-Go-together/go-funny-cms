@@ -79,7 +79,7 @@ func (*AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	password := params.Password // salt(params.password)
+	password := auth.CreatePassword(params.Password) // salt(params.password)
 
 	newAdmin := admin.Admin{
 		BaseModel:   model.BaseModel{},
