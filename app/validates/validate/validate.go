@@ -2,6 +2,7 @@ package validate
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"gocms/pkg/response"
 )
 
@@ -41,8 +42,17 @@ func WithDefaultResponse(s interface{}, writer response.JSONWriter) bool {
 // @param 	msg		验证错误时自定义消息
 // @param	writer	可输出 Json 响应对象
 // @return 验证是否成功
-func WithResponseMsg(s interface{}, msg string, writer response.JSONWriter) bool {
-	success, _ := Validate(s)
+func WithResponseMsg(s interface{}, writer response.JSONWriter, defaultMsg ...interface{}) bool {
+	//msg := "参数验证失败，请检查"
+	var msg string
+	var success bool
+	if len(defaultMsg) > 0 {
+		msg = cast.ToString(defaultMsg[0])
+		success, _ = Validate(s)
+	} else {
+		success, msg = Validate(s)
+	}
+
 	if !success {
 		response.ErrorResponse(403, msg).WriteTo(writer)
 		return false

@@ -12,7 +12,7 @@ import (
 
 func Initialize() {
 	config.Db = MysqlClient()
-	//config.Redis = RedisClient()
+	config.Redis = RedisClient()
 }
 
 // 初始化 Redis 服务器

@@ -35,3 +35,8 @@ func (*AdminService) GetList(page int, pageSize int) *model.Result {
 
 	return &data
 }
+
+// 创建一个admin用户
+func (*AdminService) Create() {
+
+}
