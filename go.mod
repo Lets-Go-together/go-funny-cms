@@ -19,9 +19,10 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/panjf2000/ants/v2 v2.4.3
 	github.com/pelletier/go-toml v1.8.1 // indirect
+	github.com/qiniu/api.v7/v7 v7.7.0
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/viper v1.7.1
-	github.com/tidwall/gjson v1.6.3 // indirect
+	github.com/tidwall/gjson v1.6.3
 	github.com/tidwall/match v1.0.2 // indirect
 	github.com/ugorji/go v1.2.0 // indirect
 	github.com/urfave/cli v1.22.5 // indirect

@@ -24,9 +24,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 		AdminController := new(Admin.AdminController)
 		apiRouter.GET("/admin/list", AdminController.Index)
 
-		apiRouter.Group("user")
-		{
-
-		}
+		ToolController := new(Admin.ToolController)
+		apiRouter.GET("/admin/qiniu", ToolController.Qiniu)
 	}
 }

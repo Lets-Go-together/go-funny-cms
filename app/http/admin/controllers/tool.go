@@ -1,0 +1,58 @@
+package controllers
+
+import (
+	"encoding/json"
+	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/qiniu/api.v7/v7/auth/qbox"
+	"github.com/qiniu/api.v7/v7/storage"
+	"github.com/tidwall/gjson"
+	"gocms/pkg/config"
+	"gocms/pkg/enum"
+	"gocms/pkg/logger"
+	"gocms/pkg/response"
+	"time"
+)
+
+type ToolController struct{}
+
+// 获取七牛云上传密钥信息
+func (*ToolController) Qiniu(c *gin.Context) {
+	uploadInfo := make(map[string]string)
+
+	info, _ := config.Redis.Get(enum.CACHE_QINIU).Result()
+	if len(info) > 0 {
+		r := gjson.Parse(info).Map()
+		for i, v := range r {
+			uploadInfo[i] = v.String()
+		}
+
+		response.SuccessResponse(uploadInfo).WriteTo(c)
+		return
+	}
+
+	bucket := config.GetString("QINIU_BUKET_PATH")
+	accessKey := config.GetString("QINIU_AK")
+	secretKey := config.GetString("QINIU_SK")
+	if len(bucket) != 0 && len(accessKey) != 0 && len(secretKey) != 0 {
+		logger.PanicError(errors.New("缺失七牛配置参数"), "获取七牛参数", false)
+		response.SuccessResponse(uploadInfo).WriteTo(c)
+		return
+	}
+
+	putPolicy := storage.PutPolicy{
+		Scope: bucket,
+	}
+	mac := qbox.NewMac(accessKey, secretKey)
+	token := putPolicy.UploadToken(mac)
+	uploadInfo = map[string]string{
+		"token":  token,
+		"bucket": bucket,
+		"url":    config.GetString("QINIU_UPLOAD_URL"),
+	}
+
+	json, _ := json.Marshal(uploadInfo)
+	config.Redis.Set(enum.CACHE_QINIU, string(json), time.Minute*50)
+
+	response.SuccessResponse(uploadInfo).WriteTo(c)
+}
