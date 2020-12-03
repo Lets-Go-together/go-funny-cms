@@ -18,3 +18,8 @@ func (*AdminController) Index(c *gin.Context) {
 
 	response.SuccessResponse(list).WriteTo(c)
 }
+
+// 管理员创建
+func (*AdminController) Create(c *gin.Context) {
+
+}

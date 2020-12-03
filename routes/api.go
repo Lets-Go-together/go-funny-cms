@@ -14,6 +14,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 	// 不需要登陆的路由
 	authController := new(Admin.AuthController)
 	apiRouter.POST("/admin/login", authController.Login)
+	apiRouter.POST("/admin/register", authController.Register)
 
 	// 需要鉴权的路由
 	apiRouter.Use(middleware.Authenticate)

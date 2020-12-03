@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
+	"gocms/app/models/model"
 	authValidate "gocms/app/validates/auth"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
@@ -59,6 +60,38 @@ func (*AuthController) Logout(c *gin.Context) {
 	response.SuccessResponse(user).WriteTo(c)
 }
 
+// 注册
 func (*AuthController) Register(c *gin.Context) {
+	action := authValidate.RegisterAction{}
+	var params authValidate.RegisterParams
+	if !action.Validate(c, &params) {
+		return
+	}
 
+	e := admin.Admin{}
+	exist := config.Db.Where("account = ?", params.Account).First(&e).RowsAffected > 0
+	if exist {
+		response.ErrorResponse(1002, "用户名已存在").WriteTo(c)
+		return
+	}
+
+	exist = config.Db.Where("email = ?", params.Account).First(&e).RowsAffected > 0
+	if exist {
+		response.ErrorResponse(1002, "邮箱已注册").WriteTo(c)
+		return
+	}
+
+	password := auth.CreatePassword(params.Password) // salt(params.password)
+
+	newAdmin := admin.Admin{
+		BaseModel:   model.BaseModel{},
+		Account:     params.Account,
+		Password:    password,
+		Description: "",
+		Email:       params.Email,
+		Phone:       "",
+		Avatar:      "",
+	}
+	config.Db.NewRecord(&newAdmin)
+	response.SuccessResponse("").WriteTo(c)
 }

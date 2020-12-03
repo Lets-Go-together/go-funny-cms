@@ -43,6 +43,7 @@ func (that *Validation) register(v *validator.Validate, t ut.Translator) (err er
 	return
 }
 
+// 以下方法支持
 func (that *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {
 
 	if that.translationFn != nil && that.registerFn != nil {
