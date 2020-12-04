@@ -43,6 +43,7 @@ func WithDefaultResponse(s interface{}, writer response.JSONWriter) bool {
 // @param	writer	可输出 Json 响应对象
 // @return 验证是否成功
 func WithResponseMsg(s interface{}, writer response.JSONWriter, defaultMsg ...interface{}) bool {
+
 	//msg := "参数验证失败，请检查"
 	var msg string
 	var success bool

@@ -25,11 +25,15 @@ type JSONWriter interface {
 	JSONP(code int, data interface{})
 }
 
-func SuccessResponse(data interface{}) *JsonResponse {
+func SuccessResponse(data ...interface{}) *JsonResponse {
+	var r interface{}
+	if len(data) > 0 {
+		r = data[0]
+	}
 	return &JsonResponse{
 		Status:  StatusSuccess,
 		Message: "Success",
-		Data:    data,
+		Data:    r,
 	}
 }
 

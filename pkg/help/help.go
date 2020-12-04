@@ -7,6 +7,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"os"
+	"time"
 )
 
 // 获取env
@@ -40,4 +41,9 @@ func Md5V(str string) string {
 // 获取偏移量
 func GetOffset(page int, pageSize int) int {
 	return (page - 1) * pageSize
+}
+
+// 获取当前时间
+func getCurrentTimestamp() string {
+	return time.Now().Format("2006-01-02")
 }

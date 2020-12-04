@@ -4,7 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
+	adminModel "gocms/app/models/admin"
 	"gocms/app/service"
+	"gocms/pkg/auth"
 	"gocms/pkg/response"
 )
 
@@ -23,10 +25,19 @@ func (*AdminController) Index(c *gin.Context) {
 
 // 管理员创建
 func (*AdminController) Add(c *gin.Context) {
-	// 验证
-	if validates.VidateCreateAdmin(c) == false {
+	var params validates.Admin
+	if validates.VidateCreateAdmin(c, &params) == false {
 		return
 	}
-
-	adminService.Create()
+	admin := adminModel.Admin{
+		Account:     params.Account,
+		Password:    auth.CreatePassword(params.Password),
+		Description: params.Description,
+		Email:       params.Email,
+		Phone:       params.Phone,
+		Avatar:      params.Avatar,
+	}
+	adminService.Create(admin)
+	response.SuccessResponse().WriteTo(c)
+	return
 }

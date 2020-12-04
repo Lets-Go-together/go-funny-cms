@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"fmt"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -95,7 +96,11 @@ func New() (cv *customValidator, err error) {
 // 使用验证器验证字段
 // 当有错误时，此只返回单个错误描述
 func (that *customValidator) verify(s interface{}) (bool, string) {
+	fmt.Println(s)
+
 	errs := that.validate.Struct(s)
+
+	fmt.Println(errs)
 	if errs != nil {
 		errs := errs.(validator.ValidationErrors)
 		if len(errs) > 0 {
