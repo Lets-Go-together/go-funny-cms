@@ -6,6 +6,7 @@ import (
 	"gocms/app/models/model"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
+	"gocms/pkg/logger"
 )
 
 type AdminService struct{}
@@ -42,6 +43,17 @@ func (*AdminService) Create(admin admin.Admin) bool {
 	r := config.Db.Omit("updated_at", "created_at").Create(&admin)
 	if errs := r.GetErrors(); len(errs) > 0 {
 		fmt.Println(errs[0])
+		return false
+	}
+
+	return true
+}
+
+// 更新一个admin用户
+func (*AdminService) Update(admin admin.Admin, id uint64) bool {
+	r := config.Db.Omit("updated_at", "created_at").Where("id = ?", id).Update(&admin)
+	if errs := r.GetErrors(); len(errs) > 0 {
+		logger.PanicError(errs[0], "更新admin用户", false)
 		return false
 	}
 

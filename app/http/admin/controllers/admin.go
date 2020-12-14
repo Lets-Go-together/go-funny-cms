@@ -24,7 +24,7 @@ func (*AdminController) Index(c *gin.Context) {
 }
 
 // 管理员创建
-func (*AdminController) Add(c *gin.Context) {
+func (*AdminController) Create(c *gin.Context) {
 	var params validates.Admin
 	if validates.VidateCreateAdmin(c, &params) == false {
 		return
@@ -38,6 +38,27 @@ func (*AdminController) Add(c *gin.Context) {
 		Avatar:      params.Avatar,
 	}
 	adminService.Create(admin)
+	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+// 管理员更新
+func (*AdminController) Update(c *gin.Context) {
+	params := validates.AdminUpdate{
+		ID: cast.ToUint64(c.Param("id")),
+	}
+	if validates.VidateUpdateAdmin(c, &params) == false {
+		return
+	}
+	admin := adminModel.Admin{
+		Account:     params.Account,
+		Password:    auth.CreatePassword(params.Password),
+		Description: params.Description,
+		Email:       params.Email,
+		Phone:       params.Phone,
+		Avatar:      params.Avatar,
+	}
+	adminService.Update(admin, params.ID)
 	response.SuccessResponse().WriteTo(c)
 	return
 }

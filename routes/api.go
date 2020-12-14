@@ -24,7 +24,8 @@ func RegisterApiRoutes(router *gin.Engine) {
 
 		AdminController := new(Admin.AdminController)
 		apiRouter.GET("/admin/list", AdminController.Index)
-		apiRouter.POST("/admin/add", AdminController.Add)
+		apiRouter.POST("/admin", AdminController.Create)
+		apiRouter.PUT("/admin/:id", AdminController.Update)
 
 		ToolController := new(Admin.ToolController)
 		apiRouter.GET("/admin/qiniu", ToolController.Qiniu)
