@@ -16,6 +16,9 @@ func RegisterApiRoutes(router *gin.Engine) {
 	apiRouter.POST("/admin/login", authController.Login)
 	apiRouter.POST("/admin/register", authController.Register)
 
+	ToolController := new(Admin.ToolController)
+	apiRouter.GET("/admin/pwd", ToolController.Pwd)
+
 	// 需要鉴权的路由
 	apiRouter.Use(middleware.Authenticate)
 	{
@@ -27,7 +30,6 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiRouter.POST("/admin", AdminController.Create)
 		apiRouter.PUT("/admin/:id", AdminController.Update)
 
-		ToolController := new(Admin.ToolController)
 		apiRouter.GET("/admin/qiniu", ToolController.Qiniu)
 	}
 }

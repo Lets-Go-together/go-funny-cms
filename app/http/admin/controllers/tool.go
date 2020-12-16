@@ -11,10 +11,19 @@ import (
 	"gocms/pkg/enum"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"os"
 	"time"
 )
 
 type ToolController struct{}
+
+func (*ToolController) Pwd(c *gin.Context) {
+	pwd, _ := os.Getwd()
+
+	response.SuccessResponse(map[string]string{
+		"current": pwd,
+	}).WriteTo(c)
+}
 
 // 获取七牛云上传密钥信息
 func (*ToolController) Qiniu(c *gin.Context) {
