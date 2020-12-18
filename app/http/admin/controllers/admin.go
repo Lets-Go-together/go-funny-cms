@@ -25,17 +25,18 @@ func (*AdminController) Index(c *gin.Context) {
 
 // 管理员创建
 func (*AdminController) Create(c *gin.Context) {
-	var params validates.Admin
-	if validates.VidateCreateAdmin(c, &params) == false {
+	var params map[string]string
+	if validates.VidateCreateOrUpdateAdmin(c, &params) == false {
 		return
 	}
+
 	admin := adminModel.Admin{
-		Account:     params.Account,
-		Password:    auth.CreatePassword(params.Password),
-		Description: params.Description,
-		Email:       params.Email,
-		Phone:       params.Phone,
-		Avatar:      params.Avatar,
+		Account:     params["account"],
+		Password:    auth.CreatePassword(params["password"]),
+		Description: params["description"],
+		Email:       params["email"],
+		Phone:       params["phone"],
+		Avatar:      params["avatar"],
 	}
 	adminService.Create(admin)
 	response.SuccessResponse().WriteTo(c)
@@ -44,21 +45,21 @@ func (*AdminController) Create(c *gin.Context) {
 
 // 管理员更新
 func (*AdminController) Update(c *gin.Context) {
-	params := validates.AdminUpdate{
-		ID: cast.ToUint64(c.Param("id")),
-	}
-	if validates.VidateUpdateAdmin(c, &params) == false {
+	var params map[string]string
+	id := cast.ToString(c.Param("id"))
+	params["id"] = id
+	if validates.VidateCreateOrUpdateAdmin(c, &params) == false {
 		return
 	}
 	admin := adminModel.Admin{
-		Account:     params.Account,
-		Password:    auth.CreatePassword(params.Password),
-		Description: params.Description,
-		Email:       params.Email,
-		Phone:       params.Phone,
-		Avatar:      params.Avatar,
+		Account:     params["account"],
+		Password:    auth.CreatePassword(params["password"]),
+		Description: params["description"],
+		Email:       params["email"],
+		Phone:       params["phone"],
+		Avatar:      params["avatar"],
 	}
-	adminService.Update(admin, params.ID)
+	adminService.Update(admin, id)
 	response.SuccessResponse().WriteTo(c)
 	return
 }
