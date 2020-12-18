@@ -22,13 +22,9 @@ type Admin struct {
 }
 
 type AdminUpdate struct {
-	ID          uint64 `validate:"required"`
-	Description string `validate:"required,gte=1,lte=60" json:"description"`
-	Email       string `validate:"required,email" json:"email"`
-	Account     string `validate:"required,gte=2,lte=8" json:"account"`
-	Password    string `validate:"gte=6,lte=16" json:"password"`
-	Phone       string `validate:"required" json:"phone"`
-	Avatar      string `validate:"required,url" json:"avatar"`
+	Admin
+	ID       uint64 `validate:"required"`
+	Password string `validate:"gte=6,lte=16" json:"password"`
 }
 
 // 验证管理员创建参数
@@ -39,13 +35,14 @@ func VidateCreateAdmin(c *gin.Context, params *Admin) bool {
 		response.ErrorResponse(http.StatusForbidden, "请检查参数").WriteTo(c)
 		return false
 	}
-	var admin = adminModel.Admin{}
-	config.Db.Select("account").Where(adminModel.Admin{
-		Account: params.Account,
-	}).First(&admin)
 
-	if len(admin.Account) > 0 {
-		response.ErrorResponse(http.StatusForbidden, "账号已存在").WriteTo(c)
+	uniqueWheres := map[string]string{
+		"email":   params.Email,
+		"account": params.Email,
+	}
+
+	if r := isAllowCreateAdmin(uniqueWheres); r == false {
+		response.ErrorResponse(http.StatusForbidden, "账号或者邮箱已存在").WriteTo(c)
 		return false
 	}
 
@@ -62,15 +59,31 @@ func VidateUpdateAdmin(c *gin.Context, params *AdminUpdate) bool {
 		response.ErrorResponse(http.StatusForbidden, "请检查参数").WriteTo(c)
 		return false
 	}
-	var admin = adminModel.Admin{}
-	config.Db.Select("account").Where("id <> " + cast.ToString(params.ID)).Where(adminModel.Admin{
-		Account: params.Account,
-	}).First(&admin)
 
-	if len(admin.Account) > 0 {
-		response.ErrorResponse(http.StatusForbidden, "账号已存在").WriteTo(c)
+	uniqueWheres := map[string]string{
+		"email":   params.Email,
+		"account": params.Email,
+		"id":      cast.ToString(params.ID),
+	}
+
+	if r := isAllowCreateAdmin(uniqueWheres); r == false {
+		response.ErrorResponse(http.StatusForbidden, "账号或者邮箱已存在").WriteTo(c)
 		return false
 	}
 
 	return validate.WithResponseMsg(params, c)
+}
+
+// 批量验证是否可以创建
+// == true 为是
+func isAllowCreateAdmin(where map[string]string) bool {
+	var total int
+	db := config.Db.Model(&adminModel.Admin{})
+	if _, ok := where["id"]; ok == true {
+		delete(where, "id")
+		db = db.Where("id", "<>", where["id"])
+	}
+	db.Where(where).Count(&total)
+
+	return total == 0
 }
