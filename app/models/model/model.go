@@ -12,8 +12,8 @@ import (
 type BaseModel struct {
 	ID uint64 `json:"id"`
 
-	CreatedAt TimeAt `json:"created_at"`
-	UpdatedAt TimeAt `json:"updated_at"`
+	CreatedAt TimeAt `json:"created_at,omitempty"`
+	UpdatedAt TimeAt `json:"updated_at,omitempty"`
 }
 
 type Result struct {

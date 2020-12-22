@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"github.com/gin-gonic/gin"
+	"gocms/app/http/middleware"
 	"gocms/pkg/config"
 	"gocms/routes"
 )
@@ -11,8 +12,12 @@ func SteupRoute() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	routes.RegisterWebRoutes(router)
-	routes.RegisterApiRoutes(router)
+	router.Use(middleware.WebMiddleware)
+	{
+		routes.RegisterWebRoutes(router)
+		routes.RegisterApiRoutes(router)
+	}
+	config.Router = router
 
 	_ = router.Run(":" + config.GetString("APP_PORT"))
 }

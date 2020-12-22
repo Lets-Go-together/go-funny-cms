@@ -50,7 +50,6 @@ func (*AuthController) Login(c *gin.Context) {
 func (*AuthController) Me(c *gin.Context) {
 	user := config.AuthAdmin
 	response.SuccessResponse(user).WriteTo(c)
-
 	return
 }
 

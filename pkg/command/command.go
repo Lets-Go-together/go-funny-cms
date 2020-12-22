@@ -7,13 +7,12 @@ import (
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
-	"gocms/pkg/pools"
 )
 
 func init() {
-	config.Initialize()
-	database.Initialize()
-	pools.Initialize()
+	//config.Initialize()
+	//database.Initialize()
+	//pools.Initialize()
 }
 
 func InitApp() *cli.App {

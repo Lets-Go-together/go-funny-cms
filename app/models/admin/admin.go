@@ -8,7 +8,7 @@ import (
 type Admin struct {
 	model.BaseModel
 	Account     string `json:"account"`
-	Password    string `json:"password"`
+	Password    string `json:"password,omitempty"`
 	Description string `json:"description"`
 	Email       string `json:"email"`
 	Phone       string `json:"phone"`
@@ -19,7 +19,7 @@ type Admin struct {
 type AuthAdmin struct {
 	jwt.StandardClaims
 	Account     string   `json:"account"`
-	Description string   `json:"description"`
+	Description string   `json:"description,omitempty"`
 	Email       string   `json:"email"`
 	Phone       string   `json:"phone"`
 	Roles       []string `json:"roles"`
