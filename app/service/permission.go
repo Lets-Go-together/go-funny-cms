@@ -43,3 +43,16 @@ func GetPermissionNodes(params ...interface{}) []map[string]string {
 	}
 	return []map[string]string{}
 }
+
+// 参数必须存在
+// 第三个参数可以为空，默认当前admin_id
+func HasPermissionForNode(node string, method string, admin_id ...interface{}) {
+
+}
+
+// 授权
+// permission_id int 权限节点id
+// admin_id int 管理员id
+func GrantPermissionForAdmin(permission_id int, admin_id int) {
+
+}
