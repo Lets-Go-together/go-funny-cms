@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
-	adminModel "gocms/app/models/admin"
+	"gocms/app/models"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
@@ -71,7 +71,7 @@ func VidateCreateOrUpdateAdmin(c *gin.Context, params *map[string]string) bool {
 // == true 为是
 func isAllowCreateAdmin(where map[string]string) bool {
 	var total int
-	db := config.Db.Model(&adminModel.Admin{})
+	db := config.Db.Model(&models.Admin{})
 	if _, ok := where["id"]; ok == true {
 		delete(where, "id")
 		db = db.Where("id", "<>", where["id"])

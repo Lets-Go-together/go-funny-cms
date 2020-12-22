@@ -7,7 +7,7 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"gocms/app/models/admin"
+	"gocms/app/models"
 	"gocms/pkg/logger"
 	"net/http"
 )
@@ -17,7 +17,7 @@ var (
 	Db        *gorm.DB
 	Redis     *redis.Client
 	Viper     *viper.Viper
-	AuthAdmin *admin.AuthAdmin
+	AuthAdmin *models.AuthAdmin
 	Pool      *ants.Pool
 	Router    *gin.Engine
 	Request   *http.Request

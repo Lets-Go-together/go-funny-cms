@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"gocms/app/models/admin"
+	"gocms/app/models"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"time"
@@ -21,7 +21,7 @@ func init() {
 
 // 获取token
 // 必须传参 需要保存的用户信息
-func (*JwtAction) GetToken(userClaims *admin.AuthAdmin) string {
+func (*JwtAction) GetToken(userClaims *models.AuthAdmin) string {
 	expireAt := time.Duration(config.GetInt64("JWT_EXPIRE_AT", 60))
 	userClaims.ExpiresAt = time.Now().Add(time.Minute * expireAt).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
@@ -32,8 +32,8 @@ func (*JwtAction) GetToken(userClaims *admin.AuthAdmin) string {
 // token 解析
 // 返回用户模型的核型信息
 // 注意: 第二个参数不为 nil 的时候，则表示解析失败
-func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
-	userClaims := admin.AuthAdmin{}
+func (*JwtAction) ParseToken(tokenString string) (models.AuthAdmin, error) {
+	userClaims := models.AuthAdmin{}
 	token, err := jwt.ParseWithClaims(tokenString, &userClaims, func(token *jwt.Token) (i interface{}, e error) {
 		return signKey, e
 	})
@@ -43,7 +43,7 @@ func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
 	}
 
 	if token.Valid {
-		if _, ok := token.Claims.(*admin.AuthAdmin); ok && token.Valid {
+		if _, ok := token.Claims.(*models.AuthAdmin); ok && token.Valid {
 			return userClaims, nil
 		} else {
 			return userClaims, err

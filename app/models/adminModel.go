@@ -1,12 +1,11 @@
-package admin
+package models
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"gocms/app/models/model"
 )
 
 type Admin struct {
-	model.BaseModel
+	BaseModel
 	Account     string `json:"account"`
 	Password    string `json:"password,omitempty"`
 	Description string `json:"description"`

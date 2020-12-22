@@ -2,8 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"gocms/app/models/admin"
-	"gocms/app/models/model"
+	"gocms/app/models"
 	authValidate "gocms/app/validates/auth"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
@@ -24,7 +23,7 @@ func (*AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	adminModel := admin.Admin{}
+	adminModel := models.Admin{}
 	config.Db.Where("account = ?", params.Account).Find(&adminModel)
 
 	if adminModel.ID == 0 {
@@ -38,7 +37,7 @@ func (*AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	authAdmin := admin.GetAuthAdmin(adminModel)
+	authAdmin := models.GetAuthAdmin(adminModel)
 	token := jwtAction.GetToken(authAdmin)
 
 	response.SuccessResponse(map[string]string{
@@ -67,7 +66,7 @@ func (*AuthController) Register(c *gin.Context) {
 		return
 	}
 
-	e := admin.Admin{}
+	e := models.Admin{}
 	exist := config.Db.Where("account = ?", params.Account).First(&e).RowsAffected > 0
 	if exist {
 		response.ErrorResponse(1002, "用户名已存在").WriteTo(c)
@@ -82,8 +81,8 @@ func (*AuthController) Register(c *gin.Context) {
 
 	password := auth.CreatePassword(params.Password) // salt(params.password)
 
-	newAdmin := admin.Admin{
-		BaseModel:   model.BaseModel{},
+	newAdmin := models.Admin{
+		BaseModel:   models.BaseModel{},
 		Account:     params.Account,
 		Password:    password,
 		Description: "",
