@@ -47,3 +47,11 @@ func GetOffset(page int, pageSize int) int {
 func getCurrentTimestamp() string {
 	return time.Now().Format("2006-01-02")
 }
+
+// 获取默认参数值
+func GetDefaultParam(params ...interface{}) interface{} {
+	if len(params) > 0 {
+		return params[0]
+	}
+	return nil
+}

@@ -2,17 +2,19 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
+	"gocms/app/service"
 	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
+	"gocms/pkg/pools"
 )
 
 func init() {
-	//config.Initialize()
-	//database.Initialize()
-	//pools.Initialize()
+	config.Initialize()
+	database.Initialize()
+	pools.Initialize()
 }
 
 func InitApp() *cli.App {
@@ -54,6 +56,15 @@ func InitApp() *cli.App {
 				Usage:   "初始化生成jwt密钥",
 				Action: func(c *cli.Context) error {
 					auth.GerateSign()
+					return nil
+				},
+			},
+			{
+				Name:  "generate-permission",
+				Usage: "初始化权限节点",
+				Action: func(c *cli.Context) error {
+					bootstrap.SteupRoute(true)
+					service.GeneratePermissionNodes()
 					return nil
 				},
 			},
