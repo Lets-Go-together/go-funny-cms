@@ -44,6 +44,7 @@ func GetPermissionNodes(params ...interface{}) []map[string]string {
 	return []map[string]string{}
 }
 
+// 检查是否有这个权限
 // 参数必须存在
 // 第三个参数可以为空，默认当前admin_id
 func HasPermissionForNode(node string, method string, admin_id ...interface{}) {

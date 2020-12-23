@@ -5,7 +5,9 @@ import (
 	"gocms/app/service"
 	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
+	"gocms/example/pkg1"
 	"gocms/pkg/auth"
+	"gocms/pkg/casbin"
 	"gocms/pkg/config"
 	"gocms/pkg/database"
 	"gocms/pkg/pools"
@@ -15,6 +17,7 @@ func init() {
 	config.Initialize()
 	database.Initialize()
 	pools.Initialize()
+	casbin.Initialize()
 }
 
 func InitApp() *cli.App {
@@ -39,14 +42,7 @@ func InitApp() *cli.App {
 				Aliases: []string{"s"},
 				Usage:   "可以在这里触发一些自定义脚本",
 				Action: func(c *cli.Context) error {
-					//var wg sync.WaitGroup
-					//for i := 0; i < 20; i++ {
-					//	wg.Add(1)
-					//	pools.PoolsExample(i, &wg)
-					//}
-					//wg.Wait()
-					//adminService := service.AdminService{}
-					//adminService.GetList()
+					pkg1.Echo()
 					return nil
 				},
 			},

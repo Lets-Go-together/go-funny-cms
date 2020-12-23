@@ -3,6 +3,9 @@ module gocms
 go 1.15
 
 require (
+	github.com/casbin/casbin/v2 v2.19.7
+	github.com/casbin/gorm-adapter/v3 v3.0.4
+	github.com/casbin/xorm-adapter/v2 v2.1.0
 	github.com/cheggaaa/pb/v3 v3.0.5
 	github.com/cosmtrek/air v1.15.1 // indirect
 	github.com/creack/pty v1.1.11 // indirect
@@ -13,6 +16,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect

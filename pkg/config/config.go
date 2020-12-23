@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
@@ -21,6 +22,11 @@ var (
 	Pool      *ants.Pool
 	Router    *gin.Engine
 	Request   *http.Request
+	Casbin    *casbin.Enforcer
+)
+
+var (
+	Dsn string
 )
 
 func init() {
