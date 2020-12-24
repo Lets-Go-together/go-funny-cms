@@ -18,8 +18,8 @@ func Echo() {
 	//roleService.UpdateOrCreateById(role)
 
 	permissionService := new(service.PermissionService)
-	//permissionService.AddPermissionForUser("/api/auth/me", "GET", "Surest")
-	//permissionService.AddRoleForUser("Surest", "chenf")
+	permissionService.AddPermissionForUser("/api/auth/me", "GET", "Surest")
+	permissionService.AddRoleForUser("Surest", "chenf")
 	fmt.Println(permissionService.HasPermissionForUser("chenf", "GET", "/api/auth/me"))
 
 }

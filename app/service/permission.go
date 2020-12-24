@@ -49,9 +49,16 @@ func (*PermissionService) GetPermissionNodes(params ...interface{}) []map[string
 
 // 检查是否有这个权限
 // 参数必须存在
-func (*PermissionService) HasPermissionForUser(permission string, method string, account string) bool {
-	ok := config.Enforcer.HasPermissionForUser(account, account, method)
-	return ok
+func (*PermissionService) HasPermissionForUser(account string, permission string, method string) bool {
+	e := config.Enforcer
+	roles, _ := e.GetRolesForUser(account)
+	for _, role := range roles {
+		ok := config.Enforcer.HasPermissionForUser(role, permission, method)
+		if ok {
+			return ok
+		}
+	}
+	return false
 }
 
 // 授权用户到角色
