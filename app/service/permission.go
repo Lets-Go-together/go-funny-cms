@@ -5,6 +5,7 @@ import (
 	"gocms/app/models/permission"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
+	"gocms/pkg/logger"
 )
 
 type PermissionService struct{}
@@ -48,15 +49,21 @@ func (*PermissionService) GetPermissionNodes(params ...interface{}) []map[string
 
 // 检查是否有这个权限
 // 参数必须存在
-// 第三个参数可以为空，默认当前admin_id
-func (*PermissionService) HasPermissionForNode(node string, method string, admin_id ...interface{}) {
-
+func (*PermissionService) HasPermissionForUser(permission string, method string, account string) bool {
+	ok := config.Enforcer.HasPermissionForUser(account, account, method)
+	return ok
 }
 
-// 授权
-// 访问地址 string
-// 动作	   string
-// 账号    string
-func (*PermissionService) GrantPermissionForAdmin(permission string, method string, account string) {
+// 授权用户到角色
+func (*PermissionService) AddRoleForUser(role string, account string) bool {
+	ok, err := config.Enforcer.AddRoleForUser(account, role)
+	logger.PanicError(err, "授权用户到角色", false)
+	return ok
+}
 
+// 添加权限到角色
+func (*PermissionService) AddPermissionForUser(permission string, method string, role string) bool {
+	ok, err := config.Enforcer.AddPermissionForUser(role, permission, method)
+	logger.PanicError(err, "授权用户到角色", false)
+	return ok
 }
