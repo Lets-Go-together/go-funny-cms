@@ -1,4 +1,4 @@
-package models
+package base
 
 import (
 	"database/sql/driver"
@@ -12,8 +12,8 @@ import (
 type BaseModel struct {
 	ID uint64 `json:"id"`
 
-	CreatedAt TimeAt `json:"created_at,omitempty"`
-	UpdatedAt TimeAt `json:"updated_at,omitempty"`
+	CreatedAt TimeAt `json:"created_at" gorm:"-"`
+	UpdatedAt TimeAt `json:"updated_at" gorm:"-"`
 }
 
 type Result struct {

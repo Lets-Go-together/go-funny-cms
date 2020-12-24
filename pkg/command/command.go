@@ -2,8 +2,6 @@ package command
 
 import (
 	"github.com/urfave/cli/v2"
-	"gocms/app/service"
-	"gocms/app/task/wyyMusic"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
 	"gocms/pkg/auth"
@@ -60,7 +58,7 @@ func InitApp() *cli.App {
 				Usage: "初始化权限节点",
 				Action: func(c *cli.Context) error {
 					bootstrap.SteupRoute(true)
-					service.GeneratePermissionNodes()
+					//service.GeneratePermissionNodes()
 					return nil
 				},
 			},
@@ -77,17 +75,6 @@ func InitApp() *cli.App {
 				},
 				Action: func(c *cli.Context) error {
 					auth.GerateAdminUser(c.String("account"))
-					return nil
-				},
-			},
-			{
-				Name:    "wyy_music",
-				Aliases: []string{"s"},
-				Usage:   "网易云自动打卡听歌",
-				Action: func(c *cli.Context) error {
-					config.Initialize()
-					database.Initialize()
-					wyyMusic.Run()
 					return nil
 				},
 			},

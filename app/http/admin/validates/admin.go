@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
-	"gocms/app/models"
+	"gocms/app/models/admin"
+	"gocms/app/service"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
@@ -59,24 +60,11 @@ func VidateCreateOrUpdateAdmin(c *gin.Context, params *map[string]string) bool {
 		return false
 	}
 
-	if r := isAllowCreateAdmin(uniqueWheres); r == false {
+	dbModel := config.Db.Model(&admin.Admin{})
+	if r := service.IsAllowOperationModel(uniqueWheres, dbModel); r == false {
 		response.ErrorResponse(http.StatusForbidden, "账号或者邮箱已存在").WriteTo(c)
 		return false
 	}
 
 	return validate.WithResponseMsg(params, c)
-}
-
-// 批量验证是否可以创建
-// == true 为是
-func isAllowCreateAdmin(where map[string]string) bool {
-	var total int
-	db := config.Db.Model(&models.Admin{})
-	if _, ok := where["id"]; ok == true {
-		delete(where, "id")
-		db = db.Where("id", "<>", where["id"])
-	}
-	db.Where(where).Count(&total)
-
-	return total == 0
 }

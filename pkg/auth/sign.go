@@ -2,7 +2,7 @@ package auth
 
 import (
 	"fmt"
-	"gocms/app/models"
+	"gocms/app/models/admin"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
@@ -27,7 +27,7 @@ func GerateAdminUser(account string) {
 
 	p := "12345678"
 	password := CreatePassword(p)
-	adminModel := models.Admin{
+	adminModel := admin.Admin{
 		Account:  account,
 		Password: password,
 	}

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
-	"gocms/app/models"
+	admin2 "gocms/app/models/admin"
 	"gocms/app/service"
 	"gocms/pkg/auth"
 	"gocms/pkg/response"
@@ -30,7 +30,7 @@ func (*AdminController) Create(c *gin.Context) {
 		return
 	}
 
-	admin := models.Admin{
+	admin := admin2.Admin{
 		Account:     params["account"],
 		Password:    auth.CreatePassword(params["password"]),
 		Description: params["description"],
@@ -51,7 +51,7 @@ func (*AdminController) Update(c *gin.Context) {
 	if validates.VidateCreateOrUpdateAdmin(c, &params) == false {
 		return
 	}
-	admin := models.Admin{
+	admin := admin2.Admin{
 		Account:     params["account"],
 		Password:    auth.CreatePassword(params["password"]),
 		Description: params["description"],

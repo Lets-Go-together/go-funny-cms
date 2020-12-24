@@ -1,11 +1,12 @@
-package models
+package admin
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"gocms/app/models/base"
 )
 
 type Admin struct {
-	BaseModel
+	base.BaseModel
 	Account     string `json:"account"`
 	Password    string `json:"password,omitempty"`
 	Description string `json:"description"`
@@ -22,6 +23,10 @@ type AuthAdmin struct {
 	Email       string   `json:"email"`
 	Phone       string   `json:"phone"`
 	Roles       []string `json:"roles"`
+}
+
+func (Admin) TableName() string {
+	return "admins"
 }
 
 // 获取安全认证的用户信息

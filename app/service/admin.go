@@ -2,7 +2,8 @@ package service
 
 import (
 	"fmt"
-	"gocms/app/models"
+	"gocms/app/models/admin"
+	"gocms/app/models/base"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
@@ -10,24 +11,24 @@ import (
 
 type AdminService struct{}
 type listStruct struct {
-	ID          uint64        `json:"id"`
-	Account     string        `json:"account"`
-	Description string        `json:"description"`
-	Email       string        `json:"email"`
-	Phone       string        `json:"phone"`
-	Avatar      string        `json:"avatar"`
-	CreatedAt   models.TimeAt `json:"created_at"`
+	ID          uint64      `json:"id"`
+	Account     string      `json:"account"`
+	Description string      `json:"description"`
+	Email       string      `json:"email"`
+	Phone       string      `json:"phone"`
+	Avatar      string      `json:"avatar"`
+	CreatedAt   base.TimeAt `json:"created_at"`
 }
 
-func (*AdminService) GetList(page int, pageSize int) *models.Result {
+func (*AdminService) GetList(page int, pageSize int) *base.Result {
 	admins := []listStruct{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
 
-	config.Db.Model(&models.Admin{}).Select("id, account, description, email, avatar, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
-	config.Db.Model(&models.Admin{}).Count(&total)
+	config.Db.Model(&admin.Admin{}).Select("id, account, description, email, avatar, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
+	config.Db.Model(&admin.Admin{}).Count(&total)
 
-	data := models.Result{
+	data := base.Result{
 		Page:     page,
 		PageSize: pageSize,
 		List:     admins,
@@ -38,7 +39,7 @@ func (*AdminService) GetList(page int, pageSize int) *models.Result {
 }
 
 // 创建一个admin用户
-func (*AdminService) Create(admin models.Admin) bool {
+func (*AdminService) Create(admin admin.Admin) bool {
 	r := config.Db.Omit("updated_at", "created_at").Create(&admin)
 	if errs := r.GetErrors(); len(errs) > 0 {
 		fmt.Println(errs[0])
@@ -49,7 +50,7 @@ func (*AdminService) Create(admin models.Admin) bool {
 }
 
 // 更新一个admin用户
-func (*AdminService) Update(admin models.Admin, id string) bool {
+func (*AdminService) Update(admin admin.Admin, id string) bool {
 	r := config.Db.Omit("updated_at", "created_at").Where("id = ?", id).Update(&admin)
 	if errs := r.GetErrors(); len(errs) > 0 {
 		logger.PanicError(errs[0], "更新admin用户", false)

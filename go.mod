@@ -3,7 +3,9 @@ module gocms
 go 1.15
 
 require (
+	github.com/casbin/casbin v1.9.1 // indirect
 	github.com/casbin/casbin/v2 v2.19.7
+	github.com/casbin/gorm-adapter v1.0.0
 	github.com/casbin/gorm-adapter/v3 v3.0.4
 	github.com/casbin/xorm-adapter/v2 v2.1.0
 	github.com/cheggaaa/pb/v3 v3.0.5

@@ -1,4 +1,4 @@
-package models
+package user
 
 import "github.com/dgrijalva/jwt-go"
 
@@ -9,4 +9,8 @@ type AuthUser struct {
 	jwt.StandardClaims
 	Id   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+func (AuthUser) TableName() string {
+	return "users"
 }

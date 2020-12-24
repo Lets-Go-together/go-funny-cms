@@ -3,7 +3,6 @@ package casbin
 import (
 	"fmt"
 	"github.com/casbin/casbin/v2"
-	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	_ "github.com/go-sql-driver/mysql"
 	"gocms/pkg/config"
@@ -11,32 +10,16 @@ import (
 )
 
 func Initialize() {
-	fmt.Println(config.Dsn)
-	a, err := gormadapter.NewAdapter("mysql", "funy_cms:JaSRrkmjDnbyr2id@tcp(175.24.233.215:3306)/", "funy_cms", "casbin")
-	if err != nil {
-		logger.PanicError(err, "new model Adapter", true)
-	}
-	m, err := model.NewModelFromString(`
-[request_definition]
-r = sub, obj, act
+	username := config.GetString("DB_USERNAME")
+	password := config.GetString("DB_PASSWORD")
+	host := config.GetString("DB_HOST")
+	port := config.GetString("DB_PORT")
+	database := config.GetString("DB_DATABASE")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/", username, password, host, port)
+	a, err := gormadapter.NewAdapter("mysql", dsn, database) // Your driver and data source.
+	logger.PanicError(err, "new adapter", true)
+	Enforcer, err := casbin.NewEnforcer("casbin.conf", a)
+	logger.PanicError(err, "new adapter", true)
 
-[policy_definition]
-p = sub, obj, act
-
-[policy_effect]
-e = some(where (p.eft == allow))
-
-[matchers]
-m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
-`)
-	if err != nil {
-		logger.PanicError(err, "init model Adapter", true)
-	}
-
-	e, err := casbin.NewEnforcer(m, a)
-	if err != nil {
-		logger.PanicError(err, "init casbin Adapter", true)
-	}
-
-	config.Casbin = e
+	config.Enforcer = Enforcer
 }

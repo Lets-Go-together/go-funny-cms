@@ -8,7 +8,7 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"gocms/app/models"
+	"gocms/app/models/admin"
 	"gocms/pkg/logger"
 	"net/http"
 )
@@ -18,15 +18,11 @@ var (
 	Db        *gorm.DB
 	Redis     *redis.Client
 	Viper     *viper.Viper
-	AuthAdmin *models.AuthAdmin
+	AuthAdmin *admin.AuthAdmin
 	Pool      *ants.Pool
 	Router    *gin.Engine
 	Request   *http.Request
-	Casbin    *casbin.Enforcer
-)
-
-var (
-	Dsn string
+	Enforcer  *casbin.Enforcer
 )
 
 func init() {
