@@ -20,6 +20,6 @@ func Echo() {
 	permissionService := new(service.PermissionService)
 	permissionService.AddPermissionForUser("/api/auth/me", "GET", "Surest")
 	permissionService.AddRoleForUser("Surest", "chenf")
-	fmt.Println(permissionService.HasPermissionForUser("chenf", "GET", "/api/auth/me"))
-
+	fmt.Println(permissionService.HasPermissionForUser("chenf", "/api/auth/me", "GET"))
+	fmt.Println(permissionService.GetPermissionsForUser("chenf"))
 }
