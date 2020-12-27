@@ -48,14 +48,14 @@ func (*AuthController) Login(c *gin.Context) {
 
 // 我的信息
 func (*AuthController) Me(c *gin.Context) {
-	user := config.AuthAdmin
+	user := admin.AuthUser
 	response.SuccessResponse(user).WriteTo(c)
 	return
 }
 
 // 注销
 func (*AuthController) Logout(c *gin.Context) {
-	user := config.AuthAdmin
+	user := admin.AuthUser
 	response.SuccessResponse(user).WriteTo(c)
 }
 

@@ -8,21 +8,19 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"gocms/app/models/admin"
 	"gocms/pkg/logger"
 	"net/http"
 )
 
 // viper 作为全局的 app 容器存在
 var (
-	Db        *gorm.DB
-	Redis     *redis.Client
-	Viper     *viper.Viper
-	AuthAdmin *admin.AuthAdmin
-	Pool      *ants.Pool
-	Router    *gin.Engine
-	Request   *http.Request
-	Enforcer  *casbin.Enforcer
+	Db       *gorm.DB
+	Redis    *redis.Client
+	Viper    *viper.Viper
+	Pool     *ants.Pool
+	Router   *gin.Engine
+	Request  *http.Request
+	Enforcer *casbin.Enforcer
 )
 
 func init() {

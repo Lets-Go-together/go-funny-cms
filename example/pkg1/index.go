@@ -1,10 +1,5 @@
 package pkg1
 
-import (
-	"fmt"
-	"gocms/app/service"
-)
-
 func init() {
 
 }
@@ -17,9 +12,9 @@ func Echo() {
 	//}
 	//roleService.UpdateOrCreateById(role)
 
-	permissionService := new(service.PermissionService)
-	permissionService.AddPermissionForUser("/api/auth/me", "GET", "Surest")
-	permissionService.AddRoleForUser("Surest", "chenf")
-	fmt.Println(permissionService.HasPermissionForUser("chenf", "/api/auth/me", "GET"))
-	fmt.Println(permissionService.GetPermissionsForUser("chenf"))
+	//permissionService := new(service.PermissionService)
+	//permissionService.AddPermissionForUser("/api/auth/me", "GET", "Surest")
+	//permissionService.AddRoleForUser("Surest", "chenf")
+	//fmt.Println(permissionService.HasPermissionForUser("chenf", "/api/auth/me", "GET"))
+	//fmt.Println(permissionService.GetPermissionsForUser("chenf"))
 }

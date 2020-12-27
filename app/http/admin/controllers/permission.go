@@ -5,6 +5,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
+	"gocms/app/models/admin"
 	"gocms/app/models/casbin"
 	"gocms/app/models/permission"
 	"gocms/app/service"
@@ -73,7 +74,7 @@ func (that *PermissionController) reset(c *gin.Context) {
 	}
 
 	// 自动创建权限
-	permissionService.GeneratePermissionNodes()
+	admin.GeneratePermissionNodes()
 	response.SuccessResponse().WriteTo(c)
 	return
 }

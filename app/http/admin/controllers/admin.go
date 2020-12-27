@@ -24,7 +24,7 @@ func (*AdminController) Index(c *gin.Context) {
 }
 
 // 管理员创建
-func (*AdminController) Create(c *gin.Context) {
+func (*AdminController) Store(c *gin.Context) {
 	var params map[string]string
 	if validates.VidateCreateOrUpdateAdmin(c, &params) == false {
 		return
@@ -44,7 +44,7 @@ func (*AdminController) Create(c *gin.Context) {
 }
 
 // 管理员更新
-func (*AdminController) Update(c *gin.Context) {
+func (*AdminController) Save(c *gin.Context) {
 	var params map[string]string
 	id := cast.ToString(c.Param("id"))
 	params["id"] = id

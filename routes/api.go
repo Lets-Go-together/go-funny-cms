@@ -22,14 +22,17 @@ func RegisterApiRoutes(router *gin.Engine) {
 	// 需要鉴权的路由
 	apiRouter.Use(middleware.Authenticate)
 	{
-		apiRouter.GET("/admin/me", authController.Me)
-		apiRouter.POST("/admin/logout", authController.Logout)
+		apiRouter.GET("/me", authController.Me)
+		apiRouter.POST("/logout", authController.Logout)
 
 		AdminController := new(Admin.AdminController)
-		apiRouter.GET("/admin/list", AdminController.Index)
-		apiRouter.POST("/admin", AdminController.Create)
-		apiRouter.PUT("/admin/:id", AdminController.Update)
+		apiAdminRouter := apiRouter.Group("admin")
+		{
+			apiRouter.POST("/", AdminController.Store)
+			apiAdminRouter.GET("/list", AdminController.Index)
+			apiRouter.PUT("/:id", AdminController.Save)
+		}
 
-		apiRouter.GET("/admin/qiniu", ToolController.Qiniu)
+		apiRouter.GET("/qiniu", ToolController.Qiniu)
 	}
 }

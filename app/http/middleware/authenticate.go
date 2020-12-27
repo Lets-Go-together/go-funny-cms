@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"gocms/app/models/admin"
 	"gocms/pkg/auth"
-	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
 )
@@ -26,6 +26,6 @@ func Authenticate(c *gin.Context) {
 		c.Abort()
 	}
 
-	config.AuthAdmin = &user
+	admin.AuthUser = user
 	c.Next()
 }
