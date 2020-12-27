@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
+	"gocms/app/http/admin/validates"
 	"gocms/app/models/casbin"
 	"gocms/app/models/permission"
 	"gocms/app/service"
@@ -24,9 +26,40 @@ func (that *PermissionController) Index(c *gin.Context) {
 	return
 }
 
-// Create 创建权限节点
-func (that *PermissionController) Create(c *gin.Context) {
+// 数据保存
+func (that *PermissionController) Store(c *gin.Context) {
+	var params map[string]string
+	if validates.VidateCreateOrUpdatePermission(c, &params) == false {
+		return
+	}
+	var permissionModel permission.Permission
+	_ = mapstructure.Decode(params, &permissionModel)
 
+	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+// 数据更新
+func (that *PermissionController) Save(c *gin.Context) {
+	var params map[string]string
+	params["id"] = c.Param("id")
+	if validates.VidateCreateOrUpdatePermission(c, &params) == false {
+		return
+	}
+	var permissionModel permission.Permission
+	_ = mapstructure.Decode(params, &permissionModel)
+
+	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+// 数据删除
+func (that *PermissionController) destory(c *gin.Context) {
+	id := c.Param("id")
+	config.Db.Delete(permission.Permission{}, "id = "+id)
+
+	response.SuccessResponse().WriteTo(c)
+	return
 }
 
 // 权限重置

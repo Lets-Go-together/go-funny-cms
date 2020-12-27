@@ -89,7 +89,7 @@ func (*PermissionService) AddRoleForUser(role string, account string) bool {
 // AddPermissionForUser 添加权限到角色
 func (*PermissionService) AddPermissionForUser(permission string, method string, role string) bool {
 	ok, err := config.Enforcer.AddPermissionForUser(role, permission, method)
-	logger.PanicError(err, "授权用户到角色", false)
+	logger.PanicError(err, "添加权限到角色", false)
 	return ok
 }
 
