@@ -35,6 +35,7 @@ func (that *PermissionController) Store(c *gin.Context) {
 	}
 	var permissionModel permission.Permission
 	_ = mapstructure.Decode(params, &permissionModel)
+	permissionService.UpdateOrCreate(permissionModel)
 
 	response.SuccessResponse().WriteTo(c)
 	return
@@ -49,6 +50,7 @@ func (that *PermissionController) Save(c *gin.Context) {
 	}
 	var permissionModel permission.Permission
 	_ = mapstructure.Decode(params, &permissionModel)
+	permissionService.UpdateOrCreate(permissionModel)
 
 	response.SuccessResponse().WriteTo(c)
 	return

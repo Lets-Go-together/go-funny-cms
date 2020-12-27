@@ -25,12 +25,29 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiRouter.GET("/me", authController.Me)
 		apiRouter.POST("/logout", authController.Logout)
 
+		// resful api
 		AdminController := new(Admin.AdminController)
 		apiAdminRouter := apiRouter.Group("admin")
 		{
-			apiRouter.POST("/", AdminController.Store)
+			apiAdminRouter.POST("/", AdminController.Store)
 			apiAdminRouter.GET("/list", AdminController.Index)
-			apiRouter.PUT("/:id", AdminController.Save)
+			apiAdminRouter.PUT("/:id", AdminController.Save)
+		}
+
+		PermissionController := new(Admin.PermissionController)
+		apiPermissionRouter := apiRouter.Group("permission")
+		{
+			apiPermissionRouter.POST("/", PermissionController.Store)
+			apiPermissionRouter.GET("/list", PermissionController.Index)
+			apiPermissionRouter.PUT("/:id", PermissionController.Save)
+		}
+
+		RoleController := new(Admin.RoleController)
+		apiRoleRouter := apiRouter.Group("role")
+		{
+			apiRoleRouter.POST("/", RoleController.Store)
+			apiRoleRouter.GET("/list", RoleController.Index)
+			apiRoleRouter.PUT("/:id", RoleController.Save)
 		}
 
 		apiRouter.GET("/qiniu", ToolController.Qiniu)

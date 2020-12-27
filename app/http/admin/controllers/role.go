@@ -11,12 +11,12 @@ import (
 	"gocms/pkg/response"
 )
 
-type roleController struct{}
+type RoleController struct{}
 
 var rolenService = &service.RoleService{}
 
 // 权限节点列表
-func (that *roleController) Index(c *gin.Context) {
+func (that *RoleController) Index(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
 	list := rolenService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
@@ -26,20 +26,21 @@ func (that *roleController) Index(c *gin.Context) {
 }
 
 // 数据保存
-func (that *roleController) Store(c *gin.Context) {
+func (that *RoleController) Store(c *gin.Context) {
 	var params map[string]string
 	if validates.VidateCreateOrUpdateRole(c, &params) == false {
 		return
 	}
 	var model role.RoleModel
 	_ = mapstructure.Decode(params, &model)
+	rolenService.UpdateOrCreateById(model)
 
 	response.SuccessResponse().WriteTo(c)
 	return
 }
 
 // 数据更新
-func (that *roleController) Save(c *gin.Context) {
+func (that *RoleController) Save(c *gin.Context) {
 	var params map[string]string
 	params["id"] = c.Param("id")
 	if validates.VidateCreateOrUpdateRole(c, &params) == false {
@@ -47,13 +48,14 @@ func (that *roleController) Save(c *gin.Context) {
 	}
 	var model role.RoleModel
 	_ = mapstructure.Decode(params, &model)
+	rolenService.UpdateOrCreateById(model)
 
 	response.SuccessResponse().WriteTo(c)
 	return
 }
 
 // 数据删除
-func (that *roleController) destory(c *gin.Context) {
+func (that *RoleController) destory(c *gin.Context) {
 	id := c.Param("id")
 	config.Db.Delete(role.RoleModel{}, "id = "+id)
 

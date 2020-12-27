@@ -26,3 +26,12 @@ func (*PermissionService) GetList(page int, pageSize int) *base.Result {
 
 	return &data
 }
+
+// UpdateOrCreate 创建或者更新权限
+func (*PermissionService) UpdateOrCreate(permissionModel permission.Permission) bool {
+	if permissionModel.ID > 0 {
+		return config.Db.Update(permissionModel).RowsAffected > 0
+	}
+
+	return config.Db.Create(permissionModel).RowsAffected > 0
+}

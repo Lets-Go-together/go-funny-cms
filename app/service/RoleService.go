@@ -41,3 +41,12 @@ func (*RoleService) GetList(page int, pageSize int) *base.Result {
 
 	return &data
 }
+
+// UpdateOrCreate 创建或者更新权限
+func (*RoleService) UpdateOrCreate(roleModel role.RoleModel) bool {
+	if roleModel.ID > 0 {
+		return config.Db.Update(roleModel).RowsAffected > 0
+	}
+
+	return config.Db.Create(roleModel).RowsAffected > 0
+}
