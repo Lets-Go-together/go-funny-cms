@@ -5,10 +5,10 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
-	"gocms/app/models/admin"
 	"gocms/app/models/casbin"
 	"gocms/app/models/permission"
 	"gocms/app/service"
+	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
 )
@@ -76,7 +76,7 @@ func (that *PermissionController) reset(c *gin.Context) {
 	}
 
 	// 自动创建权限
-	admin.GeneratePermissionNodes()
+	rabc.GeneratePermissionNodes()
 	response.SuccessResponse().WriteTo(c)
 	return
 }

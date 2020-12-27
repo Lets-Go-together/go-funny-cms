@@ -6,6 +6,7 @@ import (
 	"gocms/app/models/base"
 	authValidate "gocms/app/validates/auth"
 	"gocms/pkg/auth"
+	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
 )
@@ -39,6 +40,8 @@ func (*AuthController) Login(c *gin.Context) {
 	}
 
 	authAdmin := admin.GetAuthAdmin(adminModel)
+	authAdmin.Roles = rabc.GetRolesForUser(authAdmin.Account)
+	authAdmin.Permissions = rabc.GetPermissionsForUser(authAdmin.Account)
 	token := jwtAction.GetToken(authAdmin)
 
 	response.SuccessResponse(map[string]string{
