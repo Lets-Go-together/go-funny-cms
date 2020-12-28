@@ -28,7 +28,7 @@ func (that *RoleController) Index(c *gin.Context) {
 // 数据保存
 func (that *RoleController) Store(c *gin.Context) {
 	var params map[string]string
-	if validates.VidateCreateOrUpdateRole(c, &params) == false {
+	if !validates.VidateCreateOrUpdateRole(c, &params) {
 		return
 	}
 	var model role.RoleModel
@@ -43,7 +43,7 @@ func (that *RoleController) Store(c *gin.Context) {
 func (that *RoleController) Save(c *gin.Context) {
 	var params map[string]string
 	params["id"] = c.Param("id")
-	if validates.VidateCreateOrUpdateRole(c, &params) == false {
+	if !validates.VidateCreateOrUpdateRole(c, &params) {
 		return
 	}
 	var model role.RoleModel

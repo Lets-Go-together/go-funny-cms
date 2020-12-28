@@ -45,7 +45,7 @@ func (that *PermissionController) Store(c *gin.Context) {
 func (that *PermissionController) Save(c *gin.Context) {
 	var params map[string]string
 	params["id"] = c.Param("id")
-	if validates.VidateCreateOrUpdatePermission(c, &params) == false {
+	if !validates.VidateCreateOrUpdatePermission(c, &params) {
 		return
 	}
 	var permissionModel permission.Permission
