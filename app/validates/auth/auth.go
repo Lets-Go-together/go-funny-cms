@@ -16,18 +16,19 @@ type LoginAction struct {
 }
 
 func (*LoginAction) Validate(c *gin.Context, params interface{}) bool {
-
-	//params = &LoginParams{
-	//	Account:  c.PostForm("account"),
-	//	Password: c.PostForm("password"),
-	//}
+	params = LoginParams{
+		Account:  c.PostForm("account"),
+		Password: c.PostForm("password"),
+	}
 
 	// 通过JSON获取数据
-	err := c.BindJSON(params)
-	if err != nil {
-		logger.PanicError(err, "登录参数验证", false)
-		return false
-	}
+	//err := c.BindJSON(params)
+	//if err != nil {
+	//	fmt.Println(params)
+	//	logger.PanicError(err, "登录参数验证", false)
+	//	response.ErrorResponse(http.StatusForbidden, err.Error()).WriteTo(c)
+	//	return false
+	//}
 
 	// 自动写入默认校验错误消息和状态码到错误响应
 	//return validate.WithDefaultResponse(params, c)

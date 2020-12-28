@@ -9,6 +9,7 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
+	"net/http"
 )
 
 type AuthController struct{}
@@ -20,7 +21,7 @@ var (
 func (*AuthController) Login(c *gin.Context) {
 	authValidateAction := authValidate.LoginAction{}
 
-	var params authValidate.LoginParams
+	params := authValidate.LoginParams{}
 	if !authValidateAction.Validate(c, &params) {
 		return
 	}
@@ -29,13 +30,13 @@ func (*AuthController) Login(c *gin.Context) {
 	config.Db.Where("account = ?", params.Account).Find(&adminModel)
 
 	if adminModel.ID == 0 {
-		response.ErrorResponse(403, "用户不存在").WriteTo(c)
+		response.ErrorResponse(http.StatusForbidden, "用户不存在").WriteTo(c)
 		return
 	}
 
 	password := adminModel.Password
 	if !auth.ValidatePassword(password, params.Password) {
-		response.ErrorResponse(403, "密码错误").WriteTo(c)
+		response.ErrorResponse(http.StatusForbidden, "密码错误").WriteTo(c)
 		return
 	}
 
@@ -47,6 +48,8 @@ func (*AuthController) Login(c *gin.Context) {
 	response.SuccessResponse(map[string]string{
 		"token": token,
 	}).WriteTo(c)
+
+	return
 }
 
 // 我的信息
