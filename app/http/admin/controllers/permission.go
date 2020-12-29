@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/casbin"
@@ -29,12 +28,12 @@ func (that *PermissionController) Index(c *gin.Context) {
 
 // 数据保存
 func (that *PermissionController) Store(c *gin.Context) {
-	var params map[string]string
-	if validates.VidateCreateOrUpdatePermission(c, &params) == false {
+	var permissionModel permission.Permission
+	if !validates.VidateCreateOrUpdatePermission(c, &permissionModel) {
 		return
 	}
-	var permissionModel permission.Permission
-	_ = mapstructure.Decode(params, &permissionModel)
+
+	//_ = mapstructure.Decode(params, &permissionModel)
 	permissionService.UpdateOrCreate(permissionModel)
 
 	response.SuccessResponse().WriteTo(c)
@@ -43,15 +42,13 @@ func (that *PermissionController) Store(c *gin.Context) {
 
 // 数据更新
 func (that *PermissionController) Save(c *gin.Context) {
-	var params map[string]string
-	params["id"] = c.Param("id")
-	if !validates.VidateCreateOrUpdatePermission(c, &params) {
+	var permissionModel permission.Permission
+	permissionModel.ID = cast.ToUint64(c.Param("id"))
+	if !validates.VidateCreateOrUpdatePermission(c, &permissionModel) {
 		return
 	}
-	var permissionModel permission.Permission
-	_ = mapstructure.Decode(params, &permissionModel)
-	permissionService.UpdateOrCreate(permissionModel)
 
+	permissionService.UpdateOrCreate(permissionModel)
 	response.SuccessResponse().WriteTo(c)
 	return
 }

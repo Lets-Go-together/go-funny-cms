@@ -37,16 +37,16 @@ func RegisterApiRoutes(router *gin.Engine) {
 		PermissionController := new(Admin.PermissionController)
 		apiPermissionRouter := apiRouter.Group("permission")
 		{
-			apiPermissionRouter.POST("/", PermissionController.Store)
-			apiPermissionRouter.GET("/list", PermissionController.Index)
+			apiPermissionRouter.GET("", PermissionController.Index)
+			apiPermissionRouter.POST("", PermissionController.Store)
 			apiPermissionRouter.PUT("/:id", PermissionController.Save)
 		}
 
 		RoleController := new(Admin.RoleController)
 		apiRoleRouter := apiRouter.Group("role")
 		{
-			apiRoleRouter.POST("/", RoleController.Store)
-			apiRoleRouter.GET("/list", RoleController.Index)
+			apiRoleRouter.GET("", RoleController.Index)
+			apiRoleRouter.POST("", RoleController.Store)
 			apiRoleRouter.PUT("/:id", RoleController.Save)
 		}
 

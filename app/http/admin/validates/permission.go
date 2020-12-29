@@ -3,6 +3,7 @@ package validates
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
+	"gocms/app/models/permission"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
@@ -23,33 +24,35 @@ type PermissionUpdate struct {
 }
 
 // 验证管理员创建参数
-func VidateCreateOrUpdatePermission(c *gin.Context, params *map[string]string) bool {
-	err := c.ShouldBindJSON(&params)
+func VidateCreateOrUpdatePermission(c *gin.Context, modelParams *permission.Permission) bool {
+	err := c.ShouldBindJSON(&modelParams)
 	db := config.Db
-	modelParams := cast.ToStringMap(params)
 	isExist := 0
 
 	if err != nil {
-		logger.PanicError(err, "参数验证 VidateCreateOrUpdatePermission", true)
-	}
-
-	if validate.WithResponseMsg(params, c) {
+		logger.PanicError(err, "参数验证 VidateCreateOrUpdatePermission", false)
+		response.ErrorResponse(http.StatusBadRequest, err.Error()).WriteTo(c)
 		return false
 	}
 
-	if _, id := modelParams["id"]; id == true {
+	if !validate.WithResponseMsg(modelParams, c) {
+		return false
+	}
+
+	if modelParams.ID > 0 {
 		// 检查是否唯一
-		db.Where("method = ? and url = ? and id <> ?", modelParams["method"], modelParams["url"], id).Count(&isExist)
-		if cast.ToBool(isExist) == true {
+		db.Model(modelParams).Where("method = ? and url = ? and id <> ?", modelParams.Method, modelParams.Url, modelParams.ID).Count(&isExist)
+		if cast.ToBool(isExist) {
 			response.ErrorResponse(http.StatusForbidden, "权限已存在").WriteTo(c)
 			return false
 		}
 	} else {
-		db.Where("method = ? and url = ?", modelParams["method"], modelParams["url"]).Count(&isExist)
-		if cast.ToBool(isExist) == true {
+		db.Model(modelParams).Where("method = ? and url = ?", modelParams.Method, modelParams.Url).Count(&isExist)
+		if cast.ToBool(isExist) {
 			response.ErrorResponse(http.StatusForbidden, "权限已存在").WriteTo(c)
 			return false
 		}
 	}
+
 	return true
 }
