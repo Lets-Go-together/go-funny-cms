@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/config"
@@ -42,7 +41,6 @@ func (*AdminService) GetList(page int, pageSize int) *base.Result {
 func (*AdminService) Create(admin admin.Admin) bool {
 	r := config.Db.Omit("updated_at", "created_at").Create(&admin)
 	if errs := r.GetErrors(); len(errs) > 0 {
-		fmt.Println(errs[0])
 		return false
 	}
 

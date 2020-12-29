@@ -21,7 +21,6 @@ func GerateSign() {
 // 创建admin 用户
 func GerateAdminUser(account string) {
 	if len(account) == 0 {
-		fmt.Println("请输入账号")
 		return
 	}
 
@@ -31,7 +30,6 @@ func GerateAdminUser(account string) {
 		Account:  account,
 		Password: password,
 	}
-	fmt.Println(adminModel)
 	config.Db.Create(&adminModel)
 
 	fmt.Printf("account: %s \npassword: %s \n", account, p)

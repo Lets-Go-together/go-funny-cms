@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	auth2 "gocms/app/http/admin/validates/auth"
+	authValidate "gocms/app/http/admin/validates/auth"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/auth"
@@ -19,9 +19,9 @@ var (
 )
 
 func (*AuthController) Login(c *gin.Context) {
-	authValidateAction := auth2.LoginAction{}
+	authValidateAction := authValidate.LoginAction{}
 
-	params := auth2.LoginParams{}
+	params := authValidate.LoginParams{}
 	if !authValidateAction.Validate(c, &params) {
 		return
 	}
@@ -67,8 +67,8 @@ func (*AuthController) Logout(c *gin.Context) {
 
 // 注册
 func (*AuthController) Register(c *gin.Context) {
-	action := auth2.RegisterAction{}
-	var params auth2.RegisterParams
+	action := authValidate.RegisterAction{}
+	var params authValidate.RegisterParams
 	if !action.Validate(c, &params) {
 		return
 	}

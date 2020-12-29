@@ -15,33 +15,15 @@ type LoginParams struct {
 type LoginAction struct {
 }
 
-func (*LoginAction) Validate(c *gin.Context, params interface{}) bool {
-	params = LoginParams{
-		Account:  c.PostForm("account"),
-		Password: c.PostForm("password"),
-	}
-
-	// 通过JSON获取数据
-	//err := c.BindJSON(params)
-	//if err != nil {
-	//	fmt.Println(params)
-	//	logger.PanicError(err, "登录参数验证", false)
-	//	response.ErrorResponse(http.StatusForbidden, err.Error()).WriteTo(c)
-	//	return false
-	//}
-
-	// 自动写入默认校验错误消息和状态码到错误响应
-	//return validate.WithDefaultResponse(params, c)
-
-	// 自动写入自定义消息到错误响应
-	//return validate.WithResponse(c, "请检查账号与密码是否正确", c)
+func (*LoginAction) Validate(c *gin.Context, params *LoginParams) bool {
+	params.Account = c.PostForm("account")
+	params.Password = c.PostForm("password")
 
 	// 自定义错误码和消息
 	return validate.WithResponseMsg(params, c, "账号或者密码错误")
 }
 
 // --- 注册相关
-
 type RegisterParams struct {
 	Account  string `validate:"username" json:"account"`
 	Password string `validate:"required" json:"password"`

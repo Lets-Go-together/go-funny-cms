@@ -23,7 +23,6 @@ func Debug(log string) {
 	line, _ := callerInfo()
 	log = strings.ReplaceAll(log, "\n", "\n\t")
 	log = fmt.Sprintf("%s\n\t%s", line, log)
-	fmt.Println(log)
 }
 
 func callerInfo() (string, string) {

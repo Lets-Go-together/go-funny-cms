@@ -49,9 +49,9 @@ func WithResponseMsg(s interface{}, writer response.JSONWriter, defaultMsg ...in
 	var success bool
 	if len(defaultMsg) > 0 {
 		msg = cast.ToString(defaultMsg[0])
-		success, _ = Validate(s)
+		success, _ = Validate(&s)
 	} else {
-		success, msg = Validate(s)
+		success, msg = Validate(&s)
 	}
 
 	if !success {
