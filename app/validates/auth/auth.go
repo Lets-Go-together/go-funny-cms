@@ -37,7 +37,7 @@ func (*LoginAction) Validate(c *gin.Context, params interface{}) bool {
 	//return validate.WithResponse(c, "请检查账号与密码是否正确", c)
 
 	// 自定义错误码和消息
-	return validate.WithResponse(params, 403, "Error", c)
+	return validate.WithResponseMsg(params, c, "账号或者密码错误")
 }
 
 // --- 注册相关
