@@ -10,7 +10,7 @@ package response
 const (
 	MaskNeedAuthor   = 8
 	MaskParamMissing = 7
-	StatusSuccess    = 0
+	StatusSuccess    = 200
 )
 
 type JsonResponse struct {

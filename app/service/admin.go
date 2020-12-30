@@ -3,9 +3,11 @@ package service
 import (
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
+	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
+	"gocms/pkg/response"
 )
 
 type AdminService struct{}
@@ -56,4 +58,25 @@ func (*AdminService) Update(admin admin.Admin, id string) bool {
 	}
 
 	return true
+}
+
+// UpdateOrCreate 创建或者更新权限
+func (*AdminService) UpdateOrCreate(adminModel admin.Admin) bool {
+	var result bool
+
+	if len(adminModel.Password) > 0 {
+		adminModel.Password = auth.CreatePassword(adminModel.Password)
+	}
+
+	if adminModel.ID > 0 {
+		result = config.Db.Model(adminModel).Update(&adminModel).RowsAffected > 0
+	}
+
+	result = config.Db.Model(adminModel).Create(&adminModel).RowsAffected > 0
+	if result {
+		return true
+	}
+
+	response.ErrorResponse(500, "操作失败")
+	return false
 }

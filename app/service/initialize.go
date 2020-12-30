@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 )
 
@@ -12,7 +13,12 @@ func IsAllowOperationModel(where map[string]string, db *gorm.DB) bool {
 		delete(where, "id")
 		db = db.Where("id", "<>", where["id"])
 	}
-	db.Where(where).Count(&total)
 
+	for k, v := range where {
+		db = db.Where(k+" = ?", v)
+	}
+	db.Count(&total)
+
+	fmt.Println(total)
 	return total == 0
 }

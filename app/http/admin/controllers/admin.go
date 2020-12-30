@@ -6,7 +6,6 @@ import (
 	"gocms/app/http/admin/validates"
 	adminModel "gocms/app/models/admin"
 	"gocms/app/service"
-	"gocms/pkg/auth"
 	"gocms/pkg/response"
 )
 
@@ -25,41 +24,25 @@ func (*AdminController) Index(c *gin.Context) {
 
 // 管理员创建
 func (*AdminController) Store(c *gin.Context) {
-	var params map[string]string
+	var params adminModel.Admin
 	if !validates.VidateCreateOrUpdateAdmin(c, &params) {
 		return
 	}
 
-	admin := adminModel.Admin{
-		Account:     params["account"],
-		Password:    auth.CreatePassword(params["password"]),
-		Description: params["description"],
-		Email:       params["email"],
-		Phone:       params["phone"],
-		Avatar:      params["avatar"],
+	if adminService.UpdateOrCreate(params) {
+		response.SuccessResponse().WriteTo(c)
 	}
-	adminService.Create(admin)
-	response.SuccessResponse().WriteTo(c)
 	return
 }
 
 // 管理员更新
 func (*AdminController) Save(c *gin.Context) {
-	var params map[string]string
-	id := cast.ToString(c.Param("id"))
-	params["id"] = id
+	var params adminModel.Admin
+	params.ID = cast.ToUint64(c.Param("id"))
 	if !validates.VidateCreateOrUpdateAdmin(c, &params) {
 		return
 	}
-	admin := adminModel.Admin{
-		Account:     params["account"],
-		Password:    auth.CreatePassword(params["password"]),
-		Description: params["description"],
-		Email:       params["email"],
-		Phone:       params["phone"],
-		Avatar:      params["avatar"],
-	}
-	adminService.Update(admin, id)
+	adminService.UpdateOrCreate(params)
 	response.SuccessResponse().WriteTo(c)
 	return
 }

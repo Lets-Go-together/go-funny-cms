@@ -7,12 +7,12 @@ import (
 
 type Admin struct {
 	base.BaseModel
-	Account     string `json:"account"`
+	Account     string `validate:"required,gte=2,lte=8" json:"account"`
 	Password    string `json:"password,omitempty"`
-	Description string `json:"description"`
-	Email       string `json:"email"`
-	Phone       string `json:"phone"`
-	Avatar      string `json:"avatar"`
+	Description string `validate:"required,gte=1,lte=60" json:"description"`
+	Email       string `validate:"required,email" json:"email"`
+	Phone       string `validate:"required" json:"phone"`
+	Avatar      string `validate:"required,url" json:"avatar"`
 }
 
 // 此信息将写入鉴权中

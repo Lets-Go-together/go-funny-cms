@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gocms/app/validates/validate"
 	"gocms/pkg/logger"
+	"gocms/pkg/response"
 )
 
 // 登陆需要的参数
@@ -16,8 +17,11 @@ type LoginAction struct {
 }
 
 func (*LoginAction) Validate(c *gin.Context, params *LoginParams) bool {
-	params.Account = c.PostForm("account")
-	params.Password = c.PostForm("password")
+	err := c.ShouldBind(&params)
+	if err != nil {
+		response.ErrorResponse(500, err.Error())
+		return false
+	}
 
 	// 自定义错误码和消息
 	return validate.WithResponseMsg(params, c, "账号或者密码错误")
