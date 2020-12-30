@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/gin-gonic/gin"
 	"gocms/app/models/base"
 	"gocms/app/models/permission"
 	"gocms/app/models/role"
@@ -8,6 +9,8 @@ import (
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
+	"gocms/pkg/response"
+	"net/http"
 )
 
 type RoleService struct{}
@@ -15,22 +18,34 @@ type RoleService struct{}
 var roleModel role.RoleModel
 
 // 添加更新角色
-func (*RoleService) UpdateOrCreateById(role role.RoleModel) bool {
+func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *gin.Context) bool {
 	var result bool
-	if role.ID > 0 {
-		result = config.Db.Model(&roleModel).Where("id = ?", role.ID).Update(role).RowsAffected > 0
+	var originRoleModel role.RoleModel
+
+	if roleModel.ID > 0 {
+		config.Db.Model(originRoleModel).Where("id = ?", roleModel.ID).First(&originRoleModel)
+		if originRoleModel.ID == 0 {
+			response.ErrorResponse(http.StatusNotFound, "角色未找到").WriteTo(c)
+			return false
+		}
+		// 这里不用返回影响记录条数
+		config.Db.Model(&roleModel).Where("id = ?", roleModel.ID).Update(roleModel)
 	} else {
-		result = config.Db.Model(&roleModel).Create(role).RowsAffected > 0
-		_, err := config.Enforcer.AddRoleForUser("-", role.Name)
+		result = config.Db.Model(&roleModel).Create(roleModel).RowsAffected > 0
+		_, err := config.Enforcer.AddRoleForUser("-", roleModel.Name)
 		logger.PanicError(err, "添加角色", false)
 	}
 
 	currentPermission := roleModel.Permissions
 	if len(currentPermission) > 0 {
-		updatePermissinForRole(currentPermission, roleModel.Name)
+		updatePermissinForRole(currentPermission, roleModel.Name, originRoleModel.Name)
 	}
 
-	return result
+	if !result {
+		response.ErrorResponse(http.StatusInternalServerError, "更新异常").WriteTo(c)
+		return false
+	}
+	return true
 }
 
 func (*RoleService) GetList(page int, pageSize int) *base.Result {
@@ -52,12 +67,14 @@ func (*RoleService) GetList(page int, pageSize int) *base.Result {
 }
 
 // 更新角色权限
-func updatePermissinForRole(permissionIds []string, roleAccount string) {
+func updatePermissinForRole(permissionIds []interface{}, roleAccount string, originRoleAccount string) {
 	permissionsModel := []permission.Permission{}
-	config.Db.Where("id in (?)", permissionIds).Find(&permissionsModel)
+	config.Db.Model(permissionsModel).Where("id in (?)", permissionIds).Find(&permissionsModel)
 
-	// 删除权限
-	rabc.DeletePermissionsForUser(roleAccount)
+	if len(originRoleAccount) > 0 {
+		// 删除权限
+		rabc.DeletePermissionsForUser(originRoleAccount)
+	}
 
 	// 赋值权限
 	for _, permissionModel := range permissionsModel {

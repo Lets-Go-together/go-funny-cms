@@ -54,11 +54,11 @@ func WithResponseMsg(s interface{}, writer response.JSONWriter, defaultMsg ...in
 		success, msg = Validate(s)
 	}
 
-	if !success {
-		response.ErrorResponse(403, msg).WriteTo(writer)
-		return false
+	if success {
+		return true
 	}
-	return true
+	response.ErrorResponse(403, msg).WriteTo(writer)
+	return false
 }
 
 // 验证 struct, 自动写入错误响应到 writer

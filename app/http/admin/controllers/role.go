@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/role"
 	"gocms/app/service"
+	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
 )
@@ -27,35 +27,40 @@ func (that *RoleController) Index(c *gin.Context) {
 
 // 数据保存
 func (that *RoleController) Store(c *gin.Context) {
-	var role role.RoleModel
-	if !validates.VidateCreateOrUpdateRole(c, &role) {
+	var roleModel role.RoleModel
+	if !validates.VidateCreateOrUpdateRole(c, &roleModel) {
 		return
 	}
-	rolenService.UpdateOrCreateById(role)
-
-	response.SuccessResponse().WriteTo(c)
+	if rolenService.UpdateOrCreateById(roleModel, c) {
+		response.SuccessResponse().WriteTo(c)
+	}
 	return
 }
 
 // 数据更新
 func (that *RoleController) Save(c *gin.Context) {
-	var params map[string]string
-	params["id"] = c.Param("id")
-	if !validates.VidateCreateOrUpdateRole(c, &params) {
+	var roleModel role.RoleModel
+	roleModel.ID = cast.ToUint64(c.Param("id"))
+	if !validates.VidateCreateOrUpdateRole(c, &roleModel) {
 		return
 	}
-	var model role.RoleModel
-	_ = mapstructure.Decode(params, &model)
-	rolenService.UpdateOrCreateById(model)
 
-	response.SuccessResponse().WriteTo(c)
+	if rolenService.UpdateOrCreateById(roleModel, c) {
+		response.SuccessResponse().WriteTo(c)
+	}
+
 	return
 }
 
 // 数据删除
-func (that *RoleController) destory(c *gin.Context) {
+func (that *RoleController) Destory(c *gin.Context) {
 	id := c.Param("id")
-	config.Db.Delete(role.RoleModel{}, "id = "+id)
+	var roleModel role.RoleModel
+
+	config.Db.Model(roleModel).Delete(role.RoleModel{}, "id = "+id)
+	config.Db.Model(roleModel).Where("id = ?", id).First(&roleModel)
+	rabc.DeletePermissionsForUser(roleModel.Name)
+	rabc.DeleteRoleForUsers(roleModel.Name)
 
 	response.SuccessResponse().WriteTo(c)
 	return

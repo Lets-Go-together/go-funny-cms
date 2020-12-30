@@ -54,7 +54,7 @@ func (that *PermissionController) Save(c *gin.Context) {
 }
 
 // 数据删除
-func (that *PermissionController) destory(c *gin.Context) {
+func (that *PermissionController) Destory(c *gin.Context) {
 	id := c.Param("id")
 	config.Db.Delete(permission.Permission{}, "id = "+id)
 

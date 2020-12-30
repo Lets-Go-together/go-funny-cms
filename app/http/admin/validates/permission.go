@@ -11,18 +11,6 @@ import (
 	"net/http"
 )
 
-type Permission struct {
-	Name   string `validate:"required" json:"name"`
-	Icon   string `validate:"required" json:"name"`
-	Url    string `validate:"required" json:"name"`
-	Method string `validate:"required" json:"name"`
-	Pid    int    `validate:"required,number" json:"pid"`
-}
-
-type PermissionUpdate struct {
-	Permission
-}
-
 // 验证管理员创建参数
 func VidateCreateOrUpdatePermission(c *gin.Context, modelParams *permission.Permission) bool {
 	err := c.ShouldBindJSON(&modelParams)

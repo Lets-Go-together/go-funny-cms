@@ -105,9 +105,18 @@ func GetPermissionsForUser(account string) []map[string]string {
 }
 
 // DeletePermissionsForUser 删除角色的权限
-
 func DeletePermissionsForUser(role string) bool {
 	_, err := config.Enforcer.DeletePermissionsForUser(role)
 	logger.PanicError(err, "删除角色权限", false)
+	return true
+}
+
+// DeletePermissionsForUser 删除拥有对应角色的用户角色
+func DeleteRoleForUsers(role string) bool {
+	users, err := config.Enforcer.GetUsersForRole(role)
+	logger.PanicError(err, "获取具有角色的用户", false)
+	for _, user := range users {
+		_, _ = config.Enforcer.DeleteRoleForUser(user, role)
+	}
 	return true
 }

@@ -11,15 +11,6 @@ import (
 	"net/http"
 )
 
-type Role struct {
-	Name        string `validate:"required" json:"name"`
-	Description string `validate:"required" json:"description"`
-}
-
-type RoleUpdate struct {
-	Permission
-}
-
 // 验证管理员创建参数
 func VidateCreateOrUpdateRole(c *gin.Context, modelParams *role.RoleModel) bool {
 	err := c.ShouldBindJSON(&modelParams)
@@ -27,23 +18,25 @@ func VidateCreateOrUpdateRole(c *gin.Context, modelParams *role.RoleModel) bool 
 	isExist := 0
 
 	if err != nil {
-		logger.PanicError(err, "参数验证 VidateCreateOrUpdateRole", true)
+		logger.PanicError(err, "参数验证 VidateCreateOrUpdateRole", false)
+		response.ErrorResponse(http.StatusBadRequest, err.Error()).WriteTo(c)
+		return false
 	}
 
-	if validate.WithResponseMsg(modelParams, c) {
+	if validate.WithResponseMsg(modelParams, c) == false {
 		return false
 	}
 
 	if modelParams.ID > 0 {
 		// 检查是否唯一
-		db.Where("name = ? and id <> ?", modelParams.Name, modelParams.ID).Count(&isExist)
-		if cast.ToBool(isExist) == true {
+		db.Model(modelParams).Where("name = ? and id <> ?", modelParams.Name, modelParams.ID).Count(&isExist)
+		if cast.ToBool(isExist) {
 			response.ErrorResponse(http.StatusForbidden, "角色已存在").WriteTo(c)
 			return false
 		}
 	} else {
-		db.Where("name = ?", modelParams.Name).Count(&isExist)
-		if cast.ToBool(isExist) == true {
+		db.Model(modelParams).Where("name = ?", modelParams.Name).Count(&isExist)
+		if cast.ToBool(isExist) {
 			response.ErrorResponse(http.StatusForbidden, "角色已存在").WriteTo(c)
 			return false
 		}

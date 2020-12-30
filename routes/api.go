@@ -40,6 +40,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 			apiPermissionRouter.GET("", PermissionController.Index)
 			apiPermissionRouter.POST("", PermissionController.Store)
 			apiPermissionRouter.PUT("/:id", PermissionController.Save)
+			apiPermissionRouter.DELETE("/:id", PermissionController.Destory)
 		}
 
 		RoleController := new(Admin.RoleController)
@@ -48,6 +49,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 			apiRoleRouter.GET("", RoleController.Index)
 			apiRoleRouter.POST("", RoleController.Store)
 			apiRoleRouter.PUT("/:id", RoleController.Save)
+			apiRoleRouter.DELETE("/:id", RoleController.Destory)
 		}
 
 		apiRouter.GET("/qiniu", ToolController.Qiniu)

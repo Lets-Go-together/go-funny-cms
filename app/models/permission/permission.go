@@ -6,12 +6,12 @@ import (
 
 type Permission struct {
 	base.BaseModel
-	Name   string `json:"name" binding:"required"`
-	Icon   string `json:"icon" gorm:"-"`
-	Url    string `json:"url"`
+	Name   string `validate:"required" json:"name" binding:"required"`
+	Icon   string `validate:"required" json:"icon" gorm:"-"`
+	Url    string `validate:"required" json:"url"`
 	Status int    `json:"status" gorm:"-"`
-	Method string `json:"method"`
-	Pid    int    `json:"pid" gorm:"-"`
+	Method string `validate:"required" json:"method"`
+	Pid    int    `validate:"required" json:"pid" gorm:"-"`
 }
 
 func (Permission) TableName() string {
