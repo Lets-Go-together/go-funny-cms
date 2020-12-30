@@ -27,13 +27,11 @@ func (that *RoleController) Index(c *gin.Context) {
 
 // 数据保存
 func (that *RoleController) Store(c *gin.Context) {
-	var params map[string]string
-	if !validates.VidateCreateOrUpdateRole(c, &params) {
+	var role role.RoleModel
+	if !validates.VidateCreateOrUpdateRole(c, &role) {
 		return
 	}
-	var model role.RoleModel
-	_ = mapstructure.Decode(params, &model)
-	rolenService.UpdateOrCreateById(model)
+	rolenService.UpdateOrCreateById(role)
 
 	response.SuccessResponse().WriteTo(c)
 	return
