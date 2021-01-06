@@ -7,6 +7,7 @@ import (
 	"gocms/app/service"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
+	"gocms/pkg/logger"
 	"gocms/pkg/response"
 	"net/http"
 )
@@ -23,6 +24,8 @@ type Admin struct {
 // 验证管理员创建参数
 func VidateCreateOrUpdateAdmin(c *gin.Context, adminParams *admin.Admin) bool {
 	err := c.ShouldBindJSON(&adminParams)
+
+	logger.Info("admin", adminParams)
 
 	if err != nil {
 		response.ErrorResponse(http.StatusBadRequest, err.Error()).WriteTo(c)

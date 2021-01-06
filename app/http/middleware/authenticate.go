@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
 	"gocms/pkg/auth"
@@ -19,13 +20,18 @@ func Authenticate(c *gin.Context) {
 		c.Abort()
 	}
 
-	user, err := jwtAction.ParseToken(token)
+	adminUser, err := jwtAction.ParseToken(token)
 	if err != nil {
 		logger.Info("Token 已失效", err.Error())
 		response.ErrorResponse(401, "Token 已失效").WriteTo(c)
 		c.Abort()
 	}
 
-	admin.AuthUser = user
+	adminUser.Roles = admin.GetRoles(adminUser.Account)
+	adminUser.Permissions = admin.GetPermissions(adminUser.Account)
+
+	fmt.Println(adminUser)
+
+	admin.AuthUser = adminUser
 	c.Next()
 }

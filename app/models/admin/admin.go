@@ -3,16 +3,19 @@ package admin
 import (
 	"github.com/dgrijalva/jwt-go"
 	"gocms/app/models/base"
+	"gocms/pkg/auth/rabc"
 )
 
 type Admin struct {
 	base.BaseModel
-	Account     string `validate:"required,gte=2,lte=8" json:"account"`
-	Password    string `json:"password,omitempty"`
-	Description string `validate:"required,gte=1,lte=60" json:"description"`
-	Email       string `validate:"required,email" json:"email"`
-	Phone       string `validate:"required" json:"phone"`
-	Avatar      string `validate:"required,url" json:"avatar"`
+	Account     string   `validate:"required,gte=2,lte=8" json:"account"`
+	Password    string   `json:"password,omitempty"`
+	Description string   `validate:"required,gte=1,lte=60" json:"description"`
+	Email       string   `validate:"required,email" json:"email"`
+	Phone       string   `validate:"required" json:"phone"`
+	Avatar      string   `validate:"required,url" json:"avatar"`
+	Roles       []string `json:"roles" gorm:"-"`
+	Role_ids    []int    `json:"roles" gorm:"-"`
 }
 
 // 此信息将写入鉴权中
@@ -42,4 +45,14 @@ func GetAuthAdmin(adminModel Admin) *AuthAdmin {
 		Phone:       adminModel.Phone,
 	}
 	return r
+}
+
+// GetPermissions 通过用户账号获取权限
+func GetPermissions(account string) []map[string]string {
+	return rabc.GetPermissionsForUser(account)
+}
+
+// GetRoles 通过用户账号获取角色
+func GetRoles(account string) []string {
+	return rabc.GetRolesForUser(account)
 }

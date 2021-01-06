@@ -22,8 +22,8 @@ func init() {
 // 获取token
 // 必须传参 需要保存的用户信息
 func (*JwtAction) GetToken(userClaims *admin.AuthAdmin) string {
-	expireAt := time.Duration(config.GetInt64("JWT_EXPIRE_AT", 60))
-	userClaims.ExpiresAt = time.Now().Add(time.Minute * expireAt).Unix()
+	expireAt := time.Second * time.Duration(config.GetInt64("JWT_EXPIRE_AT", 60))
+	userClaims.ExpiresAt = time.Now().Add(expireAt).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
 	tokenString, _ := token.SignedString(signKey)
 	return tokenString
@@ -60,6 +60,7 @@ func (*JwtAction) ParseToken(tokenString string) (admin.AuthAdmin, error) {
 
 		}
 	}
+
 	return userClaims, nil
 }
 

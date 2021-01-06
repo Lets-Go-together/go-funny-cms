@@ -13,7 +13,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 
 	// 不需要登陆的路由
 	authController := new(Admin.AuthController)
-	apiRouter.POST("/admin/login", authController.Login)
+	apiRouter.POST("/login", authController.Login)
 	apiRouter.POST("/admin/register", authController.Register)
 
 	ToolController := new(Admin.ToolController)
@@ -23,7 +23,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 	apiRouter.Use(middleware.Authenticate)
 	{
 		apiRouter.GET("/me", authController.Me)
-		apiRouter.POST("/logout", authController.Logout)
+		apiRouter.DELETE("/logout", authController.Logout)
 
 		// resful api
 		AdminController := new(Admin.AdminController)
@@ -47,6 +47,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiRoleRouter := apiRouter.Group("role")
 		{
 			apiRoleRouter.GET("", RoleController.Index)
+			apiRoleRouter.GET("/:id", RoleController.Show)
 			apiRoleRouter.POST("", RoleController.Store)
 			apiRoleRouter.PUT("/:id", RoleController.Save)
 			apiRoleRouter.DELETE("/:id", RoleController.Destory)

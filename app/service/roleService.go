@@ -17,9 +17,14 @@ type RoleService struct{}
 
 var roleModel role.RoleModel
 
+type RoleList struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 // 添加更新角色
 func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *gin.Context) bool {
-	var result bool
 	var originRoleModel role.RoleModel
 
 	if roleModel.ID > 0 {
@@ -31,35 +36,31 @@ func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *gin.Context)
 		// 这里不用返回影响记录条数
 		config.Db.Model(&roleModel).Where("id = ?", roleModel.ID).Update(roleModel)
 	} else {
-		result = config.Db.Model(&roleModel).Create(roleModel).RowsAffected > 0
+		config.Db.Model(&roleModel).Create(roleModel)
 		_, err := config.Enforcer.AddRoleForUser("-", roleModel.Name)
 		logger.PanicError(err, "添加角色", false)
 	}
 
-	currentPermission := roleModel.Permissions
+	currentPermission := roleModel.Permissions_ids
 	if len(currentPermission) > 0 {
 		updatePermissinForRole(currentPermission, roleModel.Name, originRoleModel.Name)
 	}
 
-	if !result {
-		response.ErrorResponse(http.StatusInternalServerError, "更新异常").WriteTo(c)
-		return false
-	}
 	return true
 }
 
 func (*RoleService) GetList(page int, pageSize int) *base.Result {
-	admins := []role.RoleModel{}
+	roles := []RoleList{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
 
-	config.Db.Model(&role.RoleModel{}).Select("id, account, description, email, avatar, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
+	config.Db.Model(&role.RoleModel{}).Select("id, name, description, created_at").Limit(pageSize).Offset(offset).Scan(&roles)
 	config.Db.Model(&role.RoleModel{}).Count(&total)
 
 	data := base.Result{
 		Page:     page,
 		PageSize: pageSize,
-		List:     admins,
+		List:     roles,
 		Total:    total,
 	}
 
@@ -67,7 +68,7 @@ func (*RoleService) GetList(page int, pageSize int) *base.Result {
 }
 
 // 更新角色权限
-func updatePermissinForRole(permissionIds []interface{}, roleAccount string, originRoleAccount string) {
+func updatePermissinForRole(permissionIds []int, roleAccount string, originRoleAccount string) {
 	permissionsModel := []permission.Permission{}
 	config.Db.Model(permissionsModel).Where("id in (?)", permissionIds).Find(&permissionsModel)
 
@@ -91,4 +92,16 @@ func (*RoleService) UpdateOrCreate(roleModel role.RoleModel) bool {
 	}
 
 	return config.Db.Create(roleModel).RowsAffected > 0
+}
+
+// GetRolesName 通过id获取角色名称
+func GetRolesName(ids []int) []string {
+	roles := []role.RoleModel{}
+	config.Db.Model(&roleModel).Select("id, name").Where("id in (?)", ids).Scan(&roles)
+
+	names := []string{}
+	for _, roleInfo := range roles {
+		names = append(names, roleInfo.Name)
+	}
+	return names
 }

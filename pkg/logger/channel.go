@@ -11,11 +11,11 @@ import (
 // Logger channel
 // --------------
 
-func Info(title string, content string) {
+func Info(title string, content interface{}) {
 	handle("Info", title, content)
 }
 
-func Error(title string, content string) {
+func Error(title string, content interface{}) {
 	handle("Error", title, content)
 }
 

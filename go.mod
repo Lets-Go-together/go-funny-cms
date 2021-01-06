@@ -31,6 +31,7 @@ require (
 	github.com/panjf2000/ants/v2 v2.4.3
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/peterh/liner v1.2.1 // indirect
+	github.com/prometheus/common v0.4.0
 	github.com/qiniu/api.v7/v7 v7.7.0
 	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

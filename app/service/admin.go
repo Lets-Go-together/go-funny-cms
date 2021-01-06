@@ -1,13 +1,15 @@
 package service
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/auth"
+	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
-	"gocms/pkg/response"
 )
 
 type AdminService struct{}
@@ -61,22 +63,26 @@ func (*AdminService) Update(admin admin.Admin, id string) bool {
 }
 
 // UpdateOrCreate 创建或者更新权限
-func (*AdminService) UpdateOrCreate(adminModel admin.Admin) bool {
-	var result bool
+func (*AdminService) UpdateOrCreate(adminModel admin.Admin, c *gin.Context) bool {
 
 	if len(adminModel.Password) > 0 {
 		adminModel.Password = auth.CreatePassword(adminModel.Password)
 	}
 
 	if adminModel.ID > 0 {
-		result = config.Db.Model(adminModel).Update(&adminModel).RowsAffected > 0
+		config.Db.Model(adminModel).Update(&adminModel)
+	} else {
+		config.Db.Model(adminModel).Create(&adminModel)
 	}
 
-	result = config.Db.Model(adminModel).Create(&adminModel).RowsAffected > 0
-	if result {
-		return true
+	fmt.Println(adminModel)
+
+	rabc.DeleteRolesForUser(adminModel.Account)
+	if len(adminModel.Role_ids) > 0 {
+		roleNames := GetRolesName(adminModel.Role_ids)
+		logger.Info("roles", roleNames)
+		rabc.AddRolesForUser(adminModel.Account, roleNames)
 	}
 
-	response.ErrorResponse(500, "操作失败")
-	return false
+	return true
 }

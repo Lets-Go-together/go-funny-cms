@@ -1,10 +1,11 @@
-package auth
+package validates
 
 import (
 	"github.com/gin-gonic/gin"
 	"gocms/app/validates/validate"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"net/http"
 )
 
 // 登陆需要的参数
@@ -19,7 +20,7 @@ type LoginAction struct {
 func (*LoginAction) Validate(c *gin.Context, params *LoginParams) bool {
 	err := c.ShouldBind(&params)
 	if err != nil {
-		response.ErrorResponse(500, err.Error())
+		response.ErrorResponse(http.StatusUnauthorized, err.Error()).WriteTo(c)
 		return false
 	}
 

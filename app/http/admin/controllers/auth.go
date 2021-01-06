@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	authValidate "gocms/app/http/admin/validates/auth"
+	"gocms/app/http/admin/validates"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/auth"
-	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
 	"net/http"
@@ -19,9 +18,9 @@ var (
 )
 
 func (*AuthController) Login(c *gin.Context) {
-	authValidateAction := authValidate.LoginAction{}
+	authValidateAction := validates.LoginAction{}
 
-	params := authValidate.LoginParams{}
+	params := validates.LoginParams{}
 	if !authValidateAction.Validate(c, &params) {
 		return
 	}
@@ -41,8 +40,6 @@ func (*AuthController) Login(c *gin.Context) {
 	}
 
 	authAdmin := admin.GetAuthAdmin(adminModel)
-	authAdmin.Roles = rabc.GetRolesForUser(authAdmin.Account)
-	authAdmin.Permissions = rabc.GetPermissionsForUser(authAdmin.Account)
 	token := jwtAction.GetToken(authAdmin)
 
 	response.SuccessResponse(map[string]string{
@@ -67,8 +64,8 @@ func (*AuthController) Logout(c *gin.Context) {
 
 // 注册
 func (*AuthController) Register(c *gin.Context) {
-	action := authValidate.RegisterAction{}
-	var params authValidate.RegisterParams
+	action := validates.RegisterAction{}
+	var params validates.RegisterParams
 	if !action.Validate(c, &params) {
 		return
 	}

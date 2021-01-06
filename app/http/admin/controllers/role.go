@@ -37,6 +37,17 @@ func (that *RoleController) Store(c *gin.Context) {
 	return
 }
 
+// 角色详情
+func (that *RoleController) Show(c *gin.Context) {
+	id := c.Param("id")
+	result := role.RoleModel{}
+	config.Db.Model(role.RoleModel{}).Where("id = ?", id).First(&result)
+	result.Permissions = rabc.GetPermissionsForRole(result.Name)
+
+	response.SuccessResponse(result).WriteTo(c)
+	return
+}
+
 // 数据更新
 func (that *RoleController) Save(c *gin.Context) {
 	var roleModel role.RoleModel

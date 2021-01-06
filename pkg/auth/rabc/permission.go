@@ -64,6 +64,13 @@ func AddRoleForUser(role string, account string) bool {
 	return ok
 }
 
+// AddRoleForUser 批量授权用户到角色
+func AddRolesForUser(account string, role []string) bool {
+	ok, err := config.Enforcer.AddRolesForUser(account, role)
+	logger.PanicError(err, "授权用户到角色", false)
+	return ok
+}
+
 // AddPermissionForUser 添加权限到角色
 func AddPermissionForUser(permission string, method string, role string) bool {
 	ok, err := config.Enforcer.AddPermissionForUser(role, permission, method)
@@ -77,8 +84,8 @@ func GetPermissionsForRole(role string) []map[string]string {
 	currentPermissions := config.Enforcer.GetPermissionsForUser(role)
 	for _, currentPermission := range currentPermissions {
 		permissions = append(permissions, map[string]string{
-			"method":     currentPermission[1],
-			"permission": currentPermission[2],
+			"method":     currentPermission[2],
+			"permission": currentPermission[1],
 		})
 	}
 	return permissions
@@ -111,12 +118,19 @@ func DeletePermissionsForUser(role string) bool {
 	return true
 }
 
-// DeletePermissionsForUser 删除拥有对应角色的用户角色
+// DeletePermissionsForUser 删除拥有对应角色的(用户角色权限)
 func DeleteRoleForUsers(role string) bool {
 	users, err := config.Enforcer.GetUsersForRole(role)
 	logger.PanicError(err, "获取具有角色的用户", false)
 	for _, user := range users {
 		_, _ = config.Enforcer.DeleteRoleForUser(user, role)
 	}
+	return true
+}
+
+// DeleteRolesForUser 删除用户的所有角色
+func DeleteRolesForUser(account string) bool {
+	_, err := config.Enforcer.DeleteRolesForUser(account)
+	logger.PanicError(err, "删除用户的所有角色", false)
 	return true
 }

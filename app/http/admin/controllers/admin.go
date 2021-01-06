@@ -29,7 +29,7 @@ func (*AdminController) Store(c *gin.Context) {
 		return
 	}
 
-	if adminService.UpdateOrCreate(params) {
+	if adminService.UpdateOrCreate(params, c) {
 		response.SuccessResponse().WriteTo(c)
 	}
 	return
@@ -42,7 +42,8 @@ func (*AdminController) Save(c *gin.Context) {
 	if !validates.VidateCreateOrUpdateAdmin(c, &params) {
 		return
 	}
-	adminService.UpdateOrCreate(params)
+
+	adminService.UpdateOrCreate(params, c)
 	response.SuccessResponse().WriteTo(c)
 	return
 }

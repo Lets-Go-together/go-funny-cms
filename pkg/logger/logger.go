@@ -34,7 +34,7 @@ func dispatchNotice(msg string, source string) {
 	// 钉钉通知
 }
 
-func handle(level string, title string, content string) {
+func handle(level string, title string, content interface{}) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
 	logFile, logErr := os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
