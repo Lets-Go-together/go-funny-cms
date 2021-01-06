@@ -12,8 +12,8 @@ import (
 type BaseModel struct {
 	ID uint64 `json:"id"`
 
-	CreatedAt TimeAt `json:"created_at" gorm:"-"`
-	UpdatedAt TimeAt `json:"updated_at" gorm:"-"`
+	CreatedAt TimeAt `json:"created_at,omitempty" gorm:"-"`
+	UpdatedAt TimeAt `json:"updated_at,omitempty" gorm:"-"`
 }
 
 type Result struct {

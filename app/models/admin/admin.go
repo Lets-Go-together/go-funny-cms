@@ -15,7 +15,7 @@ type Admin struct {
 	Phone       string   `validate:"required" json:"phone"`
 	Avatar      string   `validate:"required,url" json:"avatar"`
 	Roles       []string `json:"roles" gorm:"-"`
-	Role_ids    []int    `json:"roles" gorm:"-"`
+	Role_ids    []int    `json:"role_ids,omitempty" gorm:"-"`
 }
 
 // 此信息将写入鉴权中

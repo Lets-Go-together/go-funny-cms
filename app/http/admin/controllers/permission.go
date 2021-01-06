@@ -77,3 +77,22 @@ func (that *PermissionController) reset(c *gin.Context) {
 	response.SuccessResponse().WriteTo(c)
 	return
 }
+
+// 角色详情
+func (that *PermissionController) Show(c *gin.Context) {
+	id := c.Param("id")
+	type permissionInfo struct {
+		Id     string
+		Name   string `json:"name"`
+		Icon   string `json:"icon"`
+		Url    string `json:"url"`
+		Status int    `json:"status"`
+		Method string `json:"method"`
+		Pid    int    `json:"pid"`
+	}
+	result := permissionInfo{}
+	config.Db.Model(permission.Permission{}).Omit("").Where("id = ?", id).First(&result)
+
+	response.SuccessResponse(result).WriteTo(c)
+	return
+}

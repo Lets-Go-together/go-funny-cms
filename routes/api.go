@@ -17,7 +17,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 	apiRouter.POST("/admin/register", authController.Register)
 
 	ToolController := new(Admin.ToolController)
-	apiRouter.GET("/admin/pwd", ToolController.Pwd)
+	apiRouter.GET("/pwd", ToolController.Pwd)
 
 	// 需要鉴权的路由
 	apiRouter.Use(middleware.Authenticate)
@@ -29,8 +29,9 @@ func RegisterApiRoutes(router *gin.Engine) {
 		AdminController := new(Admin.AdminController)
 		apiAdminRouter := apiRouter.Group("admin")
 		{
-			apiAdminRouter.POST("/", AdminController.Store)
-			apiAdminRouter.GET("/list", AdminController.Index)
+			apiAdminRouter.GET("", AdminController.Index)
+			apiAdminRouter.GET("/:id", AdminController.Show)
+			apiAdminRouter.POST("", AdminController.Store)
 			apiAdminRouter.PUT("/:id", AdminController.Save)
 		}
 
@@ -38,6 +39,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 		apiPermissionRouter := apiRouter.Group("permission")
 		{
 			apiPermissionRouter.GET("", PermissionController.Index)
+			apiPermissionRouter.GET("/:id", PermissionController.Show)
 			apiPermissionRouter.POST("", PermissionController.Store)
 			apiPermissionRouter.PUT("/:id", PermissionController.Save)
 			apiPermissionRouter.DELETE("/:id", PermissionController.Destory)

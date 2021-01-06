@@ -6,6 +6,8 @@ import (
 	"gocms/app/http/admin/validates"
 	adminModel "gocms/app/models/admin"
 	"gocms/app/service"
+	"gocms/pkg/auth/rabc"
+	"gocms/pkg/config"
 	"gocms/pkg/response"
 )
 
@@ -45,5 +47,16 @@ func (*AdminController) Save(c *gin.Context) {
 
 	adminService.UpdateOrCreate(params, c)
 	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+// 角色详情
+func (that *AdminController) Show(c *gin.Context) {
+	id := c.Param("id")
+	result := adminModel.Admin{}
+	config.Db.Model(adminModel.Admin{}).Omit("password").Select("id, account, description, email, phone, avatar, created_at, updated_at").Where("id = ?", id).First(&result)
+	result.Roles = rabc.GetRolesForUser(result.Account)
+
+	response.SuccessResponse(result).WriteTo(c)
 	return
 }
