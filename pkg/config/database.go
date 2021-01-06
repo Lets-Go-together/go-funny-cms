@@ -37,7 +37,7 @@ func RedisClient() *redis.Client {
 }
 
 // MysqlClient 初始化 mysql 服务器
-func MysqlClient() *gorm.DB {
+func MysqlClient() *DataBase {
 	username := GetString("DB_USERNAME")
 	password := GetString("DB_PASSWORD")
 	host := GetString("DB_HOST")
@@ -64,7 +64,9 @@ func MysqlClient() *gorm.DB {
 
 	logger.Info("连接Mysql 成功", "mysql connect")
 
-	return Db
+	return &DataBase{
+		Db,
+	}
 }
 
 func (that *DataBase) Where(query interface{}, param ...interface{}) *DataBase {

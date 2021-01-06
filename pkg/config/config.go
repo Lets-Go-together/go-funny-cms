@@ -4,7 +4,6 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/jinzhu/gorm"
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -14,7 +13,7 @@ import (
 
 // viper 作为全局的 app 容器存在
 var (
-	Db       *gorm.DB
+	Db       *DataBase
 	Redis    *redis.Client
 	Viper    *viper.Viper
 	Pool     *ants.Pool
