@@ -4,17 +4,17 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/jinzhu/gorm"
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"gocms/pkg/database"
 	"gocms/pkg/logger"
 	"net/http"
 )
 
 // viper 作为全局的 app 容器存在
 var (
-	Db       *database.DataBase
+	Db       *gorm.DB
 	Redis    *redis.Client
 	Viper    *viper.Viper
 	Pool     *ants.Pool
@@ -25,6 +25,7 @@ var (
 
 func init() {
 	InitViper()
+	InitDatabase()
 }
 
 func Initialize() {}

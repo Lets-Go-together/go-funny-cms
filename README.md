@@ -81,14 +81,14 @@
     curl --location --request POST '127.0.0.1:8082/api/admin/login' \
     --header 'Content-Type: application/x-www-form-urlencoded' \
     --data-urlencode 'account=chenf' \
-    --data-urlencode 'password=12345678'
+    --data-urlencode 'password=123456'
 
 **11-27**
 
     # 新增中间件
     
     # 新增配置
-    # 默认分钟
+    # 默认秒
     # pkg/auth/jwt.go:25
     JWT_EXPIRE_AT=10
     

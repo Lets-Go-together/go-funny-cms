@@ -7,13 +7,11 @@ import (
 	"gocms/pkg/auth"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
-	"gocms/pkg/database"
 	"gocms/pkg/pools"
 )
 
 func init() {
 	config.Initialize()
-	database.Initialize()
 	pools.Initialize()
 	casbin.Initialize()
 }
