@@ -2,9 +2,8 @@ package validates
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
+	"github.com/jinzhu/gorm"
 	"gocms/app/models/admin"
-	"gocms/app/service"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
@@ -36,24 +35,36 @@ func VidateCreateOrUpdateAdmin(c *gin.Context, adminParams *admin.Admin) bool {
 		return false
 	}
 
-	uniqueWheres := make(map[string]string)
-	if adminParams.ID > 0 {
-		uniqueWheres = map[string]string{
-			"email":   adminParams.Account,
-			"account": adminParams.Email,
-			"id":      cast.ToString(adminParams.ID),
-		}
-	} else {
-		uniqueWheres = map[string]string{
-			"email":   adminParams.Email,
-			"account": adminParams.Account,
-		}
+	modelQuery := func() *gorm.DB {
+		return config.Db.Model(admin.Admin{})
 	}
 
-	dbModel := config.Db.Model(&admin.Admin{})
-	if r := service.IsAllowOperationModel(uniqueWheres, dbModel); r == false {
-		response.ErrorResponse(http.StatusForbidden, "账号或者邮箱已存在").WriteTo(c)
-		return false
+	if adminParams.ID > 0 {
+		total := 0
+		modelQuery().Where("id <> ?", adminParams.ID).Where("account = ?", adminParams.Account).Count(&total)
+		if total > 0 {
+			response.ErrorResponse(http.StatusForbidden, "账号已存在").WriteTo(c)
+			return false
+		}
+
+		modelQuery().Where("id <> ?", adminParams.ID).Where("email = ?", adminParams.Email).Count(&total)
+		if total > 0 {
+			response.ErrorResponse(http.StatusForbidden, "邮箱已存在").WriteTo(c)
+			return false
+		}
+	} else {
+		total := 0
+		modelQuery().Where("account = ?", adminParams.Account).Count(&total)
+		if total > 0 {
+			response.ErrorResponse(http.StatusForbidden, "账号已存在").WriteTo(c)
+			return false
+		}
+
+		modelQuery().Where("email = ?", adminParams.Email).Count(&total)
+		if total > 0 {
+			response.ErrorResponse(http.StatusForbidden, "邮箱已存在").WriteTo(c)
+			return false
+		}
 	}
 
 	return true
