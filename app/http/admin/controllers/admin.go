@@ -19,7 +19,7 @@ var adminService = &service.AdminService{}
 func (*AdminController) Index(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
-	list := adminService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
+	list := adminService.GetList(cast.ToInt(page), cast.ToInt(pageSize), c)
 
 	response.SuccessResponse(list).WriteTo(c)
 }

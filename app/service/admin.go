@@ -21,14 +21,21 @@ type listStruct struct {
 	Phone       string      `json:"phone"`
 	Avatar      string      `json:"avatar"`
 	CreatedAt   base.TimeAt `json:"created_at"`
+	UpdatedAt   base.TimeAt `json:"updated_at"`
 }
 
-func (*AdminService) GetList(page int, pageSize int) *base.Result {
+func (*AdminService) GetList(page int, pageSize int, c *gin.Context) *base.Result {
 	admins := []listStruct{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
+	account, _ := c.GetQuery("account")
 
-	config.Db.Model(&admin.Admin{}).Select("id, account, description, email, avatar, phone, created_at").Limit(pageSize).Offset(offset).Scan(&admins)
+	query := config.Db.Model(&admin.Admin{}).Select("id, account, description, email, avatar, phone, updated_at")
+	if len(account) > 0 {
+		query = query.Where("account like ?", "%"+account+"%")
+	}
+
+	query.Limit(pageSize).Offset(offset).Scan(&admins)
 	config.Db.Model(&admin.Admin{}).Count(&total)
 
 	data := base.Result{
