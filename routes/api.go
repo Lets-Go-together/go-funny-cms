@@ -6,34 +6,46 @@ import (
 	"gocms/app/http/middleware"
 )
 
-func route() {
-	type route struct {
-		method       string
-		relativePath string
-		handlerFunc  gin.HandlerFunc
-		auth         bool
-	}
+func SetupRoutes(engine *gin.Engine) {
 
-	type group struct {
-		name   string
-		routes []*route
-	}
+	authController := new(Admin.AuthController)
+	toolController := new(Admin.ToolController)
+	adminController := new(Admin.AdminController)
+	permissionController := new(Admin.PermissionController)
+	roleController := new(Admin.RoleController)
 
-	var post = func(relativePath string, handlerFunc gin.HandlerFunc) *route {
-		return &route{
-			method:       "",
-			relativePath: "",
-			handlerFunc:  handlerFunc,
-			auth:         false,
-		}
-	}
+	rt := group("api",
+		post("/login", authController.Login),
+		post("/admin/register", authController.Register),
+		get("/pwd", toolController.Pwd),
+		use(middleware.Authenticate,
+			get("/me", authController.Me),
+			delete("/logout", authController.Logout),
+			group("admin",
+				get("", adminController.Index),
+				get("/:id", adminController.Show),
+				post("", adminController.Store),
+				put("/:id", adminController.Save),
+			),
+			group("permission",
+				get("", permissionController.Index),
+				get("/:id", permissionController.Show),
+				post("", permissionController.Store),
+				put("/:id", permissionController.Save),
+				delete("/:id", permissionController.Destory),
+			),
+			group("role",
+				get("", roleController.Index),
+				get("/:id", roleController.Show),
+				post("", roleController.Store),
+				put("/:id", roleController.Save),
+				delete("/:id", roleController.Destory),
+			),
+		),
+		get("/qiniu", toolController.Qiniu),
+	)
 
-	_ = group{
-		name: "",
-		routes: []*route{
-			post("/user", nil),
-		},
-	}
+	setupRoutes(rt, engine)
 }
 
 // 路由注册
