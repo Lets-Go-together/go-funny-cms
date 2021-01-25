@@ -6,6 +6,36 @@ import (
 	"gocms/app/http/middleware"
 )
 
+func route() {
+	type route struct {
+		method       string
+		relativePath string
+		handlerFunc  gin.HandlerFunc
+		auth         bool
+	}
+
+	type group struct {
+		name   string
+		routes []*route
+	}
+
+	var post = func(relativePath string, handlerFunc gin.HandlerFunc) *route {
+		return &route{
+			method:       "",
+			relativePath: "",
+			handlerFunc:  handlerFunc,
+			auth:         false,
+		}
+	}
+
+	_ = group{
+		name: "",
+		routes: []*route{
+			post("/user", nil),
+		},
+	}
+}
+
 // 路由注册
 func RegisterApiRoutes(router *gin.Engine) {
 	// 后台项目
@@ -57,4 +87,8 @@ func RegisterApiRoutes(router *gin.Engine) {
 
 		apiRouter.GET("/qiniu", ToolController.Qiniu)
 	}
+}
+
+func interceptor() {
+
 }

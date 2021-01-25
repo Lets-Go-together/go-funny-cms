@@ -13,11 +13,12 @@ import (
 
 // viper 作为全局的 app 容器存在
 var (
-	Db       *DataBase
-	Redis    *redis.Client
-	Viper    *viper.Viper
-	Pool     *ants.Pool
-	Router   *gin.Engine
+	Db     *DataBase
+	Redis  *redis.Client
+	Viper  *viper.Viper
+	Pool   *ants.Pool
+	Router *gin.Engine
+	// TODO 2021-1-25 移除: 并发情况?
 	Request  *http.Request
 	Enforcer *casbin.Enforcer
 )

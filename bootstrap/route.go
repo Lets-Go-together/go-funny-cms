@@ -13,6 +13,7 @@ func SteupRoute(params ...interface{}) {
 	router := gin.New()
 	router.Use(gin.Logger())
 
+	router.Use(middleware.RecoveryMiddleware)
 	router.Use(middleware.WebMiddleware)
 	{
 		routes.RegisterWebRoutes(router)
