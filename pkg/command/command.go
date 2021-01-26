@@ -55,7 +55,7 @@ func InitApp() *cli.App {
 				Name:  "generate-permission",
 				Usage: "初始化权限节点",
 				Action: func(c *cli.Context) error {
-					bootstrap.SteupRoute(true)
+					bootstrap.Run(true)
 					//service.GeneratePermissionNodes()
 					return nil
 				},
@@ -82,5 +82,5 @@ func InitApp() *cli.App {
 
 // 服务器
 func AppServer() {
-	bootstrap.SteupRoute()
+	bootstrap.Run()
 }

@@ -6,7 +6,8 @@ import (
 	"gocms/app/http/middleware"
 )
 
-func SetupRoutes(engine *gin.Engine) {
+// 路由注册
+func RegisterApiRoutes2(router *gin.Engine) {
 
 	authController := new(Admin.AuthController)
 	toolController := new(Admin.ToolController)
@@ -14,38 +15,39 @@ func SetupRoutes(engine *gin.Engine) {
 	permissionController := new(Admin.PermissionController)
 	roleController := new(Admin.RoleController)
 
-	rt := group("api",
-		post("/login", authController.Login),
-		post("/admin/register", authController.Register),
-		get("/pwd", toolController.Pwd),
-		use(middleware.Authenticate,
-			get("/me", authController.Me),
-			delete("/logout", authController.Logout),
-			group("admin",
-				get("", adminController.Index),
-				get("/:id", adminController.Show),
-				post("", adminController.Store),
-				put("/:id", adminController.Save),
+	rt :=
+		group("api",
+			post("/login", authController.Login),
+			post("/admin/register", authController.Register),
+			post("/admin/register2", authController.Register2),
+			get("/pwd", toolController.Pwd),
+			use(middleware.Authenticate,
+				get("/me", authController.Me),
+				delete("/logout", authController.Logout),
+				group("admin",
+					get("", adminController.Index),
+					get("/:id", adminController.Show),
+					post("", adminController.Store),
+					put("/:id", adminController.Save),
+				),
+				group("permission",
+					get("", permissionController.Index),
+					get("/:id", permissionController.Show),
+					post("", permissionController.Store),
+					put("/:id", permissionController.Save),
+					delete("/:id", permissionController.Destory),
+				),
+				group("role",
+					get("", roleController.Index),
+					get("/:id", roleController.Show),
+					post("", roleController.Store),
+					put("/:id", roleController.Save),
+					delete("/:id", roleController.Destory),
+				),
 			),
-			group("permission",
-				get("", permissionController.Index),
-				get("/:id", permissionController.Show),
-				post("", permissionController.Store),
-				put("/:id", permissionController.Save),
-				delete("/:id", permissionController.Destory),
-			),
-			group("role",
-				get("", roleController.Index),
-				get("/:id", roleController.Show),
-				post("", roleController.Store),
-				put("/:id", roleController.Save),
-				delete("/:id", roleController.Destory),
-			),
-		),
-		get("/qiniu", toolController.Qiniu),
-	)
-
-	setupRoutes(rt, engine)
+			get("/qiniu", toolController.Qiniu),
+		)
+	setupRoutes(rt, router)
 }
 
 // 路由注册
@@ -99,8 +101,4 @@ func RegisterApiRoutes(router *gin.Engine) {
 
 		apiRouter.GET("/qiniu", ToolController.Qiniu)
 	}
-}
-
-func interceptor() {
-
 }

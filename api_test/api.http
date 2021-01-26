@@ -1,0 +1,11 @@
+POST http://localhost:8080/api/admin/register2
+Content-Type: application/json
+
+{
+  "account": "user_test",
+  "password": "abcd1234.",
+  "email": "email@example.com",
+  "captcha": "1234"
+}
+
+###

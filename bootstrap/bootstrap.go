@@ -9,7 +9,7 @@ import (
 )
 
 // 初始化路由
-func SteupRoute(params ...interface{}) {
+func Run(params ...interface{}) {
 	router := gin.New()
 	router.Use(gin.Logger())
 

@@ -29,10 +29,11 @@ func RedisClient() *redis.Client {
 		DB:       GetInt("REDIS_DB"),
 	})
 
-	_, err := client.Ping().Result()
-	logger.PanicError(err, "Redis 连接", true)
-
-	logger.Info("连接Redis 成功", "redis connect")
+	// TODO
+	//_, err := client.Ping().Result()
+	//logger.PanicError(err, "Redis 连接", true)
+	//
+	//logger.Info("连接Redis 成功", "redis connect")
 	return client
 }
 
