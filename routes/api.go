@@ -7,7 +7,7 @@ import (
 )
 
 // 路由注册
-func RegisterApiRoutes2(router *gin.Engine) {
+func RegisterApiRoutes(router *gin.Engine) {
 
 	authController := new(Admin.AuthController)
 	toolController := new(Admin.ToolController)
@@ -51,7 +51,7 @@ func RegisterApiRoutes2(router *gin.Engine) {
 }
 
 // 路由注册
-func RegisterApiRoutes(router *gin.Engine) {
+func RegisterApiRoutesOld(router *gin.Engine) {
 	// 后台项目
 	apiRouter := router.Group("api")
 

@@ -97,7 +97,7 @@ func (that *route) setup(parent gin.IRouter) {
 		parent.Handle(that.method, that.relativePath, realHandleFunc)
 
 	} else if argNum == 2 {
-		typeParam := typ.In(1)
+		typeParam := typ.In(1).Elem()
 		if typeParam.Kind() != reflect.Struct {
 			panic("type assertion fail" + where)
 		}
@@ -108,8 +108,8 @@ func (that *route) setup(parent gin.IRouter) {
 		f := reflect.ValueOf(that.handlerFunc)
 		handleFunc := func(context *gin.Context) {
 			param := reflect.New(typeParam).Interface().(validate.ValidationAction)
-			if param.Validate(context, &param) {
-				f.Call(valOf(context, &param))
+			if param.Validate(context, param) {
+				f.Call(valOf(context, reflect.ValueOf(param).Interface()))
 			}
 		}
 		parent.Handle(that.method, that.relativePath, handleFunc)

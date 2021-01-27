@@ -62,7 +62,7 @@ func (*AuthController) Logout(c *gin.Context) {
 	response.SuccessResponse(user).WriteTo(c)
 }
 
-func (*AuthController) Register2(c *gin.Context, params validates.RegisterParams) {
+func (*AuthController) Register2(c *gin.Context, params *validates.RegisterParams) {
 	// CRUD
 	// ...
 	response.SuccessResponse("user register successful: " + params.Account).WriteTo(c)

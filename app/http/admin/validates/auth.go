@@ -36,10 +36,7 @@ type RegisterParams struct {
 	Captcha  string `validate:"numeric,len=5" json:"captcha"`
 }
 
-type RegisterAction struct {
-}
-
-func (that *RegisterAction) Validate(c *gin.Context, params interface{}) bool {
+func (that *RegisterParams) Validate(c *gin.Context, params interface{}) bool {
 	err := c.BindJSON(params)
 	if err != nil {
 		logger.PanicError(err, "注册参数验证", false)
@@ -48,11 +45,11 @@ func (that *RegisterAction) Validate(c *gin.Context, params interface{}) bool {
 	return validate.WithResponse(params, 403, "请检查参数", c)
 }
 
-func (that *RegisterParams) Validate(c *gin.Context, params interface{}) bool {
+type RegisterAction struct {
+}
+
+func (that *RegisterAction) Validate(c *gin.Context, params interface{}) bool {
 	err := c.BindJSON(params)
-	if true {
-		return true
-	}
 	if err != nil {
 		logger.PanicError(err, "注册参数验证", false)
 		return false
