@@ -1,18 +1,18 @@
 package validates
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/models/role"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
 // 验证管理员创建参数
-func VidateCreateOrUpdateRole(c *gin.Context, modelParams *role.RoleModel) bool {
+func VidateCreateOrUpdateRole(c *wrap.ContextWrapper, modelParams *role.RoleModel) bool {
 	err := c.ShouldBindJSON(&modelParams)
 	db := config.Db
 	isExist := 0

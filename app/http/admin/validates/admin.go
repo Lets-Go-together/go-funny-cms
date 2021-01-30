@@ -1,13 +1,13 @@
 package validates
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"gocms/app/models/admin"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ type Admin struct {
 }
 
 // 验证管理员创建参数
-func VidateCreateOrUpdateAdmin(c *gin.Context, adminParams *admin.Admin) bool {
+func VidateCreateOrUpdateAdmin(c *wrap.ContextWrapper, adminParams *admin.Admin) bool {
 	err := c.ShouldBindJSON(&adminParams)
 
 	logger.Info("admin", adminParams)

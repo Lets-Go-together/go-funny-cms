@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gocms/app/validates/validate"
+	"gocms/wrap"
 	"net/http"
 	"reflect"
 )
 
-var typeGinContext = reflect.TypeOf((*gin.Context)(nil))
+var typeGinContext = reflect.TypeOf((*wrap.ContextWrapper)(nil))
 
 type iRoute interface {
 	setup(parent gin.IRouter)
@@ -28,10 +29,6 @@ type routeGroup struct {
 type routeUse struct {
 	middleware []gin.HandlerFunc
 	routes     []iRoute
-}
-
-func setupRoutes(rt iRoute, parent gin.IRouter) {
-	rt.setup(parent)
 }
 
 func (that *routeGroup) setup(parent gin.IRouter) {
@@ -65,11 +62,15 @@ func (that *route) setup(parent gin.IRouter) {
 	}
 	if argNum == 1 {
 
-		realHandleFunc, ok := that.handlerFunc.(func(ctx *gin.Context))
+		realHandleFunc, ok := that.handlerFunc.(func(ctx *wrap.ContextWrapper))
 		if !ok {
 			panic("type assertion fail, " + where)
 		}
-		parent.Handle(that.method, that.relativePath, realHandleFunc)
+		parent.Handle(that.method, that.relativePath, func(context *gin.Context) {
+			realHandleFunc(&wrap.ContextWrapper{
+				Context: context,
+			})
+		})
 
 	} else if argNum == 2 {
 
@@ -84,13 +85,16 @@ func (that *route) setup(parent gin.IRouter) {
 		f := reflect.ValueOf(that.handlerFunc)
 
 		proxyHandleFunc := func(context *gin.Context) {
-			invokeRealHandler(context, typeParam, f)
+			wrapCtx := wrap.ContextWrapper{
+				Context: context,
+			}
+			invokeRealHandler(&wrapCtx, typeParam, f)
 		}
 		parent.Handle(that.method, that.relativePath, proxyHandleFunc)
 	}
 }
 
-func invokeRealHandler(context *gin.Context, tParam reflect.Type, vRealHandlerFunc reflect.Value) {
+func invokeRealHandler(context *wrap.ContextWrapper, tParam reflect.Type, vRealHandlerFunc reflect.Value) {
 	param := reflect.New(tParam).Interface().(validate.ValidationAction)
 	if param.Validate(context, param) {
 		vRealHandlerFunc.Call(valOf(context, reflect.ValueOf(param).Interface()))

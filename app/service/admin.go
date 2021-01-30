@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/auth"
@@ -10,6 +9,7 @@ import (
 	"gocms/pkg/config"
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
+	"gocms/wrap"
 )
 
 type AdminService struct{}
@@ -24,7 +24,7 @@ type listStruct struct {
 	UpdatedAt   base.TimeAt `json:"updated_at"`
 }
 
-func (*AdminService) GetList(page int, pageSize int, c *gin.Context) *base.Result {
+func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *base.Result {
 	admins := []listStruct{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
@@ -70,7 +70,7 @@ func (*AdminService) Update(admin admin.Admin, id string) bool {
 }
 
 // UpdateOrCreate 创建或者更新权限
-func (*AdminService) UpdateOrCreate(adminModel admin.Admin, c *gin.Context) bool {
+func (*AdminService) UpdateOrCreate(adminModel admin.Admin, c *wrap.ContextWrapper) bool {
 
 	if len(adminModel.Password) > 0 {
 		adminModel.Password = auth.CreatePassword(adminModel.Password)

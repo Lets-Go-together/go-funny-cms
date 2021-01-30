@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/casbin"
@@ -10,6 +9,7 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
+	"gocms/wrap"
 )
 
 type PermissionController struct{}
@@ -17,7 +17,7 @@ type PermissionController struct{}
 var permissionService = &service.PermissionService{}
 
 // 权限节点列表
-func (that *PermissionController) Index(c *gin.Context) {
+func (that *PermissionController) Index(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
 	list := permissionService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
@@ -27,7 +27,7 @@ func (that *PermissionController) Index(c *gin.Context) {
 }
 
 // 数据保存
-func (that *PermissionController) Store(c *gin.Context) {
+func (that *PermissionController) Store(c *wrap.ContextWrapper) {
 	var permissionModel permission.Permission
 	if !validates.VidateCreateOrUpdatePermission(c, &permissionModel) {
 		return
@@ -41,7 +41,7 @@ func (that *PermissionController) Store(c *gin.Context) {
 }
 
 // 数据更新
-func (that *PermissionController) Save(c *gin.Context) {
+func (that *PermissionController) Save(c *wrap.ContextWrapper) {
 	var permissionModel permission.Permission
 	permissionModel.ID = cast.ToUint64(c.Param("id"))
 	if !validates.VidateCreateOrUpdatePermission(c, &permissionModel) {
@@ -54,7 +54,7 @@ func (that *PermissionController) Save(c *gin.Context) {
 }
 
 // 数据删除
-func (that *PermissionController) Destory(c *gin.Context) {
+func (that *PermissionController) Destory(c *wrap.ContextWrapper) {
 	id := c.Param("id")
 	config.Db.Delete(permission.Permission{}, "id = "+id)
 
@@ -63,7 +63,7 @@ func (that *PermissionController) Destory(c *gin.Context) {
 }
 
 // 权限重置
-func (that *PermissionController) reset(c *gin.Context) {
+func (that *PermissionController) reset(c *wrap.ContextWrapper) {
 	// 是否权限清除并重置
 	is_clear := cast.ToBool(c.PostForm("is_clear"))
 	db := config.Db
@@ -79,7 +79,7 @@ func (that *PermissionController) reset(c *gin.Context) {
 }
 
 // 角色详情
-func (that *PermissionController) Show(c *gin.Context) {
+func (that *PermissionController) Show(c *wrap.ContextWrapper) {
 	id := c.Param("id")
 	type permissionInfo struct {
 		Id     string

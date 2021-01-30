@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
 	"github.com/tidwall/gjson"
@@ -11,13 +10,14 @@ import (
 	"gocms/pkg/enum"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"os"
 	"time"
 )
 
 type ToolController struct{}
 
-func (*ToolController) Pwd(c *gin.Context) {
+func (*ToolController) Pwd(c *wrap.ContextWrapper) {
 	pwd, _ := os.Getwd()
 
 	response.SuccessResponse(map[string]string{
@@ -26,7 +26,7 @@ func (*ToolController) Pwd(c *gin.Context) {
 }
 
 // 获取七牛云上传密钥信息
-func (*ToolController) Qiniu(c *gin.Context) {
+func (*ToolController) Qiniu(c *wrap.ContextWrapper) {
 	uploadInfo := make(map[string]string)
 	info, _ := config.Redis.Get(enum.CACHE_QINIU).Result()
 	if len(info) > 0 {

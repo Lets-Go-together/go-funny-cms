@@ -1,18 +1,18 @@
 package validates
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/models/permission"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
 // 验证管理员创建参数
-func VidateCreateOrUpdatePermission(c *gin.Context, modelParams *permission.Permission) bool {
+func VidateCreateOrUpdatePermission(c *wrap.ContextWrapper, modelParams *permission.Permission) bool {
 	err := c.ShouldBindJSON(&modelParams)
 	db := config.Db
 	isExist := 0

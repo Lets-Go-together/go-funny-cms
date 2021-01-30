@@ -5,7 +5,7 @@ Content-Type: application/json
   "account": "user_test",
   "password": "abcd1234.",
   "email": "email@example.com",
-  "captcha": "1234"
+  "captcha": "12344"
 }
 
 ###

@@ -17,6 +17,8 @@ type Writer interface {
 type Reader interface {
 }
 
+type HandlerFunc func(wrapper *ContextWrapper)
+
 type ContextWrapper struct {
 	*gin.Context
 

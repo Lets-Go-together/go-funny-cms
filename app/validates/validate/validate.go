@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/pkg/response"
 	"gocms/wrap"
@@ -14,7 +13,7 @@ type ValidationAction interface {
 	// @param	ctx 	包含需要验证参数请求上下文
 	// @param	params	用于该请求中的参数
 	// @return	是否验证成功
-	Validate(ctx *gin.Context, params interface{}) bool
+	Validate(ctx *wrap.ContextWrapper, params interface{}) bool
 }
 
 // 验证器

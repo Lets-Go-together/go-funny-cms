@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
 	"gocms/app/models/base"
 	"gocms/app/models/permission"
 	"gocms/app/models/role"
@@ -10,6 +9,7 @@ import (
 	"gocms/pkg/help"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ type RoleList struct {
 }
 
 // 添加更新角色
-func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *gin.Context) bool {
+func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *wrap.ContextWrapper) bool {
 	var originRoleModel role.RoleModel
 
 	if roleModel.ID > 0 {

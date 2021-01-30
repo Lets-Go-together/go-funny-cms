@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/admin"
 	"gocms/app/models/base"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ var (
 	jwtAction = auth.JwtAction{}
 )
 
-func (*AuthController) Login(c *gin.Context) {
+func (*AuthController) Login(c *wrap.ContextWrapper) {
 	authValidateAction := validates.LoginAction{}
 
 	params := validates.LoginParams{}
@@ -50,26 +50,26 @@ func (*AuthController) Login(c *gin.Context) {
 }
 
 // 我的信息
-func (*AuthController) Me(c *gin.Context) {
+func (*AuthController) Me(c *wrap.ContextWrapper) {
 	user := admin.AuthUser
 	response.SuccessResponse(user).WriteTo(c)
 	return
 }
 
 // 注销
-func (*AuthController) Logout(c *gin.Context) {
+func (*AuthController) Logout(c *wrap.ContextWrapper) {
 	user := admin.AuthUser
 	response.SuccessResponse(user).WriteTo(c)
 }
 
-func (*AuthController) Register2(c *gin.Context, params *validates.RegisterParams) {
+func (*AuthController) Register2(c *wrap.ContextWrapper, params *validates.RegisterParams) {
 	// CRUD
 	// ...
 	response.SuccessResponse("user register successful: " + params.Account).WriteTo(c)
 }
 
 // 注册
-func (*AuthController) Register(c *gin.Context) {
+func (*AuthController) Register(c *wrap.ContextWrapper) {
 	action := validates.RegisterAction{}
 	var params validates.RegisterParams
 	if !action.Validate(c, &params) {

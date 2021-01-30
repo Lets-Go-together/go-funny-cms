@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/role"
@@ -9,6 +8,7 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
+	"gocms/wrap"
 )
 
 type RoleController struct{}
@@ -16,7 +16,7 @@ type RoleController struct{}
 var rolenService = &service.RoleService{}
 
 // 权限节点列表
-func (that *RoleController) Index(c *gin.Context) {
+func (that *RoleController) Index(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
 	list := rolenService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
@@ -26,7 +26,7 @@ func (that *RoleController) Index(c *gin.Context) {
 }
 
 // 数据保存
-func (that *RoleController) Store(c *gin.Context) {
+func (that *RoleController) Store(c *wrap.ContextWrapper) {
 	var roleModel role.RoleModel
 	if !validates.VidateCreateOrUpdateRole(c, &roleModel) {
 		return
@@ -38,7 +38,7 @@ func (that *RoleController) Store(c *gin.Context) {
 }
 
 // 角色详情
-func (that *RoleController) Show(c *gin.Context) {
+func (that *RoleController) Show(c *wrap.ContextWrapper) {
 	id := c.Param("id")
 	result := role.RoleModel{}
 	config.Db.Model(role.RoleModel{}).Where("id = ?", id).First(&result)
@@ -49,7 +49,7 @@ func (that *RoleController) Show(c *gin.Context) {
 }
 
 // 数据更新
-func (that *RoleController) Save(c *gin.Context) {
+func (that *RoleController) Save(c *wrap.ContextWrapper) {
 	var roleModel role.RoleModel
 	roleModel.ID = cast.ToUint64(c.Param("id"))
 	if !validates.VidateCreateOrUpdateRole(c, &roleModel) {
@@ -64,7 +64,7 @@ func (that *RoleController) Save(c *gin.Context) {
 }
 
 // 数据删除
-func (that *RoleController) Destory(c *gin.Context) {
+func (that *RoleController) Destory(c *wrap.ContextWrapper) {
 	id := c.Param("id")
 	var roleModel role.RoleModel
 

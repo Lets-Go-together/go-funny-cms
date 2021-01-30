@@ -1,10 +1,10 @@
 package validates
 
 import (
-	"github.com/gin-gonic/gin"
 	"gocms/app/validates/validate"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
+	"gocms/wrap"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ type LoginParams struct {
 type LoginAction struct {
 }
 
-func (*LoginAction) Validate(c *gin.Context, params *LoginParams) bool {
+func (*LoginAction) Validate(c *wrap.ContextWrapper, params *LoginParams) bool {
 	err := c.ShouldBind(&params)
 	if err != nil {
 		response.ErrorResponse(http.StatusUnauthorized, err.Error()).WriteTo(c)
@@ -36,7 +36,7 @@ type RegisterParams struct {
 	Captcha  string `validate:"numeric,len=5" json:"captcha"`
 }
 
-func (that *RegisterParams) Validate(c *gin.Context, params interface{}) bool {
+func (that *RegisterParams) Validate(c *wrap.ContextWrapper, params interface{}) bool {
 	err := c.BindJSON(params)
 	if err != nil {
 		logger.PanicError(err, "注册参数验证", false)
@@ -48,7 +48,7 @@ func (that *RegisterParams) Validate(c *gin.Context, params interface{}) bool {
 type RegisterAction struct {
 }
 
-func (that *RegisterAction) Validate(c *gin.Context, params interface{}) bool {
+func (that *RegisterAction) Validate(c *wrap.ContextWrapper, params interface{}) bool {
 	err := c.BindJSON(params)
 	if err != nil {
 		logger.PanicError(err, "注册参数验证", false)
