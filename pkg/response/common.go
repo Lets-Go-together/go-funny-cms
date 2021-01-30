@@ -1,5 +1,9 @@
 package response
 
+import (
+	"gocms/wrap"
+)
+
 /**
 公共响应
 
@@ -17,12 +21,6 @@ type JsonResponse struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
-}
-
-type JSONWriter interface {
-	JSON(code int, data interface{})
-	PureJSON(code int, data interface{})
-	JSONP(code int, data interface{})
 }
 
 func SuccessResponse(data ...interface{}) *JsonResponse {
@@ -47,7 +45,7 @@ func ErrorResponse(status int, message string) *JsonResponse {
 
 // 将 json 设为响应体.
 // HTTP 状态码由应用状态码决定
-func (that *JsonResponse) WriteTo(ctx JSONWriter) {
+func (that *JsonResponse) WriteTo(ctx wrap.JSONWriter) {
 	code := 200
 	if that.Status != StatusSuccess {
 		code = that.responseCode()

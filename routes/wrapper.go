@@ -8,32 +8,7 @@ import (
 	"reflect"
 )
 
-type Controller interface {
-}
-
-type acceptor func(ctx *gin.Context, params interface{})
-
 var typeGinContext = reflect.TypeOf((*gin.Context)(nil))
-var typeValidatable = reflect.TypeOf((*validate.ValidationAction)(nil)).Elem()
-
-type ContextWrapper struct {
-	*gin.Context
-
-	// TODO 2021-1-25 屏蔽实际 Context, 便于控制修改需要暴露的接口和屏蔽不必要的接口, 利于规范代码
-	//context *gin.Context
-}
-
-func (that *ContextWrapper) Accept(json interface{}) {
-	that.JSON(http.StatusAccepted, &json)
-}
-
-func (that *ContextWrapper) Unauthorized() {
-	that.String(http.StatusUnauthorized, "401 Unauthorized")
-}
-
-func (that *ContextWrapper) Forbidden() {
-	that.String(http.StatusForbidden, "403 Forbidden")
-}
 
 type iRoute interface {
 	setup(parent gin.IRouter)
@@ -97,6 +72,7 @@ func (that *route) setup(parent gin.IRouter) {
 		parent.Handle(that.method, that.relativePath, realHandleFunc)
 
 	} else if argNum == 2 {
+
 		typeParam := typ.In(1).Elem()
 		if typeParam.Kind() != reflect.Struct {
 			panic("type assertion fail" + where)
@@ -106,13 +82,18 @@ func (that *route) setup(parent gin.IRouter) {
 			panic("type assertion fail" + where)
 		}
 		f := reflect.ValueOf(that.handlerFunc)
-		handleFunc := func(context *gin.Context) {
-			param := reflect.New(typeParam).Interface().(validate.ValidationAction)
-			if param.Validate(context, param) {
-				f.Call(valOf(context, reflect.ValueOf(param).Interface()))
-			}
+
+		proxyHandleFunc := func(context *gin.Context) {
+			invokeRealHandler(context, typeParam, f)
 		}
-		parent.Handle(that.method, that.relativePath, handleFunc)
+		parent.Handle(that.method, that.relativePath, proxyHandleFunc)
+	}
+}
+
+func invokeRealHandler(context *gin.Context, tParam reflect.Type, vRealHandlerFunc reflect.Value) {
+	param := reflect.New(tParam).Interface().(validate.ValidationAction)
+	if param.Validate(context, param) {
+		vRealHandlerFunc.Call(valOf(context, reflect.ValueOf(param).Interface()))
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 // 路由注册
-func RegisterApiRoutes(router *gin.Engine) {
+func RegisterApiRoutes(engine *gin.Engine) {
 
 	authController := new(Admin.AuthController)
 	toolController := new(Admin.ToolController)
@@ -47,7 +47,7 @@ func RegisterApiRoutes(router *gin.Engine) {
 			),
 			get("/qiniu", toolController.Qiniu),
 		)
-	setupRoutes(rt, router)
+	rt.setup(engine)
 }
 
 // 路由注册
