@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"gocms/pkg/auth"
+	"gocms/wrap"
 )
 
 type IndexController struct{}
@@ -11,7 +11,7 @@ var (
 	jwtAction = auth.JwtAction{}
 )
 
-func (*IndexController) Index(c *gin.Context) {
+func (*IndexController) Index(c *wrap.ContextWrapper) {
 	//token := jwtAction.GetToken(users.AuthUser{
 	//	Id:   10,
 	//	Name: "chenf",

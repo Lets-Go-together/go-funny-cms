@@ -22,7 +22,7 @@ type Admin struct {
 
 // 验证管理员创建参数
 func VidateCreateOrUpdateAdmin(c *wrap.ContextWrapper, adminParams *admin.Admin) bool {
-	err := c.ShouldBindJSON(&adminParams)
+	err := c.BindJSON(&adminParams)
 
 	logger.Info("admin", adminParams)
 

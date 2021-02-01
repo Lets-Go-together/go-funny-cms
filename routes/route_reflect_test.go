@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gocms/app/http/admin/validates"
 	"gocms/pkg/config"
+	"gocms/wrap"
 	"net/http"
 	"testing"
 )
@@ -23,7 +24,7 @@ func BenchmarkNormalHandleFunc(b *testing.B) {
 	router.POST("api/register", func(ctx *gin.Context) {
 		p := validates.RegisterParams{}
 		validator := validates.RegisterAction{}
-		if !validator.Validate(ctx, &p) {
+		if !validator.Validate(wrap.Context(ctx), &p) {
 			return
 		}
 		if len(p.Account) == 0 {

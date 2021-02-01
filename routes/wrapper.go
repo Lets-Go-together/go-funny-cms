@@ -67,9 +67,7 @@ func (that *route) setup(parent gin.IRouter) {
 			panic("type assertion fail, " + where)
 		}
 		parent.Handle(that.method, that.relativePath, func(context *gin.Context) {
-			realHandleFunc(&wrap.ContextWrapper{
-				Context: context,
-			})
+			realHandleFunc(wrap.Context(context))
 		})
 
 	} else if argNum == 2 {
@@ -85,10 +83,8 @@ func (that *route) setup(parent gin.IRouter) {
 		f := reflect.ValueOf(that.handlerFunc)
 
 		proxyHandleFunc := func(context *gin.Context) {
-			wrapCtx := wrap.ContextWrapper{
-				Context: context,
-			}
-			invokeRealHandler(&wrapCtx, typeParam, f)
+			wrapCtx := wrap.Context(context)
+			invokeRealHandler(wrapCtx, typeParam, f)
 		}
 		parent.Handle(that.method, that.relativePath, proxyHandleFunc)
 	}
@@ -132,7 +128,7 @@ func get(relativePath string, handlerFunc interface{}) *route {
 	return handle(http.MethodGet, relativePath, handlerFunc)
 }
 
-func delete(relativePath string, handlerFunc interface{}) *route {
+func delete_(relativePath string, handlerFunc interface{}) *route {
 	return handle(http.MethodDelete, relativePath, handlerFunc)
 }
 

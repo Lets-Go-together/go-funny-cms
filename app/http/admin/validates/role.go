@@ -13,7 +13,7 @@ import (
 
 // 验证管理员创建参数
 func VidateCreateOrUpdateRole(c *wrap.ContextWrapper, modelParams *role.RoleModel) bool {
-	err := c.ShouldBindJSON(&modelParams)
+	err := c.BindJSON(&modelParams)
 	db := config.Db
 	isExist := 0
 

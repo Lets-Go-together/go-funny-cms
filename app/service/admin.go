@@ -28,7 +28,7 @@ func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *ba
 	admins := []listStruct{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
-	account, _ := c.GetQuery("account")
+	account := c.Query("account")
 
 	query := config.Db.Model(&admin.Admin{}).Select("id, account, description, email, avatar, phone, updated_at")
 	if len(account) > 0 {

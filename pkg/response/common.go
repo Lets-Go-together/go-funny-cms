@@ -45,7 +45,7 @@ func ErrorResponse(status int, message string) *JsonResponse {
 
 // 将 json 设为响应体.
 // HTTP 状态码由应用状态码决定
-func (that *JsonResponse) WriteTo(ctx wrap.JSONWriter) {
+func (that *JsonResponse) WriteTo(ctx wrap.Writer) {
 	code := 200
 	if that.Status != StatusSuccess {
 		code = that.responseCode()

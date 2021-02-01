@@ -13,7 +13,7 @@ import (
 
 // 验证管理员创建参数
 func VidateCreateOrUpdatePermission(c *wrap.ContextWrapper, modelParams *permission.Permission) bool {
-	err := c.ShouldBindJSON(&modelParams)
+	err := c.BindJSON(&modelParams)
 	db := config.Db
 	isExist := 0
 
