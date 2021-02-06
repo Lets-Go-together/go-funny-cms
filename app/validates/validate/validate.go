@@ -7,13 +7,12 @@ import (
 )
 
 // 表示一个可验证对象, 实现该接口可以用于从 ctx 中取出接口参数, 并且在成功的情况自动写入到 params.
-type ValidationAction interface {
+type Validatable interface {
 	// 验证接口参数, 在错误情况应在该方法中处理错误
 	//
 	// @param	ctx 	包含需要验证参数请求上下文
-	// @param	params	用于该请求中的参数
 	// @return	是否验证成功
-	Validate(ctx *wrap.ContextWrapper, params interface{}) bool
+	Validate(ctx *wrap.ContextWrapper) bool
 }
 
 // 验证器

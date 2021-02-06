@@ -5,6 +5,11 @@ import (
 	"net/http"
 )
 
+/**
+把 Context 的方法按用途抽象成若干接口, 在具体使用其中部分方法的时候应按接口引用代替使用 Context 引用.
+用接口分离抽象了具体的功能, 隔离了不必要的功能. 例如在只需要读取的地方只传入 Reader 作为参数更加明显的说明了这个方法只需要进行读取操作.
+*/
+
 type JSONWriter interface {
 	JSON(code int, data interface{})
 }
@@ -30,6 +35,7 @@ type Reader interface {
 
 type HandlerFunc func(wrapper *ContextWrapper)
 
+// 包装一下 gin.Context, 方便控制接口的暴露和实现, 以及后期拓展一些功能.
 type ContextWrapper struct {
 	//*gin.Context
 

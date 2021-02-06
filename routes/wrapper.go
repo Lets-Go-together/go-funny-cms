@@ -76,23 +76,24 @@ func (that *route) setup(parent gin.IRouter) {
 		if typeParam.Kind() != reflect.Struct {
 			panic("type assertion fail" + where)
 		}
-		_, ok := reflect.New(typeParam).Interface().(validate.ValidationAction)
+		_, ok := reflect.New(typeParam).Interface().(validate.Validatable)
 		if !ok {
 			panic("type assertion fail" + where)
 		}
-		f := reflect.ValueOf(that.handlerFunc)
+		valueFunc := reflect.ValueOf(that.handlerFunc)
 
 		proxyHandleFunc := func(context *gin.Context) {
 			wrapCtx := wrap.Context(context)
-			invokeRealHandler(wrapCtx, typeParam, f)
+			// 调用真实的 Router HandlerFunc
+			invokeRealHandler(wrapCtx, typeParam, valueFunc)
 		}
 		parent.Handle(that.method, that.relativePath, proxyHandleFunc)
 	}
 }
 
 func invokeRealHandler(context *wrap.ContextWrapper, tParam reflect.Type, vRealHandlerFunc reflect.Value) {
-	param := reflect.New(tParam).Interface().(validate.ValidationAction)
-	if param.Validate(context, param) {
+	param := reflect.New(tParam).Interface().(validate.Validatable)
+	if param.Validate(context) {
 		vRealHandlerFunc.Call(valOf(context, reflect.ValueOf(param).Interface()))
 	}
 }

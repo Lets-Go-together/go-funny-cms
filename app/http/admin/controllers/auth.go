@@ -72,7 +72,7 @@ func (*AuthController) Register2(c *wrap.ContextWrapper, params *validates.Regis
 func (*AuthController) Register(c *wrap.ContextWrapper) {
 	action := validates.RegisterAction{}
 	var params validates.RegisterParams
-	if !action.Validate(c, &params) {
+	if !action.Validate(c) {
 		return
 	}
 
