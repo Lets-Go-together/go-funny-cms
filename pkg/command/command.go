@@ -52,8 +52,9 @@ func InitApp() *cli.App {
 				},
 			},
 			{
-				Name:  "generate-permission",
-				Usage: "初始化权限节点",
+				Name:    "generate-permission",
+				Usage:   "初始化权限节点",
+				Aliases: []string{"gp"},
 				Action: func(c *cli.Context) error {
 					bootstrap.Run(true)
 					//service.GeneratePermissionNodes()
