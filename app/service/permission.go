@@ -9,14 +9,29 @@ import (
 
 type PermissionService struct{}
 type PermissionList struct {
-	Id        string      `json:"id"`
-	Name      string      `json:"name"`
-	Icon      string      `json:"icon"`
-	Url       string      `json:"url"`
-	Status    int         `json:"status"`
-	Method    string      `json:"method"`
-	Pid       int         `json:"pid"`
-	CreatedAt base.TimeAt `json:"created_at"`
+	Id        int              `json:"id"`
+	Name      string           `json:"name"`
+	Icon      string           `json:"icon"`
+	Url       string           `json:"url"`
+	Status    int              `json:"status"`
+	Method    string           `json:"method"`
+	PId       int              `json:"p_id"`
+	CreatedAt base.TimeAt      `json:"created_at"`
+	Children  []PermissionList `json:"children"`
+}
+
+// https://binglangnet.com/vue/#/article-details/18?ii=3
+// https://www.kancloud.cn/hyckrrwzsn/go/512829
+func getPermisstionTree(permissions []PermissionList, pid int) []PermissionList {
+	var list []PermissionList
+	for _, v := range permissions {
+		if v.Id == pid {
+			v.Children = getPermisstionTree(permissions, v.Id)
+		}
+		list = append(list, v)
+	}
+
+	return list
 }
 
 func (*PermissionService) GetList(page int, pageSize int) *base.Result {
@@ -27,6 +42,7 @@ func (*PermissionService) GetList(page int, pageSize int) *base.Result {
 	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Limit(pageSize).Offset(offset).Scan(&permissions)
 	config.Db.Model(&permission.Permission{}).Count(&total)
 
+	permissions = getPermisstionTree(permissions, 0)
 	data := base.Result{
 		Page:     page,
 		PageSize: pageSize,
@@ -44,4 +60,12 @@ func (*PermissionService) UpdateOrCreate(permissionModel permission.Permission) 
 	}
 
 	return config.Db.Model(permissionModel).Create(permissionModel).RowsAffected > 0
+}
+
+// 获取权限节点树
+func (*PermissionService) GetPermisstionTree() []PermissionList {
+	var permissions []PermissionList
+	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Scan(&permissions)
+
+	return getPermisstionTree(permissions, 0)
 }

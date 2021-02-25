@@ -5,6 +5,7 @@ import (
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
 	"gocms/pkg/auth"
+	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
 	"gocms/pkg/pools"
@@ -57,7 +58,7 @@ func InitApp() *cli.App {
 				Aliases: []string{"gp"},
 				Action: func(c *cli.Context) error {
 					bootstrap.Run(true)
-					//service.GeneratePermissionNodes()
+					rabc.GeneratePermissionNodes()
 					return nil
 				},
 			},

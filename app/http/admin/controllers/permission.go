@@ -96,3 +96,10 @@ func (that *PermissionController) Show(c *wrap.ContextWrapper) {
 	response.SuccessResponse(result).WriteTo(c)
 	return
 }
+
+// 获取权限节点树
+func (that *PermissionController) Tree(c *wrap.ContextWrapper) {
+	permissionsTree := permissionService.GetPermisstionTree()
+
+	response.SuccessResponse(permissionsTree).WriteTo(c)
+}

@@ -19,6 +19,7 @@ type route struct {
 	method       string
 	relativePath string
 	handlerFunc  interface{}
+	Condition    string
 }
 
 type routeGroup struct {

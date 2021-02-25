@@ -6,6 +6,7 @@ import (
 	//"crypto/rand"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/spf13/cast"
 	"os"
 	"time"
 )
@@ -54,4 +55,24 @@ func GetDefaultParam(params ...interface{}) interface{} {
 		return params[0]
 	}
 	return nil
+}
+
+// 递归
+func TreeRecursion(data []interface{}, pid ...int) []interface{} {
+	p_id := 0
+	if len(pid) > 0 {
+		p_id = pid[0]
+	}
+
+	var tree []interface{}
+	for _, item := range data {
+		column := item.(map[string]interface{})
+		currentPid := cast.ToInt(column["pid"])
+		if cast.ToInt(column["pid"]) == p_id {
+			column["children"] = TreeRecursion(data, currentPid)
+			tree = append(tree, column)
+		}
+	}
+
+	return tree
 }
