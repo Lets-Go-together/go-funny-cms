@@ -35,7 +35,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 					get("", permissionController.Index),
 					get("/:id", permissionController.Show),
 					post("", permissionController.Store),
-					put("/:id", permissionController.Save),
+					put("", permissionController.Save),
 					delete_("/:id", permissionController.Destory),
 				),
 				group("role",
