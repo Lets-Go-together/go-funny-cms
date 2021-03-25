@@ -3,6 +3,7 @@ module gocms
 go 1.15
 
 require (
+	github.com/bluele/gcache v0.0.2 // indirect
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/casbin/gorm-adapter/v3 v3.0.4
 	github.com/cheggaaa/pb/v3 v3.0.5

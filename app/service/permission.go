@@ -14,6 +14,7 @@ type PermissionList struct {
 	Icon      string           `json:"icon"`
 	Url       string           `json:"url"`
 	Status    int              `json:"status"`
+	Hidden    int              `json:"hidden"`
 	Method    string           `json:"method"`
 	PId       int              `json:"p_id"`
 	CreatedAt base.TimeAt      `json:"created_at"`
