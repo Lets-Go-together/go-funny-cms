@@ -41,7 +41,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 				),
 				group("role",
 					get("", roleController.Index),
-					get("/:id", roleController.Show),
+					get("/show", roleController.Show),
 					post("", roleController.Store),
 					put("/:id", roleController.Save),
 					delete_("/:id", roleController.Destory),

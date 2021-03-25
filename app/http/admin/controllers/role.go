@@ -40,9 +40,13 @@ func (that *RoleController) Store(c *wrap.ContextWrapper) {
 // 角色详情
 func (that *RoleController) Show(c *wrap.ContextWrapper) {
 	id := c.Param("id")
-	result := role.RoleModel{}
+	result := struct {
+		role.RoleModel
+		AllPermissions []service.PermissionList `json:"all_permissions"`
+	}{}
 	config.Db.Model(role.RoleModel{}).Where("id = ?", id).First(&result)
 	result.Permissions = rabc.GetPermissionsForRole(result.Name)
+	result.AllPermissions = permissionService.GetPermisstionTree()
 
 	response.SuccessResponse(result).WriteTo(c)
 	return

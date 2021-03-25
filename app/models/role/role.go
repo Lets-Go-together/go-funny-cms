@@ -9,7 +9,7 @@ type RoleModel struct {
 	Name            string              `validate:"required" json:"name"`
 	Description     string              `validate:"required" json:"description"`
 	Permissions     []map[string]string `json:"permissions" gorm:"-"`
-	Permissions_ids []int               `json:"-" gorm:"-"`
+	Permissions_ids []int               `json:"permission_ids" gorm:"-"`
 }
 
 func (RoleModel) TableName() string {
