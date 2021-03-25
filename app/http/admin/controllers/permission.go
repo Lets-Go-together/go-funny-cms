@@ -20,7 +20,7 @@ var permissionService = &service.PermissionService{}
 func (that *PermissionController) Index(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
-	list := permissionService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
+	list := permissionService.GetList(cast.ToInt(page), cast.ToInt(pageSize), c)
 
 	response.SuccessResponse(list).WriteTo(c)
 	return
@@ -99,7 +99,21 @@ func (that *PermissionController) Show(c *wrap.ContextWrapper) {
 
 // 获取权限节点树
 func (that *PermissionController) Tree(c *wrap.ContextWrapper) {
+	list := []service.PermissionList{
+		{
+			Id:       1,
+			Name:     "根节点",
+			Icon:     "link",
+			Url:      "",
+			Status:   1,
+			Hidden:   2,
+			Method:   "any",
+			PId:      0,
+			Children: nil,
+		},
+	}
 	permissionsTree := permissionService.GetPermisstionTree()
+	permissionsTree = append(list, permissionsTree...)
 
 	response.SuccessResponse(permissionsTree).WriteTo(c)
 }

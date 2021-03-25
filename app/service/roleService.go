@@ -21,6 +21,8 @@ type RoleList struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Status      int    `json:"status"`
+	CreatedAt   string `json:"created_at"`
 }
 
 // 添加更新角色
@@ -49,13 +51,19 @@ func (*RoleService) UpdateOrCreateById(roleModel role.RoleModel, c *wrap.Context
 	return true
 }
 
-func (*RoleService) GetList(page int, pageSize int) *base.Result {
+func (*RoleService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *base.Result {
 	roles := []RoleList{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
+	name := c.Query("name")
 
-	config.Db.Model(&role.RoleModel{}).Select("id, name, description, created_at").Limit(pageSize).Offset(offset).Scan(&roles)
-	config.Db.Model(&role.RoleModel{}).Count(&total)
+	query := config.Db.Model(&role.RoleModel{}).Select("id, name, description, status, created_at")
+	if len(name) > 0 {
+		query = query.Where("name like ?", "%"+name+"%")
+	}
+
+	query.Limit(pageSize).Offset(offset).Scan(&roles)
+	query.Count(&total)
 
 	data := base.Result{
 		Page:     page,

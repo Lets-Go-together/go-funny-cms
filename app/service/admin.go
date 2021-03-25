@@ -36,7 +36,7 @@ func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *ba
 	}
 
 	query.Limit(pageSize).Offset(offset).Scan(&admins)
-	config.Db.Model(&admin.Admin{}).Count(&total)
+	query.Count(&total)
 
 	data := base.Result{
 		Page:     page,

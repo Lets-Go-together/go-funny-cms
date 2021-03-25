@@ -19,7 +19,7 @@ var rolenService = &service.RoleService{}
 func (that *RoleController) Index(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
-	list := rolenService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
+	list := rolenService.GetList(cast.ToInt(page), cast.ToInt(pageSize), c)
 
 	response.SuccessResponse(list).WriteTo(c)
 	return
