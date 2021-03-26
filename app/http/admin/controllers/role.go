@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/role"
@@ -49,8 +48,6 @@ func (that *RoleController) Show(c *wrap.ContextWrapper) {
 	result.Permissions = rabc.GetPermissionsForRole(result.Name)
 	result.AllPermissions = permissionService.GetPermisstionTree()
 	result.Permissions_ids = rolenService.GetPermissionIdsByTree(result.Permissions, result.AllPermissions)
-
-	fmt.Println(result.Permissions_ids)
 
 	response.SuccessResponse(result).WriteTo(c)
 	return

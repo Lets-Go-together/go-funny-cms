@@ -29,15 +29,15 @@ func VidateCreateOrUpdateRole(c *wrap.ContextWrapper, modelParams *role.RoleMode
 
 	if modelParams.ID > 0 {
 		// 检查是否唯一
-		db.Model(modelParams).Where("name = ? and id <> ?", modelParams.Name, modelParams.ID).Count(&isExist)
+		db.Model(role.RoleModel{}).Where("name = ? and id <> ?", modelParams.Name, modelParams.ID).Count(&isExist)
 		if cast.ToBool(isExist) {
-			response.ErrorResponse(http.StatusForbidden, "角色已存在").WriteTo(c)
+			response.ErrorResponse(http.StatusForbidden, "角色名称已存在").WriteTo(c)
 			return false
 		}
 	} else {
-		db.Model(modelParams).Where("name = ?", modelParams.Name).Count(&isExist)
+		db.Model(role.RoleModel{}).Where("name = ?", modelParams.Name).Count(&isExist)
 		if cast.ToBool(isExist) {
-			response.ErrorResponse(http.StatusForbidden, "角色已存在").WriteTo(c)
+			response.ErrorResponse(http.StatusForbidden, "角色名称已存在").WriteTo(c)
 			return false
 		}
 	}
