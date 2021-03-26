@@ -43,7 +43,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 					get("", roleController.Index),
 					get("/show", roleController.Show),
 					post("", roleController.Store),
-					put("/:id", roleController.Save),
+					put("/", roleController.Save),
 					delete_("/:id", roleController.Destory),
 				),
 			),

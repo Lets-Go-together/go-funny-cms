@@ -11,6 +11,7 @@ import (
 	"gocms/pkg/response"
 	"gocms/wrap"
 	"net/http"
+	"sync"
 )
 
 type RoleService struct{}
@@ -55,11 +56,11 @@ func (*RoleService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *bas
 	roles := []RoleList{}
 	offset := help.GetOffset(page, pageSize)
 	total := 0
-	name := c.Query("name")
+	keyword := c.Query("keyword")
 
 	query := config.Db.Model(&role.RoleModel{}).Select("id, name, description, status, created_at")
-	if len(name) > 0 {
-		query = query.Where("name like ?", "%"+name+"%")
+	if len(keyword) > 0 {
+		query = query.Where("name like ?", "%"+keyword+"%")
 	}
 
 	query.Limit(pageSize).Offset(offset).Scan(&roles)
@@ -112,4 +113,28 @@ func GetRolesName(ids []int) []string {
 		names = append(names, roleInfo.Name)
 	}
 	return names
+}
+
+// 根据所有权限和当前权限 获取权限节点ID
+func (*RoleService) GetPermissionIdsByTree(currentPs []map[string]string, allPermissions []PermissionList) []int {
+	var permission_ids []int
+	var wg sync.WaitGroup
+
+	for _, p := range allPermissions {
+		for _, c := range currentPs {
+			wg.Add(1)
+
+			go func(p PermissionList, c map[string]string) {
+				defer wg.Done()
+
+				if p.Method == c["method"] && p.Url == c["permission"] {
+					permission_ids = append(permission_ids, p.Id)
+				}
+			}(p, c)
+		}
+	}
+
+	wg.Wait()
+
+	return permission_ids
 }

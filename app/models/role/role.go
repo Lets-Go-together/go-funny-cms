@@ -6,8 +6,9 @@ import (
 
 type RoleModel struct {
 	base.BaseModel
-	Name            string              `validate:"required" json:"name"`
-	Description     string              `validate:"required" json:"description"`
+	Name            string              `json:"name"`
+	Status          int                 `json:"status"`
+	Description     string              `json:"description"`
 	Permissions     []map[string]string `json:"permissions" gorm:"-"`
 	Permissions_ids []int               `json:"permission_ids" gorm:"-"`
 }

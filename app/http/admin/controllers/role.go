@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/role"
@@ -39,7 +40,7 @@ func (that *RoleController) Store(c *wrap.ContextWrapper) {
 
 // 角色详情
 func (that *RoleController) Show(c *wrap.ContextWrapper) {
-	id := c.Param("id")
+	id := c.Query("id")
 	result := struct {
 		role.RoleModel
 		AllPermissions []service.PermissionList `json:"all_permissions"`
@@ -47,6 +48,9 @@ func (that *RoleController) Show(c *wrap.ContextWrapper) {
 	config.Db.Model(role.RoleModel{}).Where("id = ?", id).First(&result)
 	result.Permissions = rabc.GetPermissionsForRole(result.Name)
 	result.AllPermissions = permissionService.GetPermisstionTree()
+	result.Permissions_ids = rolenService.GetPermissionIdsByTree(result.Permissions, result.AllPermissions)
+
+	fmt.Println(result.Permissions_ids)
 
 	response.SuccessResponse(result).WriteTo(c)
 	return
@@ -55,7 +59,6 @@ func (that *RoleController) Show(c *wrap.ContextWrapper) {
 // 数据更新
 func (that *RoleController) Save(c *wrap.ContextWrapper) {
 	var roleModel role.RoleModel
-	roleModel.ID = cast.ToUint64(c.Param("id"))
 	if !validates.VidateCreateOrUpdateRole(c, &roleModel) {
 		return
 	}
