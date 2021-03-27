@@ -25,6 +25,8 @@ type AuthAdmin struct {
 	Description string              `json:"description,omitempty"`
 	Email       string              `json:"email"`
 	Phone       string              `json:"phone"`
+	Role_ids    []int               `json:"role_ids,omitempty" gorm:"-"`
+	Avatar      string              `json:"avatar"`
 	Roles       []string            `json:"roles"`
 	Permissions []map[string]string `json:"permissions"`
 }
@@ -42,6 +44,8 @@ func GetAuthAdmin(adminModel Admin) *AuthAdmin {
 		Account:     adminModel.Account,
 		Description: adminModel.Description,
 		Email:       adminModel.Email,
+		Roles:       adminModel.Roles,
+		Avatar:      adminModel.Avatar,
 		Phone:       adminModel.Phone,
 	}
 	return r
