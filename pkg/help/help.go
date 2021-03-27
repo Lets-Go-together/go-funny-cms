@@ -6,8 +6,8 @@ import (
 	//"crypto/rand"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/spf13/cast"
 	"os"
+	"reflect"
 	"time"
 )
 
@@ -49,30 +49,31 @@ func getCurrentTimestamp() string {
 	return time.Now().Format("2006-01-02")
 }
 
+func StructMap(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < t.NumField(); i++ {
+		data[t.Field(i).Name] = v.Field(i).Interface()
+	}
+	return data
+}
+
+func StructsMap(obj interface{}) []map[string]interface{} {
+	var data []map[string]interface{}
+	n := obj.([]interface{})
+
+	for _, item := range n {
+		data = append(data, StructMap(item))
+	}
+	return data
+}
+
 // 获取默认参数值
 func GetDefaultParam(params ...interface{}) interface{} {
 	if len(params) > 0 {
 		return params[0]
 	}
 	return nil
-}
-
-// 递归
-func TreeRecursion(data []interface{}, pid ...int) []interface{} {
-	p_id := 0
-	if len(pid) > 0 {
-		p_id = pid[0]
-	}
-
-	var tree []interface{}
-	for _, item := range data {
-		column := item.(map[string]interface{})
-		currentPid := cast.ToInt(column["pid"])
-		if cast.ToInt(column["pid"]) == p_id {
-			column["children"] = TreeRecursion(data, currentPid)
-			tree = append(tree, column)
-		}
-	}
-
-	return tree
 }
