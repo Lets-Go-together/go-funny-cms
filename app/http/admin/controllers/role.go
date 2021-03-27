@@ -47,7 +47,7 @@ func (that *RoleController) Show(c *wrap.ContextWrapper) {
 	config.Db.Model(role.RoleModel{}).Where("id = ?", id).First(&result)
 	result.Permissions = rabc.GetPermissionsForRole(result.Name)
 	result.AllPermissions = permissionService.GetPermisstionTree()
-	result.Permissions_ids = rolenService.GetPermissionIdsByTree(result.Permissions, result.AllPermissions)
+	result.Permissions_ids = rolenService.GetPermissionIdsByTree(result.Permissions)
 
 	response.SuccessResponse(result).WriteTo(c)
 	return
@@ -69,11 +69,12 @@ func (that *RoleController) Save(c *wrap.ContextWrapper) {
 
 // 数据删除
 func (that *RoleController) Destory(c *wrap.ContextWrapper) {
-	id := c.Param("id")
-	var roleModel role.RoleModel
+	var param IdParam
+	c.BindJSON(&param)
 
-	config.Db.Model(roleModel).Delete(role.RoleModel{}, "id = "+id)
-	config.Db.Model(roleModel).Where("id = ?", id).First(&roleModel)
+	var roleModel role.RoleModel
+	config.Db.Model(roleModel).Delete(role.RoleModel{}, "id = "+cast.ToString(param.Id))
+	config.Db.Model(roleModel).Where("id = ?", cast.ToString(param.Id)).First(&roleModel)
 	rabc.DeletePermissionsForUser(roleModel.Name)
 	rabc.DeleteRoleForUsers(roleModel.Name)
 

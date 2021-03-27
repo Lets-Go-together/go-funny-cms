@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"gocms/app/models/base"
 	"gocms/app/models/permission"
 	"gocms/pkg/config"
@@ -47,7 +46,8 @@ func (*PermissionService) GetList(page int, pageSize int, c *wrap.ContextWrapper
 	query := config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at")
 
 	if len(keyword) > 0 {
-		query = query.Where("name|url like ?", fmt.Sprintf("%%s%", keyword))
+		keyword = "%" + keyword + "%"
+		query = query.Where("name like ?", keyword).Or("url like ?", keyword)
 	}
 
 	query.Limit(pageSize).Offset(offset).Scan(&permissions)
@@ -76,7 +76,7 @@ func (*PermissionService) UpdateOrCreate(permissionModel permission.Permission) 
 func (*PermissionService) GetPermisstionTree() []PermissionList {
 	var permissions []PermissionList
 	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Scan(&permissions)
-	permissions = getPermisstionTree(permissions, 1)
+	permissions = getPermisstionTree(permissions, 0)
 
 	return permissions
 }

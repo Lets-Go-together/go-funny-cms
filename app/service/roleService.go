@@ -116,11 +116,13 @@ func GetRolesName(ids []int) []string {
 }
 
 // 根据所有权限和当前权限 获取权限节点ID
-func (*RoleService) GetPermissionIdsByTree(currentPs []map[string]string, allPermissions []PermissionList) []int {
+func (*RoleService) GetPermissionIdsByTree(currentPs []map[string]string) []int {
 	var permission_ids []int
-	var wg sync.WaitGroup
+	var permissions []PermissionList
+	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Scan(&permissions)
 
-	for _, p := range allPermissions {
+	var wg sync.WaitGroup
+	for _, p := range permissions {
 		for _, c := range currentPs {
 			wg.Add(1)
 

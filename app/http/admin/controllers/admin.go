@@ -52,8 +52,10 @@ func (*AdminController) Save(c *wrap.ContextWrapper) {
 
 // 数据删除
 func (that *AdminController) Destory(c *wrap.ContextWrapper) {
-	id := c.Param("id")
-	config.Db.Delete(adminModel.Admin{}, "id = "+id)
+	var param IdParam
+	c.BindJSON(&param)
+
+	config.Db.Delete(adminModel.Admin{}, "id = "+cast.ToString(param.Id))
 
 	response.SuccessResponse().WriteTo(c)
 	return
