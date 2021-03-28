@@ -2,7 +2,6 @@ package rabc
 
 import (
 	"github.com/cheggaaa/pb/v3"
-	"github.com/spf13/cast"
 	"gocms/app/models/permission"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
@@ -18,15 +17,15 @@ func GeneratePermissionNodes() {
 	count := len(routers)
 	bar := pb.StartNew(count)
 
-	rootNode := &permission.Permission{
-		Name:   "根节点",
-		Icon:   "link",
-		Url:    "",
-		Status: 1,
-		Method: "any",
-		PId:    0,
-	}
-	db.Model(&permission.Permission{}).Omit("pid", "status", "icon", "hidden").Create(&rootNode)
+	//rootNode := &permission.Permission{
+	//	Name:   "根节点",
+	//	Icon:   "link",
+	//	Url:    "",
+	//	Status: 1,
+	//	Method: "any",
+	//	PId:    0,
+	//}
+	//db.Model(&permission.Permission{}).Omit("pid", "status", "icon", "hidden").Create(&rootNode)
 
 	for _, router := range routers {
 		permissionModel := &permission.Permission{}
@@ -43,7 +42,7 @@ func GeneratePermissionNodes() {
 
 		db.Where(routerCopy).Select("id").First(permissionModel)
 
-		routerCopy.PId = cast.ToInt(rootNode.ID)
+		//routerCopy.PId = cast.ToInt(rootNode.ID)
 		if permissionModel.ID == 0 {
 			routerCopy.Name = router["name"]
 			db.Model(&permission.Permission{}).Omit("pid", "status", "icon", "hidden").Create(routerCopy)
