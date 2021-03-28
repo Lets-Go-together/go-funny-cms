@@ -11,6 +11,8 @@ type MenuModel struct {
 	Weight      int    `json:"weight"`
 	Component   string `json:"component"`
 	Status      int    `validate:"required" json:"status"`
+	Hidden      int    `json:"hidden"`
+	Url         string `json:"url"`
 	Icon        string `validate:"required" json:"icon"`
 	Description string `validate:"required" json:"description"`
 	Children    string `json:"children" gorm:"-"`
@@ -20,6 +22,8 @@ type MenuRouter struct {
 	Id        int          `json:"id"`
 	PId       int          `json:"p_id"`
 	Name      string       `json:"name"`
+	Url       string       `json:"url"`
+	Hidden    int          `json:"hidden"`
 	Component string       `json:"component"`
 	Children  []MenuRouter `json:"children" gorm:"-"`
 }

@@ -69,19 +69,32 @@ func GetRoles(account string) []string {
 }
 
 // GetMenus 通过用户账号获取菜单
-func GetMenus(roles []string) []menu.MenuRouter {
+func GetMenus(roles []string, currentAccount string) []menu.MenuRouter {
 	var RoleList []role.RoleModel
 	var MenuList []menu.MenuRouter
 	var menu_ids []int
-	config.Db.Model(role.RoleModel{}).Where("name in (?)", roles).Select("id, menu_ids").Scan(&RoleList)
 
+	if currentAccount == config.Get("ACCOUNT") {
+		config.Db.Model(menu.MenuModel{}).Order("weight desc").Scan(&MenuList)
+
+		MenuList = GetMenuTreeRouter(MenuList, 1)
+		return MenuList
+	}
+
+	config.Db.Model(role.RoleModel{}).Where("name in (?)", roles).Select("id, menu_ids").Scan(&RoleList)
 	for _, role := range RoleList {
 		menu_ids = append(menu_ids, role.MenuIds...)
 	}
 
-	config.Db.Model(menu.MenuModel{}).Where("id in (?)", menu_ids).Scan(&MenuList)
-	MenuList = GetMenuTreeRouter(MenuList, 1)
+	config.Db.Model(menu.MenuModel{}).Where("id in (?)", menu_ids).Select("id, p_id").Scan(&MenuList)
+	for _, item := range MenuList {
+		if item.PId > 1 {
+			menu_ids = append(menu_ids, item.PId)
+		}
+	}
+	config.Db.Model(menu.MenuModel{}).Where("id in (?)", menu_ids).Order("weight desc").Scan(&MenuList)
 
+	MenuList = GetMenuTreeRouter(MenuList, 1)
 	return MenuList
 }
 

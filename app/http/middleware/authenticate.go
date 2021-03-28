@@ -28,7 +28,7 @@ func Authenticate(c *gin.Context) {
 	}
 
 	adminUser.Roles = admin.GetRoles(adminUser.Account)
-	adminUser.Menus = admin.GetMenus(adminUser.Roles)
+	adminUser.Menus = admin.GetMenus(adminUser.Roles, adminUser.Account)
 	adminUser.Permissions = admin.GetPermissions(adminUser.Account)
 
 	fmt.Println(adminUser)

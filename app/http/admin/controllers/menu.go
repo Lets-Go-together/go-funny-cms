@@ -16,6 +16,8 @@ type MenuList struct {
 	PId         int        `json:"p_id"`
 	Weight      int        `json:"weight"`
 	Status      int        `json:"status"`
+	Hidden      int        `json:"hidden"`
+	Url         string     `json:"url"`
 	Icon        string     `json:"icon"`
 	Component   string     `json:"component"`
 	Description string     `json:"description"`
@@ -33,7 +35,7 @@ func (*MenuController) Index(c *wrap.ContextWrapper) {
 	if len(keyword) > 0 {
 		query = query.Where("name like ?", "%"+keyword+"%")
 	}
-	query = query.Select("id, name, status, icon, weight, p_id, component, created_at, description").Order("weight desc").Scan(&Menus)
+	query = query.Select("id, name, status, icon, weight, url, hidden, p_id, component, created_at, description").Order("weight desc").Scan(&Menus)
 	Menus = GetMenuTree(Menus, 1)
 
 	response.SuccessResponse(Menus).WriteTo(c)
