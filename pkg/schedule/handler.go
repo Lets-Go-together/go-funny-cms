@@ -49,38 +49,11 @@ func InitSchedule() {
 
 func DispatchTestProcess() {
 	process := Process{
-		Name:    "每3分钟运行一次",
-		Content: "每3分钟运行一次",
-		Spec:    "*/3 * * * *",
+		Name:    "每一个小时运行一次",
+		Content: "每一个小时运行一次",
+		Spec:    "*/60 * * * *",
 		Status:  STATUS_STARTING,
 	}
-	Dispatch(process)
-
-	process = Process{
-		Name:    "每2分钟运行一次",
-		Content: "每2分钟运行一次",
-		Spec:    "*/2 * * * *",
-		Status:  STATUS_STARTING,
-	}
-
-	Dispatch(process)
-
-	process = Process{
-		Name:    "每4分钟运行一次",
-		Content: "每4分钟运行一次",
-		Spec:    "*/4 * * * *",
-		Status:  STATUS_STARTING,
-	}
-
-	Dispatch(process)
-
-	process = Process{
-		Name:    "每1分钟运行一次",
-		Content: "每1分钟运行一次",
-		Spec:    "* * * * *",
-		Status:  STATUS_STARTING,
-	}
-
 	Dispatch(process)
 }
 
@@ -106,7 +79,7 @@ func (that Schedule) GetJobs() []Process {
 // RunJobs 从 redis 执行当前已有的任务
 func (that Schedule) RunJobs() {
 	jobs := that.GetJobs()
-	timeAt := time.Now().String()
+	timeAt := time.Now().Format("2006-01-02 15:04:05")
 	for _, item := range jobs {
 		switch item.Status {
 		case STATUS_STOPPING:
@@ -114,6 +87,14 @@ func (that Schedule) RunJobs() {
 			item.Status = STATUS_STOPPED
 			item.StopAt = timeAt
 		case STATUS_RUNING:
+			// 如果检测到当前的entry ID 不存在时，我们对他进行重启
+			if entry := that.cron.Entry(item.EntryId); !entry.Valid() {
+				item.EntryId = that.StartJob(item)
+				item.Status = STATUS_RUNING
+				item.TimeAt = timeAt
+				logger.Info(item.Name, "重启中... | Time: "+timeAt)
+				continue
+			}
 			logger.Info(item.Name, "正常运行中... | Time: "+timeAt)
 		case STATUS_STARTING:
 			entry_id := that.StartJob(item)
@@ -144,7 +125,8 @@ func (that Schedule) StartJob(process Process) cron.EntryID {
 func (that Schedule) DingTalk() {
 	var dingToken = []string{"b960b8c2240b7d0f05b1ffbf26b4a7807efa2fb22603127dcbdc618ea48607ea"}
 	cli := dingtalk.InitDingTalk(dingToken, "任务")
-	cli.SendTextMessage(that.Content + " | TimeAt:" + time.Now().String())
+	fmt.Println(that.Content + " | TimeAt:" + time.Now().Format("2006-01-02 15:04:05"))
+	cli.SendTextMessage(that.Content + " | TimeAt:" + time.Now().Format("2006-01-02 15:04:05"))
 }
 
 // 分发任务
