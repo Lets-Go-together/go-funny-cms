@@ -3,6 +3,7 @@ module gocms
 go 1.15
 
 require (
+	github.com/blinkbean/dingtalk v0.0.0-20201231030509-45a553a84503
 	github.com/bluele/gcache v0.0.2 // indirect
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/casbin/gorm-adapter/v3 v3.0.4
@@ -30,6 +31,7 @@ require (
 	github.com/panjf2000/ants/v2 v2.4.3
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/qiniu/api.v7/v7 v7.7.0
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/pflag v1.0.5 // indirect

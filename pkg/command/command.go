@@ -9,6 +9,7 @@ import (
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
 	"gocms/pkg/pools"
+	"gocms/pkg/schedule"
 )
 
 func init() {
@@ -49,6 +50,24 @@ func InitApp() *cli.App {
 				Usage:   "初始化生成jwt密钥",
 				Action: func(c *cli.Context) error {
 					auth.GerateSign()
+					return nil
+				},
+			},
+			{
+				Name:    "schedule",
+				Aliases: []string{"sch"},
+				Usage:   "启动一个任务处理",
+				Action: func(c *cli.Context) error {
+					schedule.InitSchedule()
+					return nil
+				},
+			},
+			{
+				Name:    "schedule-exam",
+				Aliases: []string{"sch-exam"},
+				Usage:   "启动一个测试任务分发",
+				Action: func(c *cli.Context) error {
+					schedule.DispatchTestProcess()
 					return nil
 				},
 			},
