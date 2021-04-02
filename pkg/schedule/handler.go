@@ -47,17 +47,26 @@ func InitSchedule() {
 
 func DispatchTestProcess() {
 	process := Process{
-		Name:    "每五分钟运行一次",
-		Content: "每五分钟运行一次",
-		Spec:    "0 0/5 * * *",
+		Name:    "每3分钟运行一次",
+		Content: "每3分钟运行一次",
+		Spec:    "*/3 * * * *",
 		Status:  STATUS_STARTING,
 	}
 	Dispatch(process)
 
 	process = Process{
-		Name:    "每两分钟运行一次",
-		Content: "每两分钟运行一次",
-		Spec:    "0 0/2 * * *",
+		Name:    "每2分钟运行一次",
+		Content: "每2分钟运行一次",
+		Spec:    "*/2 * * * *",
+		Status:  STATUS_STARTING,
+	}
+
+	Dispatch(process)
+
+	process = Process{
+		Name:    "每4分钟运行一次",
+		Content: "每4分钟运行一次",
+		Spec:    "*/4 * * * *",
 		Status:  STATUS_STARTING,
 	}
 
