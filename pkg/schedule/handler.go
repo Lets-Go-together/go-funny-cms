@@ -42,6 +42,9 @@ func InitSchedule() {
 	schedule.cron = cron.New()
 	schedule.client = config.Redis
 
+	// 运行一下假数据
+	DispatchTestProcess()
+
 	schedule.RunJobs()
 	schedule.cron.AddFunc("* * * * *", schedule.ManangeJob)
 	schedule.cron.Run()
