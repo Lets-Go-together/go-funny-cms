@@ -2,7 +2,6 @@ package schedule
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/blinkbean/dingtalk"
 	"github.com/go-redis/redis"
 	"github.com/robfig/cron/v3"
@@ -128,14 +127,12 @@ func (that Schedule) StartJob(process Process) cron.EntryID {
 func (that Schedule) DingTalk() {
 	var dingToken = []string{"b960b8c2240b7d0f05b1ffbf26b4a7807efa2fb22603127dcbdc618ea48607ea"}
 	cli := dingtalk.InitDingTalk(dingToken, "任务")
-	fmt.Println(that.Content + " | TimeAt:" + time.Now().Format("2006-01-02 15:04:05"))
 	cli.SendTextMessage(that.Content + " | TimeAt:" + time.Now().Format("2006-01-02 15:04:05"))
 }
 
 // 分发任务
 func Dispatch(process Process) {
 	r, _ := json.Marshal(process)
-	fmt.Println(string(r))
 	if _, err := config.Redis.HSet(SCHEDULE_KEY, process.Name, string(r)).Result(); err != nil {
 		logger.Error("REDIS ERROR", err.Error())
 	}
