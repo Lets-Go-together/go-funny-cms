@@ -41,6 +41,8 @@ func InitSchedule() {
 	var schedule Schedule
 	schedule.cron = cron.New()
 	schedule.client = config.Redis
+
+	schedule.RunJobs()
 	schedule.cron.AddFunc("* * * * *", schedule.ManangeJob)
 	schedule.cron.Run()
 }
@@ -73,8 +75,8 @@ func DispatchTestProcess() {
 	Dispatch(process)
 
 	process = Process{
-		Name:    "每一分钟运行一次",
-		Content: "每一分钟运行一次",
+		Name:    "每1分钟运行一次",
+		Content: "每1分钟运行一次",
 		Spec:    "* * * * *",
 		Status:  STATUS_STARTING,
 	}
