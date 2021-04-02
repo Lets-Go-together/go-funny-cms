@@ -8,6 +8,7 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
+	"gocms/pkg/mail/mailer"
 	"gocms/pkg/pools"
 	"gocms/pkg/schedule"
 )
@@ -68,6 +69,17 @@ func InitApp() *cli.App {
 				Usage:   "启动一个测试任务分发",
 				Action: func(c *cli.Context) error {
 					schedule.DispatchTestProcess()
+					return nil
+				},
+			},
+			{
+				Name:  "email-test",
+				Usage: "测试邮件发送",
+				Action: func(c *cli.Context) error {
+					service := new(mailer.Mailer)
+					service.InitMailer()
+					service.SendTest("chenf@surest.cn")
+
 					return nil
 				},
 			},

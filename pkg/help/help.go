@@ -6,6 +6,9 @@ import (
 	//"crypto/rand"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/wumansgy/goEncrypt"
+	"gocms/pkg/config"
+	"gocms/pkg/logger"
 	"os"
 	"reflect"
 	"time"
@@ -76,4 +79,26 @@ func GetDefaultParam(params ...interface{}) interface{} {
 		return params[0]
 	}
 	return nil
+}
+
+func Enctrypt(text string) (string, error) {
+	sign := config.GetString("SIGN")
+	r, e := goEncrypt.DesCbcDecrypt([]byte(text), []byte(sign))
+	if e != nil {
+		logger.PanicError(e, "Enctrypt", false)
+		return "", e
+	}
+
+	return string(r), nil
+}
+
+func Dectrypt(text string) (string, error) {
+	sign := config.GetString("SIGN")
+	r, e := goEncrypt.DesCbcDecrypt([]byte(text), []byte(sign))
+	if e != nil {
+		logger.PanicError(e, "Enctrypt", false)
+		return "", e
+	}
+
+	return string(r), nil
 }
