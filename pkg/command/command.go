@@ -10,7 +10,7 @@ import (
 	"gocms/pkg/config"
 	"gocms/pkg/mail/mailer"
 	"gocms/pkg/pools"
-	"gocms/pkg/schedule"
+	"gocms/pkg/schedule/backup"
 )
 
 func init() {
@@ -59,7 +59,7 @@ func InitApp() *cli.App {
 				Aliases: []string{"sch"},
 				Usage:   "启动一个任务处理",
 				Action: func(c *cli.Context) error {
-					schedule.InitSchedule()
+					backup.InitSchedule()
 					return nil
 				},
 			},
@@ -68,7 +68,7 @@ func InitApp() *cli.App {
 				Aliases: []string{"sch-exam"},
 				Usage:   "启动一个测试任务分发",
 				Action: func(c *cli.Context) error {
-					schedule.DispatchTestProcess()
+					backup.DispatchTestProcess()
 					return nil
 				},
 			},
