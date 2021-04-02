@@ -144,7 +144,7 @@ func (that Schedule) StartJob(process Process) cron.EntryID {
 func (that Schedule) DingTalk() {
 	var dingToken = []string{"b960b8c2240b7d0f05b1ffbf26b4a7807efa2fb22603127dcbdc618ea48607ea"}
 	cli := dingtalk.InitDingTalk(dingToken, "任务")
-	cli.SendTextMessage(that.Content)
+	cli.SendTextMessage(that.Content + " | TimeAt:" + time.Now().String())
 }
 
 // 分发任务
