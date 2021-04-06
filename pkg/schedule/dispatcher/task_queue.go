@@ -1,4 +1,4 @@
-package task
+package dispatcher
 
 type BlockingQueue interface {
 	// 添加到尾部, 如果队列满则抛出错误
