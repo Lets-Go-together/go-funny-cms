@@ -1,12 +1,15 @@
 package mailer
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"github.com/CloudyKit/jet"
 	"github.com/jordan-wright/email"
-	"html/template"
+	"gocms/pkg/logger"
 	"net/smtp"
 	"os"
+	"path/filepath"
 )
 
 // 主要集中邮件发送类
@@ -54,20 +57,20 @@ func (that *Mailer) SendTest(to string) {
 	//r, e := ioutil.ReadFile("./resources/views/test.html")
 	//logger.PanicError(e, "file", true)
 	//fmt.Println(string(r))
-	type Person struct {
-		UserName string
+
+	var root, _ = os.Getwd()
+	var View = jet.NewHTMLSet(filepath.Join(root, "resources/views"))
+	templateName := "auth/verify.jet"
+	t, err := View.GetTemplate(templateName)
+	if err != nil {
+		logger.PanicError(err, "template", true)
 	}
 
-	tpl := template.Must(
-		template.ParseFiles(
-			"./resources/views/auth/verify.html",
-			"./resources/views/layout/index.html",
-		),
-	)
-
-	if e := tpl.ExecuteTemplate(os.Stdout, "layout", Person{
-		UserName: "DCF",
-	}); e != nil {
-		fmt.Println(e)
+	var w bytes.Buffer
+	vars := make(jet.VarMap)
+	if err = t.Execute(&w, vars, nil); err != nil {
+		// error when executing template
 	}
+
+	fmt.Println(w.String())
 }
