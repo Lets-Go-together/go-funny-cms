@@ -19,7 +19,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 	rt :=
 		group("api",
 			post("/login", authController.Login),
-			post("/admin/register", authController.Register),
+			//post("/admin/register", authController.Register),
 			//post("/admin/register2", authController.Register2),
 			get("/pwd", toolController.Pwd),
 			use(middleware.Authenticate,
