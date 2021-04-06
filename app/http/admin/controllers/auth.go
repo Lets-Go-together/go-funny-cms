@@ -3,7 +3,6 @@ package controllers
 import (
 	"gocms/app/http/admin/validates"
 	"gocms/app/models/admin"
-	"gocms/app/models/base"
 	"gocms/pkg/auth"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
@@ -60,46 +59,4 @@ func (*AuthController) Me(c *wrap.ContextWrapper) {
 func (*AuthController) Logout(c *wrap.ContextWrapper) {
 	user := admin.AuthUser
 	response.SuccessResponse(user).WriteTo(c)
-}
-
-func (*AuthController) Register2(c *wrap.ContextWrapper, params *validates.RegisterParams) {
-	// CRUD
-	// ...
-	response.SuccessResponse("user register successful: " + params.Account).WriteTo(c)
-}
-
-// 注册
-func (*AuthController) Register(c *wrap.ContextWrapper) {
-	action := validates.RegisterAction{}
-	var params validates.RegisterParams
-	if !action.Validate(c) {
-		return
-	}
-
-	e := admin.Admin{}
-	exist := config.Db.Where("account = ?", params.Account).First(&e).RowsAffected > 0
-	if exist {
-		response.ErrorResponse(1002, "用户名已存在").WriteTo(c)
-		return
-	}
-
-	exist = config.Db.Where("email = ?", params.Account).First(&e).RowsAffected > 0
-	if exist {
-		response.ErrorResponse(1002, "邮箱已注册").WriteTo(c)
-		return
-	}
-
-	password := auth.CreatePassword(params.Password) // salt(params.password)
-
-	newAdmin := admin.Admin{
-		BaseModel:   base.BaseModel{},
-		Account:     params.Account,
-		Password:    password,
-		Description: "",
-		Email:       params.Email,
-		Phone:       "",
-		Avatar:      "",
-	}
-	config.Db.NewRecord(&newAdmin)
-	response.SuccessResponse("").WriteTo(c)
 }

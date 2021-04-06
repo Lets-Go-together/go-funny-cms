@@ -2,6 +2,7 @@ package base
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -62,4 +63,19 @@ func (t *TimeAt) Scan(v interface{}) error {
 
 func (t *TimeAt) String() string {
 	return fmt.Sprintf("hhh:%s", time.Time(*t).String())
+}
+
+type IntJson []int
+
+func (v IntJson) Value() (driver.Value, error) {
+	return json.Marshal(v)
+}
+
+func (v *IntJson) Scan(data interface{}) error {
+	bytes, _ := data.([]byte)
+	r := IntJson{}
+	err := json.Unmarshal(bytes, &r)
+	*v = IntJson(r)
+
+	return err
 }

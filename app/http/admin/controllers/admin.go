@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
 	adminModel "gocms/app/models/admin"
+	"gocms/app/models/role"
 	"gocms/app/service"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
@@ -52,8 +53,10 @@ func (*AdminController) Save(c *wrap.ContextWrapper) {
 
 // 数据删除
 func (that *AdminController) Destory(c *wrap.ContextWrapper) {
-	id := c.Param("id")
-	config.Db.Delete(adminModel.Admin{}, "id = "+id)
+	var param IdParam
+	c.BindJSON(&param)
+
+	config.Db.Delete(adminModel.Admin{}, "id = "+cast.ToString(param.Id))
 
 	response.SuccessResponse().WriteTo(c)
 	return
@@ -67,5 +70,14 @@ func (that *AdminController) Show(c *wrap.ContextWrapper) {
 	result.Roles = rabc.GetRolesForUser(result.Account)
 
 	response.SuccessResponse(result).WriteTo(c)
+	return
+}
+
+// 角色树
+func (that *AdminController) Tree(c *wrap.ContextWrapper) {
+	var roles []role.RoleModel
+	config.Db.Model(role.RoleModel{}).Select("id, name").Scan(&roles)
+
+	response.SuccessResponse(roles).WriteTo(c)
 	return
 }

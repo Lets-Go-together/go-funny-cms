@@ -15,7 +15,7 @@ var (
 type JwtAction struct{}
 
 func init() {
-	key := config.GetString("JWT_SIGN")
+	key := config.GetString("SIGN")
 	signKey = []byte(key)
 }
 

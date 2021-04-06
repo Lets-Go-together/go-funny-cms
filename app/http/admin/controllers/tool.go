@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
-	"github.com/tidwall/gjson"
 	"gocms/pkg/config"
 	"gocms/pkg/enum"
 	"gocms/pkg/logger"
@@ -28,16 +28,16 @@ func (*ToolController) Pwd(c *wrap.ContextWrapper) {
 // 获取七牛云上传密钥信息
 func (*ToolController) Qiniu(c *wrap.ContextWrapper) {
 	uploadInfo := make(map[string]string)
-	info, _ := config.Redis.Get(enum.CACHE_QINIU).Result()
-	if len(info) > 0 {
-		r := gjson.Parse(info).Map()
-		for i, v := range r {
-			uploadInfo[i] = v.String()
-		}
-
-		response.SuccessResponse(uploadInfo).WriteTo(c)
-		return
-	}
+	//info, _ := config.Redis.Get(enum.CACHE_QINIU).Result()
+	//if len(info) > 0 {
+	//	r := gjson.Parse(info).Map()
+	//	for i, v := range r {
+	//		uploadInfo[i] = v.String()
+	//	}
+	//
+	//	response.SuccessResponse(uploadInfo).WriteTo(c)
+	//	return
+	//}
 
 	bucket := config.GetString("QINIU_BUKET_PATH")
 	accessKey := config.GetString("QINIU_AK")
@@ -61,6 +61,8 @@ func (*ToolController) Qiniu(c *wrap.ContextWrapper) {
 		"upload_dir": config.GetString("QINIU_UPLOAD_DIR"),
 		"host":       config.GetString("QINIU_HOST"),
 	}
+
+	fmt.Println(uploadInfo)
 
 	json, _ := json.Marshal(uploadInfo)
 	config.Redis.Set(enum.CACHE_QINIU, string(json), time.Minute*50)

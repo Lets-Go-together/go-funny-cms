@@ -5,6 +5,7 @@ import (
 	"gocms/app/models/permission"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
+	"gocms/wrap"
 )
 
 type PermissionService struct{}
@@ -26,24 +27,32 @@ type PermissionList struct {
 func getPermisstionTree(permissions []PermissionList, pid int) []PermissionList {
 	var list []PermissionList
 	for _, v := range permissions {
-		if v.Id == pid {
+		if v.PId == pid {
 			v.Children = getPermisstionTree(permissions, v.Id)
+			list = append(list, v)
 		}
-		list = append(list, v)
+
 	}
 
 	return list
 }
 
-func (*PermissionService) GetList(page int, pageSize int) *base.Result {
+func (*PermissionService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *base.Result {
 	var permissions []PermissionList
 	offset := help.GetOffset(page, pageSize)
 	total := 0
+	keyword := c.Query("keyword")
 
-	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Limit(pageSize).Offset(offset).Scan(&permissions)
-	config.Db.Model(&permission.Permission{}).Count(&total)
+	query := config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at")
 
-	permissions = getPermisstionTree(permissions, 0)
+	if len(keyword) > 0 {
+		keyword = "%" + keyword + "%"
+		query = query.Where("name like ?", keyword).Or("url like ?", keyword)
+	}
+
+	query.Limit(pageSize).Offset(offset).Scan(&permissions)
+	query.Count(&total)
+
 	data := base.Result{
 		Page:     page,
 		PageSize: pageSize,
@@ -67,6 +76,7 @@ func (*PermissionService) UpdateOrCreate(permissionModel permission.Permission) 
 func (*PermissionService) GetPermisstionTree() []PermissionList {
 	var permissions []PermissionList
 	config.Db.Model(&permission.Permission{}).Select("id, name, icon, url, status, method, p_id, hidden, created_at").Scan(&permissions)
+	permissions = getPermisstionTree(permissions, 0)
 
-	return getPermisstionTree(permissions, 0)
+	return permissions
 }

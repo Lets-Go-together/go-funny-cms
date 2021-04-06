@@ -20,13 +20,13 @@ var permissionService = &service.PermissionService{}
 func (that *PermissionController) Index(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("pageSize", "20")
-	list := permissionService.GetList(cast.ToInt(page), cast.ToInt(pageSize))
+	list := permissionService.GetList(cast.ToInt(page), cast.ToInt(pageSize), c)
 
 	response.SuccessResponse(list).WriteTo(c)
 	return
 }
 
-// 数据保存
+// 权限保存
 func (that *PermissionController) Store(c *wrap.ContextWrapper) {
 	var permissionModel permission.Permission
 	if !validates.VidateCreateOrUpdatePermission(c, &permissionModel) {
@@ -40,7 +40,7 @@ func (that *PermissionController) Store(c *wrap.ContextWrapper) {
 	return
 }
 
-// 数据更新
+// 权限更新
 func (that *PermissionController) Save(c *wrap.ContextWrapper) {
 	var permissionModel permission.Permission
 	permissionModel.ID = cast.ToUint64(c.Param("id"))
@@ -53,11 +53,12 @@ func (that *PermissionController) Save(c *wrap.ContextWrapper) {
 	return
 }
 
-// 数据删除
+// 权限删除
 func (that *PermissionController) Destory(c *wrap.ContextWrapper) {
-	id := c.Param("id")
-	config.Db.Delete(permission.Permission{}, "id = "+id)
+	var param IdParam
+	c.BindJSON(&param)
 
+	config.Db.Delete(permission.Permission{}, "id = "+cast.ToString(param.Id))
 	response.SuccessResponse().WriteTo(c)
 	return
 }

@@ -16,13 +16,33 @@ func GeneratePermissionNodes() {
 	db := config.Db
 	count := len(routers)
 	bar := pb.StartNew(count)
+
+	//rootNode := &permission.Permission{
+	//	Name:   "根节点",
+	//	Icon:   "link",
+	//	Url:    "",
+	//	Status: 1,
+	//	Method: "any",
+	//	PId:    0,
+	//}
+	//db.Model(&permission.Permission{}).Omit("pid", "status", "icon", "hidden").Create(&rootNode)
+
 	for _, router := range routers {
 		permissionModel := &permission.Permission{}
 		routerCopy := &permission.Permission{
 			Url:    router["url"],
 			Method: router["method"],
 		}
+
+		// 忽略需要过滤的节点
+		if !Filter(routerCopy) {
+			bar.Increment()
+			continue
+		}
+
 		db.Where(routerCopy).Select("id").First(permissionModel)
+
+		//routerCopy.PId = cast.ToInt(rootNode.ID)
 		if permissionModel.ID == 0 {
 			routerCopy.Name = router["name"]
 			db.Model(&permission.Permission{}).Omit("pid", "status", "icon", "hidden").Create(routerCopy)

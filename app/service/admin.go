@@ -14,14 +14,16 @@ import (
 
 type AdminService struct{}
 type listStruct struct {
-	ID          uint64      `json:"id"`
-	Account     string      `json:"account"`
-	Description string      `json:"description"`
-	Email       string      `json:"email"`
-	Phone       string      `json:"phone"`
-	Avatar      string      `json:"avatar"`
-	CreatedAt   base.TimeAt `json:"created_at"`
-	UpdatedAt   base.TimeAt `json:"updated_at"`
+	ID          uint64       `json:"id"`
+	Account     string       `json:"account"`
+	Description string       `json:"description"`
+	Email       string       `json:"email"`
+	Phone       string       `json:"phone"`
+	RoleIds     base.IntJson `json:"role_ids"`
+	Roles       []string     `json:"roles" gorm:"-"`
+	Avatar      string       `json:"avatar"`
+	CreatedAt   base.TimeAt  `json:"created_at"`
+	UpdatedAt   base.TimeAt  `json:"updated_at"`
 }
 
 func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *base.Result {
@@ -36,7 +38,9 @@ func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *ba
 	}
 
 	query.Limit(pageSize).Offset(offset).Scan(&admins)
-	config.Db.Model(&admin.Admin{}).Count(&total)
+	query.Count(&total)
+
+	admins = getAdminListToRoles(admins)
 
 	data := base.Result{
 		Page:     page,
@@ -46,6 +50,17 @@ func (*AdminService) GetList(page int, pageSize int, c *wrap.ContextWrapper) *ba
 	}
 
 	return &data
+}
+
+//
+func getAdminListToRoles(listStruct []listStruct) []listStruct {
+	for k, admin := range listStruct {
+		roles := rabc.GetRolesForUser(admin.Account)
+		listStruct[k].Roles = roles
+		listStruct[k].RoleIds = GetRolesId(roles)
+	}
+
+	return listStruct
 }
 
 // 创建一个admin用户
@@ -85,8 +100,8 @@ func (*AdminService) UpdateOrCreate(adminModel admin.Admin, c *wrap.ContextWrapp
 	fmt.Println(adminModel)
 
 	rabc.DeleteRolesForUser(adminModel.Account)
-	if len(adminModel.Role_ids) > 0 {
-		roleNames := GetRolesName(adminModel.Role_ids)
+	if len(adminModel.RoleIds) > 0 {
+		roleNames := GetRolesName(adminModel.RoleIds)
 		logger.Info("roles", roleNames)
 		rabc.AddRolesForUser(adminModel.Account, roleNames)
 	}
