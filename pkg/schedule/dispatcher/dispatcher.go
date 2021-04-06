@@ -1,22 +1,24 @@
 package dispatcher
 
-type TaskObserverFunc func([]*Task)
+type TaskObserverFunc func([]Task)
 
 type TaskSource interface {
 	Initialize()
-	SubscribeTaskArrive(tasks TaskObserverFunc)
+	SubscribeTaskUpdate(tasks TaskObserverFunc)
 	QueryAllTask() []Task
 	QueryTaskById(taskId uint64) []Task
 }
 
 type Dispatcher struct {
-	taskLoader []TaskSource
-	workers    []Worker
+	taskLoader             []TaskSource
+	workers                []Worker
+	taskTypeExecuteFuncMap TaskTypeExecuteFuncMap
 }
 
 func New() *Dispatcher {
-
-	return &Dispatcher{}
+	d := &Dispatcher{}
+	d.AddTaskSource(&RedisTaskSource{})
+	return d
 }
 
 func (that *Dispatcher) AddTaskSource(source TaskSource) {
@@ -27,8 +29,11 @@ func (that *Dispatcher) AddWorker(worker Worker) {
 	that.workers = append(that.workers, worker)
 }
 
-func (that *Dispatcher) RegisterTaskType(taskType *TaskType) {
-
+func (that *Dispatcher) RegisterTaskType(taskType *TaskType, handleFunc TaskHandleFunc) {
+	err := that.taskTypeExecuteFuncMap.PutUnique(taskType.Name, handleFunc)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (that *Dispatcher) Start() {
@@ -44,16 +49,20 @@ func (that *Dispatcher) runWorkers() {
 
 func (that *Dispatcher) runTaskLoaders() {
 	for _, loader := range that.taskLoader {
-		loader.SubscribeTaskArrive(func(tasks []*Task) {
+		loader.Initialize()
+		loader.SubscribeTaskUpdate(func(tasks []Task) {
 			that.onTaskArrive(tasks)
 		})
 	}
 }
 
-func (that *Dispatcher) onTaskArrive(tasks []*Task) {
+func (that *Dispatcher) onTaskArrive(tasks []Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
-			worker.handle(task)
+			if !worker.handle(task) {
+				// dispatch to other worker.
+			}
+			// just get first worker
 			break
 		}
 	}
