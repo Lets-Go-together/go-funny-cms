@@ -76,9 +76,7 @@ func InitApp() *cli.App {
 				Name:  "email-test",
 				Usage: "测试邮件发送",
 				Action: func(c *cli.Context) error {
-					service := new(mailer.Mailer)
-					service.InitMailer()
-					service.SendTest("chenf@surest.cn")
+					mailer := new(mailer.Mailer).LoadConfig()
 
 					return nil
 				},
