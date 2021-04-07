@@ -2,17 +2,16 @@ package dispatcher
 
 import "errors"
 
-//goland:noinspection GoUnusedGlobalVariable
-var (
-	TaskTypeDefault = &TaskType{
-		Name:     "default-type",
-		Priority: -1,
-	}
+type TaskState int
 
-	TaskTypeCron = &TaskType{
-		Name:     "cron-type",
-		Priority: -1,
-	}
+const (
+	TaskStateUnknown TaskState = iota
+	TaskStateStarting
+	TaskStateRunning
+	TaskSateStopping
+	TaskStateStopped
+	TaskStateRebooting
+	TaskStateDeleting
 )
 
 type TaskHandleFunc func() *TaskResult
@@ -27,26 +26,28 @@ type TaskResult struct {
 	Logs    string
 }
 
-type TaskType struct {
-	Name      string `json:"name"`
-	Priority  int    `json:"priority"`
-	TriggerId int16  `json:"trigger_id"`
+type TaskType int
+
+type TaskManager struct {
+	funcMap map[TaskInfo]*TaskHandleFunc
+	nameMap map[string]*TaskInfo
 }
 
-type TaskTypeExecuteFuncMap struct {
-	funcMap map[string]TaskHandleFunc
-}
-
-func (that *TaskTypeExecuteFuncMap) PutUnique(typeName string, handleFunc TaskHandleFunc) (err error) {
-	if that.funcMap[typeName] != nil {
+func (that *TaskManager) SetHandleFunc(task TaskInfo, handleFunc *TaskHandleFunc) (err error) {
+	if that.funcMap[task] != nil {
 		err = errors.New("type already exist")
 	}
-	that.funcMap[typeName] = handleFunc
+	that.funcMap[task] = handleFunc
+	that.nameMap[task.Name] = &task
 	return
 }
 
-func (that TaskTypeExecuteFuncMap) Get(typeName string) TaskHandleFunc {
-	return that.funcMap[typeName]
+func (that *TaskManager) GetTaskHandleFunc(task TaskInfo) *TaskHandleFunc {
+	return that.funcMap[task]
+}
+
+func (that *TaskManager) GetInfoByName(taskName string) *TaskInfo {
+	return that.nameMap[taskName]
 }
 
 type Trigger interface {
@@ -55,17 +56,18 @@ type Trigger interface {
 
 type Task interface {
 	Execute() *TaskResult
-	Entity() *TaskEntity
+	Entity() *TaskInfo
 }
 
-type TaskEntity struct {
-	Name        string    `json:"name"`
-	TaskId      uint64    `json:"task_id"`
-	State       int8      `json:"state"`
-	Type        *TaskType `json:"type"`
-	ExecuteFunc TaskHandleFunc
+type TaskInfo struct {
+	Name     string    `json:"name"`
+	Desc     string    `json:"desc"`
+	TaskId   int       `json:"task_id"`
+	State    TaskState `json:"state"`
+	CronExpr string    `json:"cron_expr"`
+	Type     *TaskType `json:"type"`
 }
 
-func (that *TaskEntity) Execute() *TaskResult {
-	return nil
+func (that *TaskInfo) StateInChange() bool {
+	return that.State == TaskStateRunning || that.State == TaskSateStopping || that.State == TaskStateRebooting
 }

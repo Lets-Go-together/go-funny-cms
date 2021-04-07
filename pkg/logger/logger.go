@@ -35,6 +35,10 @@ func dispatchNotice(msg string, source string) {
 }
 
 func handle(level string, title string, content interface{}) {
+	//// TODO 修复单元测试问题
+	//if true {
+	//	return
+	//}
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
 	logFile, logErr := os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)

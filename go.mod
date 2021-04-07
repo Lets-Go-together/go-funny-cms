@@ -4,13 +4,11 @@ go 1.15
 
 require (
 	github.com/blinkbean/dingtalk v0.0.0-20201231030509-45a553a84503
-	github.com/bluele/gcache v0.0.2 // indirect
+	github.com/bluele/gcache v0.0.2
 	github.com/casbin/casbin/v2 v2.19.7
 	github.com/casbin/gorm-adapter/v3 v3.0.4
 	github.com/cheggaaa/pb/v3 v3.0.5
-	github.com/cosmtrek/air v1.21.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
-	github.com/creack/pty v1.1.11 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -21,11 +19,10 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/lib/pq v1.10.0
+	github.com/lib/pq v1.10.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
@@ -37,9 +34,6 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/syyongx/php2go v0.9.4 // indirect
-	github.com/tidwall/gjson v1.6.3
-	github.com/tidwall/match v1.0.2 // indirect
 	github.com/ugorji/go v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/wumansgy/goEncrypt v0.0.0-20201114063050-efa0a0601707
