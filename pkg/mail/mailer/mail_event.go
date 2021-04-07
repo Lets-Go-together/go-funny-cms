@@ -2,7 +2,7 @@ package mailer
 
 const (
 	DINGTALK = 1
-	WECHAT   = 1
+	WECHAT   = 2
 )
 
 // Event 邮件发送事件
@@ -28,10 +28,10 @@ func (t DingTalk) Failed(v interface{}) error {
 // Wechat 企业微信通知对应操作
 type Wechat struct{}
 
-func (t *Wechat) Success(v interface{}) error {
+func (t Wechat) Success(v interface{}) error {
 	return nil
 }
 
-func (t *Wechat) Failed(v interface{}) error {
+func (t Wechat) Failed(v interface{}) error {
 	return nil
 }

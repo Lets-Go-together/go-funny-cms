@@ -1,11 +1,13 @@
 package mailer
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jordan-wright/email"
 	"gocms/pkg/logger"
 	"io/ioutil"
 	"net/smtp"
+	"time"
 )
 
 type Express struct {
@@ -16,20 +18,18 @@ type Express struct {
 	Options Options
 }
 
+// Options 配置选项
 type Options struct {
 	LoggerFile string
 	NotifeType int
+	Delay      time.Duration
 }
 
 // Init 初始化express
-func (that *Express) GetExpress(options Options) *Express {
-	if len(options.LoggerFile) == 0 {
-		that.Options.LoggerFile = that.defaultLoggerFile()
-	}
-
-	if options.NotifeType == 0 {
-
-	}
+func (that *Express) GetExpress(options *Options) *Express {
+	_ = that.defaultLoggerFile(options.LoggerFile)
+	_ = that.defaultEvent()
+	return that
 }
 
 // Send 发送操作
@@ -39,8 +39,29 @@ func (that *Express) Send() error {
 }
 
 // defaultLoggerFile 默认日志文件
-func (that *Express) defaultLoggerFile() string {
-	return "./storage/mail/system.log"
+func (that *Express) defaultLoggerFile(file string) error {
+	that.Options.LoggerFile = "./storage/mail/system.log"
+	return nil
+}
+
+// defaultEvent 默认event通知
+func (that *Express) defaultEvent() error {
+	if that.Options.NotifeType == DINGTALK {
+		e := DingTalk{}
+		that.Event = e
+	}
+	var e Event
+	switch that.Options.NotifeType {
+	case DINGTALK:
+		e = &DingTalk{}
+	case WECHAT:
+		e = &Wechat{}
+	default:
+		return errors.New("Event 不存在")
+	}
+
+	that.SetEvent(e)
+	return nil
 }
 
 // checkIsFile 默认日志文件
@@ -48,15 +69,9 @@ func (that *Express) checkIsFile() error {
 	return nil
 }
 
-// setEvent 默认日志文件
-func (that *Express) setEvent() error {
-	if that.Options.NotifeType == DINGTALK {
-		e := DingTalk{}
-		that.Event = e
-	}
-	switch expr {
-
-	}
+// setEvent 支持重置Event
+func (that *Express) SetEvent(e Event) {
+	that.Event = e
 }
 
 // SendTsxt 发送测试
