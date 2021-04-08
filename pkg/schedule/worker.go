@@ -1,9 +1,9 @@
-package dispatcher
+package schedule
 
 type Worker interface {
 	NewTask(task Task) error
 	Start()
 	Stop()
 	StopNow()
-	Initialize()
+	Initialize(handleFunMap *TaskHandleFuncMap)
 }
