@@ -1,7 +1,8 @@
 package dispatcher
 
 type Worker interface {
-	handle(task Task) bool
+	NewTask(task Task) error
+	Start()
 	Stop()
 	StopNow()
 	Initialize()

@@ -5,35 +5,42 @@ type TaskObserverFunc func([]Task)
 type TaskSource interface {
 	Initialize()
 	SubscribeTaskUpdate(tasks TaskObserverFunc)
-	QueryAllTask() []Task
-	QueryTaskById(taskId uint64) []Task
+	UpdateTask(info *TaskInfo)
+	RemoveTask(name string)
+	QueryAllTask() []*TaskInfo
+	QueryTypeByState(state int) []*TaskInfo
+	QueryTaskById(taskId uint64) []*TaskInfo
 }
 
 type Dispatcher struct {
-	taskLoader             []TaskSource
-	workers                []Worker
-	taskTypeExecuteFuncMap TaskTypeExecuteFuncMap
+	taskSource         TaskSource
+	workers            []Worker
+	taskExecuteFuncMap TaskManager
 }
 
 func New() *Dispatcher {
 	d := &Dispatcher{}
-	d.AddTaskSource(&RedisTaskSource{})
+	d.SetTaskSource(&RedisTaskSource{})
 	return d
 }
 
-func (that *Dispatcher) AddTaskSource(source TaskSource) {
-	that.taskLoader = append(that.taskLoader, source)
+func (that *Dispatcher) SetTaskSource(source TaskSource) {
+	that.taskSource = source
 }
 
 func (that *Dispatcher) AddWorker(worker Worker) {
 	that.workers = append(that.workers, worker)
 }
 
-func (that *Dispatcher) RegisterTaskType(taskType *TaskType, handleFunc TaskHandleFunc) {
-	err := that.taskTypeExecuteFuncMap.PutUnique(taskType.Name, handleFunc)
+func (that *Dispatcher) AddTask(task TaskInfo, handleFunc TaskHandleFunc) {
+	err := that.taskExecuteFuncMap.SetHandleFunc(task, &handleFunc)
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (that *Dispatcher) RemoveTask(taskName string) {
+	that.taskSource.RemoveTask(taskName)
 }
 
 func (that *Dispatcher) Start() {
@@ -48,21 +55,20 @@ func (that *Dispatcher) runWorkers() {
 }
 
 func (that *Dispatcher) runTaskLoaders() {
-	for _, loader := range that.taskLoader {
-		loader.Initialize()
-		loader.SubscribeTaskUpdate(func(tasks []Task) {
-			that.onTaskArrive(tasks)
-		})
-	}
+	that.taskSource.Initialize()
+	that.taskSource.SubscribeTaskUpdate(func(tasks []Task) {
+		that.onTaskArrive(tasks)
+	})
 }
 
 func (that *Dispatcher) onTaskArrive(tasks []Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
-			if !worker.handle(task) {
-				// dispatch to other worker.
+			err := worker.NewTask(task)
+			if err != nil {
+				panic(err)
 			}
-			// just get first worker
+			// dispatch to other worker.
 			break
 		}
 	}

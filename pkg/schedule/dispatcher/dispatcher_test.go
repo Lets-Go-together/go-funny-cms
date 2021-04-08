@@ -1,6 +1,9 @@
 package dispatcher
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestNew(t *testing.T) {
 	tests := []struct {
@@ -11,10 +14,19 @@ func TestNew(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var d = New()
-			d.RegisterTaskType(TaskTypeCron, func() *TaskResult {
+
+			task := TaskInfo{
+				Name:     "task_a",
+				Desc:     "test task",
+				CronExpr: "",
+			}
+
+			d.AddTask(task, func() *TaskResult {
+				t.Log("Task execute...")
 				return nil
 			})
 			d.Start()
+			time.Sleep(time.Hour)
 		})
 	}
 }

@@ -2,13 +2,13 @@ package dispatcher
 
 type CronTask struct {
 	Duration int32
-	*TaskEntity
+	*TaskInfo
 }
 
 func (that *CronTask) Execute() *TaskResult {
-	return that.ExecuteFunc()
+	return nil
 }
 
-func (that *CronTask) Entity() *TaskEntity {
-	return that.TaskEntity
+func (that *CronTask) Entity() *TaskInfo {
+	return that.TaskInfo
 }

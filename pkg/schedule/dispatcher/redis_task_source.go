@@ -24,17 +24,19 @@ func (that *RedisTaskSource) SubscribeTaskUpdate(taskObserverFunc TaskObserverFu
 		for {
 			r, err := that.redis.HGetAll(keyTaskCron).Result()
 			if err == nil {
-				// handle err
+				// NewTask err
 				continue
 			}
 			var tasks []Task
 			for _, item := range r {
 				var task CronTask
 				if err := json.Unmarshal([]byte(item), &task); err != nil {
-					// handle err
+					// NewTask err
 					continue
 				}
-				tasks = append(tasks, &task)
+				if task.StateInChange() {
+					tasks = append(tasks, &task)
+				}
 			}
 			taskObserverFunc(tasks)
 			time.Sleep(time.Second * 3)
@@ -42,10 +44,21 @@ func (that *RedisTaskSource) SubscribeTaskUpdate(taskObserverFunc TaskObserverFu
 	}(taskObserverFunc)
 }
 
-func (that *RedisTaskSource) QueryTaskById(taskId uint64) []Task {
-	return []Task{}
+func (that *RedisTaskSource) UpdateTask(task *TaskInfo) {
+
+}
+func (that *RedisTaskSource) RemoveTask(taskName string) {
+
 }
 
-func (that *RedisTaskSource) QueryAllTask() []Task {
-	return []Task{}
+func (that *RedisTaskSource) QueryTypeByState(state int) []*TaskInfo {
+	return []*TaskInfo{}
+}
+
+func (that *RedisTaskSource) QueryTaskById(taskId uint64) []*TaskInfo {
+	return []*TaskInfo{}
+}
+
+func (that *RedisTaskSource) QueryAllTask() []*TaskInfo {
+	return []*TaskInfo{}
 }
