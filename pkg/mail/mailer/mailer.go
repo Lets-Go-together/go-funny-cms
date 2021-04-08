@@ -1,12 +1,14 @@
 package mailer
 
 import (
+	"github.com/jordan-wright/email"
 	"gocms/pkg/config"
 )
 
 // 主要集中邮件发送类
 // 供其他模块api调用
 type Mailer struct {
+	Mail     *email.Email
 	Username string
 	Password string
 	Host     string
@@ -32,12 +34,20 @@ func (that *Mailer) LoadConfig(mailer ...string) *Mailer {
 }
 
 // 加载默认配置
-func (that *Mailer) LoadDefaultConfig() {
+func NewMailer() *Mailer {
 	username := config.GetString("MAIL_USERNAME")
 	password := config.GetString("MAIL_PASSWORD")
 	host := config.GetString("MAIL_HOST")
 	port := config.GetString("MAIL_PORT")
-	that.LoadConfig(username, password, host, port)
+	Mail := email.NewEmail()
+
+	return &Mailer{
+		Mail:     Mail,
+		Username: username,
+		Password: password,
+		Host:     host,
+		Port:     port,
+	}
 }
 
 // 设置用户名

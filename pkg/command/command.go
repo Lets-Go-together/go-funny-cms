@@ -76,8 +76,10 @@ func InitApp() *cli.App {
 				Name:  "email-test",
 				Usage: "测试邮件发送",
 				Action: func(c *cli.Context) error {
-					mailer := new(mailer.Mailer).LoadConfig()
+					express := mailer.NewMailerExpress()
+					express.Event = mailer.Wechat{}
 
+					express.SendTest("chenf@surest.cn")
 					return nil
 				},
 			},

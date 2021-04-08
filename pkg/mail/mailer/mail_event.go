@@ -1,5 +1,7 @@
 package mailer
 
+import "fmt"
+
 const (
 	DINGTALK = 1
 	WECHAT   = 2
@@ -18,6 +20,7 @@ type Event interface {
 type DingTalk struct{}
 
 func (t DingTalk) Success(v interface{}) error {
+	fmt.Println("钉钉通知: ", v)
 	return nil
 }
 
@@ -29,6 +32,7 @@ func (t DingTalk) Failed(v interface{}) error {
 type Wechat struct{}
 
 func (t Wechat) Success(v interface{}) error {
+	fmt.Println("Wechat通知 Ssccess: ", v)
 	return nil
 }
 
