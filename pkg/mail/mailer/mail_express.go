@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jordan-wright/email"
-	"gocms/pkg/logger"
 	"net/smtp"
 	"os"
 	"time"
@@ -25,6 +24,7 @@ type Options struct {
 	Event      Event
 }
 
+// NewMailerExpress 初始化一个邮件发送通道
 func NewExpress(mailer *Mailer) *Express {
 	express := &Express{
 		Mailer:  mailer,
@@ -34,6 +34,7 @@ func NewExpress(mailer *Mailer) *Express {
 	return express
 }
 
+// NewMailerExpress 初始化一个带配置的邮件发送通道
 func NewMailerExpress() *Express {
 	mailer := NewMailer()
 	express := &Express{
@@ -61,10 +62,63 @@ func (that *Express) SetOptions(options Options) error {
 	return nil
 }
 
-// Send 发送操作
+// SendNow 立即发送
 func (that *Express) SendNow() error {
 	addr := fmt.Sprintf("%s:%s", that.Mailer.Host, that.Mailer.Port)
 	return that.Mailer.Mail.Send(addr, smtp.PlainAuth("", that.Mailer.Username, that.Mailer.Password, that.Mailer.Host))
+}
+
+// setEvent 支持重置Event
+func (that *Express) SetEvent(e Event) {
+	that.Event = e
+}
+
+// SetLoggerFile 设置日志文件
+func (that *Express) SetLoggerFile(filename string) error {
+	if e := that.isFile(that.Options.LoggerFile); e != nil {
+		return e
+	}
+	return nil
+}
+
+// GetEvent 重设Event
+func (that *Express) GetEvent() Event {
+	if that.Event == nil {
+		that.defaultEvent()
+	}
+	return that.Event
+}
+
+// GetLoggerFile 支持重置Event
+func (that *Express) GetLoggerFile() string {
+	return that.Options.LoggerFile
+}
+
+// Send 发送操作
+func (that *Express) Send() error {
+	err := that.SendNow()
+	that.pipe(err, that.Mailer.Mail)
+
+	return err
+}
+
+// pipe 处理各种问题
+func (that *Express) pipe(err error, email *email.Email) error {
+	event := that.GetEvent()
+	mailJson, _ := json.Marshal(email)
+	result := map[string]string{
+		"to":     string(mailJson),
+		"result": "",
+	}
+	fmt.Println(result, err)
+	if err == nil {
+		event.Success("Success")
+		return err
+	}
+
+	result["result"] = "发送失败, err: " + err.Error()
+	event.Failed("Error")
+	return err
 }
 
 // defaultLoggerFile 默认日志文件
@@ -102,69 +156,4 @@ func (that *Express) isFile(file string) error {
 		return err
 	}
 	return nil
-}
-
-// setEvent 支持重置Event
-func (that *Express) SetEvent(e Event) {
-	that.Event = e
-}
-
-// setEvent 支持重置Event
-func (that *Express) SetLoggerFile(filename string) error {
-	if e := that.isFile(that.Options.LoggerFile); e != nil {
-		return e
-	}
-	return nil
-}
-
-// GetEvent 支持重置Event
-func (that *Express) GetEvent() Event {
-	if that.Event == nil {
-		that.defaultEvent()
-	}
-	return that.Event
-}
-
-// GetLoggerFile 支持重置Event
-func (that *Express) GetLoggerFile() string {
-	return that.Options.LoggerFile
-}
-
-// sendTo 支持重置Event
-func (that *Express) Send() error {
-	err := that.SendNow()
-	that.pipe(err, that.Mailer.Mail)
-
-	return err
-}
-
-// pipe 处理各种问题
-func (that *Express) pipe(err error, email *email.Email) error {
-	event := that.GetEvent()
-	mailJson, _ := json.Marshal(email)
-	result := map[string]string{
-		"to":     string(mailJson),
-		"result": "",
-	}
-
-	if err == nil {
-		event.Success("Success")
-		return err
-	}
-
-	result["result"] = "发送失败, err: " + err.Error()
-	return err
-}
-
-// SendTsxt 发送测试
-func (that *Express) SendTest(to string) {
-	that.Mailer.Mail.From = that.Mailer.Username
-	that.Mailer.Mail.To = []string{to}
-	that.Mailer.Mail.Subject = "Test Subject"
-	that.Mailer.Mail.Text = []byte("Text Body is, of course, supported!")
-	that.Mailer.Mail.HTML = []byte("<h1>Fancy HTML is supported, too!</h1>")
-	err := that.Send()
-	logger.PanicError(err, "邮件发送", true)
-
-	// https://github.com/CloudyKit/jet/wiki/V1-Documentation
 }

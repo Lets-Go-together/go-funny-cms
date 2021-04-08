@@ -26,6 +26,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/lib/pq v1.10.0 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
 	github.com/panjf2000/ants/v2 v2.4.3
@@ -39,6 +40,7 @@ require (
 	github.com/ugorji/go v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/wumansgy/goEncrypt v0.0.0-20201114063050-efa0a0601707
+	github.com/zhenorzz/snowflake v0.0.0-20180707022500-b31e6da4ecd2 // indirect
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	google.golang.org/protobuf v1.25.0 // indirect

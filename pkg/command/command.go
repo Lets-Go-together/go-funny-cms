@@ -8,7 +8,6 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
-	"gocms/pkg/mail/mailer"
 	"gocms/pkg/pools"
 	"gocms/pkg/schedule/backup"
 )
@@ -76,10 +75,17 @@ func InitApp() *cli.App {
 				Name:  "email-test",
 				Usage: "测试邮件发送",
 				Action: func(c *cli.Context) error {
-					express := mailer.NewMailerExpress()
-					express.Event = mailer.Wechat{}
-
-					express.SendTest("chenf@surest.cn")
+					//express := mailer.NewMailerExpress()
+					//express.Event = mailer.Wechat{}
+					//express.Mailer.Mail = &email.Email {
+					//	To: []string{"test@example.com"},
+					//	From: "Jordan Wright <test@gmail.com>",
+					//	Subject: "Awesome Subject",
+					//	Text: []byte("Text Body is, of course, supported!"),
+					//	HTML: []byte("<h1>Fancy HTML is supported, too!</h1>"),
+					//	Headers: textproto.MIMEHeader{},
+					//}
+					//express.Send()
 					return nil
 				},
 			},
