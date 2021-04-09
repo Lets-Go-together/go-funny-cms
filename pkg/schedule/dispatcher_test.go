@@ -6,6 +6,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
+
 	tests := []struct {
 		name string
 	}{
@@ -16,7 +17,7 @@ func TestNew(t *testing.T) {
 
 			// 初始化
 			var scheduler = New()
-			scheduler.Run()
+			scheduler.Launch()
 
 			// 注册任务
 			scheduler.RegisterTask("email", func(context *Context) *TaskResult {
@@ -26,17 +27,17 @@ func TestNew(t *testing.T) {
 			})
 
 			// 新建任务
-			task := TaskInfo{
+			task := Task{
 				Name:     "email", // 固定的, 必须注册过
 				Desc:     "test task",
-				CronExpr: "* * * * *",
+				CronExpr: "* * * * * ?",
 			}
 			// 查询任务
 			scheduler.AddTask(&task)
-			scheduler.QueryAllTask()
-			scheduler.QueryTaskById(1)
-			scheduler.StopTask(1)
-			scheduler.StopTask(1)
+			//scheduler.QueryAllTask()
+			//scheduler.QueryTaskById(1)
+			//scheduler.StopTask(1)
+			//scheduler.StartTask(1)
 
 			time.Sleep(time.Hour)
 		})
@@ -44,4 +45,5 @@ func TestNew(t *testing.T) {
 }
 
 func TestRedisTaskSource_Initialize(t *testing.T) {
+
 }

@@ -18,8 +18,8 @@ func New() *Scheduler {
 	}
 }
 
-func (that *Scheduler) Run() {
-	that.dispatcher.run()
+func (that *Scheduler) Launch() {
+	that.dispatcher.Launch()
 }
 
 func (that *Scheduler) RegisterTask(taskName string, handleFunc TaskHandleFunc) {
@@ -28,7 +28,7 @@ func (that *Scheduler) RegisterTask(taskName string, handleFunc TaskHandleFunc) 
 	}
 }
 
-func (that *Scheduler) AddTask(info *TaskInfo) {
+func (that *Scheduler) AddTask(info *Task) {
 	that.broker.AddTask(info)
 }
 

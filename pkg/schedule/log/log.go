@@ -13,13 +13,13 @@ func D(tag string, l string) {
 	log("D", tag, l)
 }
 func E(tag string, l string) {
-	log("D", tag, l)
+	log("E", tag, l)
 }
 func Err(tag string, err error) {
-	log("D", tag, err.Error())
+	log("E", tag, err.Error())
 }
 func I(tag string, l string) {
-	log("D", tag, l)
+	log("I", tag, l)
 }
 
 func log(level string, tag string, log string) {
