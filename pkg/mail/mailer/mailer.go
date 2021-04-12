@@ -1,6 +1,9 @@
 package mailer
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"github.com/jordan-wright/email"
 	"gocms/pkg/config"
 )
@@ -9,10 +12,10 @@ import (
 // 供其他模块api调用
 type Mailer struct {
 	Mail     *email.Email
-	Username string
-	Password string
-	Host     string
-	Port     string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
 }
 
 // 加载配置
@@ -69,4 +72,18 @@ func (that *Mailer) ForHost(host string) {
 // 设置端口
 func (that *Mailer) ForPort(port string) {
 	that.Port = port
+}
+
+func (that Mailer) Value() (driver.Value, error) {
+	return json.Marshal(that)
+}
+
+func (v *Mailer) Scan(data interface{}) error {
+	fmt.Println("Scan")
+	bytes, _ := data.([]byte)
+	r := Mailer{}
+	err := json.Unmarshal(bytes, &r)
+	*v = Mailer(r)
+
+	return err
 }

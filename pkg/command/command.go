@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/jordan-wright/email"
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
@@ -8,8 +9,11 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
+	"gocms/pkg/mail/mailer"
 	"gocms/pkg/pools"
 	"gocms/pkg/schedule/backup"
+	"net/textproto"
+	"time"
 )
 
 func init() {
@@ -75,17 +79,17 @@ func InitApp() *cli.App {
 				Name:  "email-test",
 				Usage: "测试邮件发送",
 				Action: func(c *cli.Context) error {
-					//express := mailer.NewMailerExpress()
-					//express.Event = mailer.Wechat{}
-					//express.Mailer.Mail = &email.Email {
-					//	To: []string{"test@example.com"},
-					//	From: "Jordan Wright <test@gmail.com>",
-					//	Subject: "Awesome Subject",
-					//	Text: []byte("Text Body is, of course, supported!"),
-					//	HTML: []byte("<h1>Fancy HTML is supported, too!</h1>"),
-					//	Headers: textproto.MIMEHeader{},
-					//}
-					//express.Send()
+					express := mailer.NewMailerExpress()
+					express.Options.Delay = time.Minute
+					express.Mailer.Mail = &email.Email{
+						To:      []string{"chenf@surest.cn"},
+						From:    "Jordan Wright <2522257384@qq.com>",
+						Subject: "Awesome Subject",
+						HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
+						Headers: textproto.MIMEHeader{},
+					}
+					task := mailer.NewTaskExpress()
+					task.Dispatch(express)
 					return nil
 				},
 			},

@@ -6,6 +6,7 @@ import (
 	//"crypto/rand"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"github.com/wumansgy/goEncrypt"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
@@ -101,4 +102,9 @@ func Dectrypt(text string) (string, error) {
 	}
 
 	return string(r), nil
+}
+
+func ToJson(v interface{}) string {
+	r, _ := json.Marshal(v)
+	return string(r)
 }

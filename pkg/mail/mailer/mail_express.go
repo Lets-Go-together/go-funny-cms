@@ -12,6 +12,7 @@ import (
 type Express struct {
 	// https://pkg.go.dev/github.com/jordan-wright/email
 	Mailer  *Mailer
+	Title   string
 	Event   Event
 	Options Options
 }
@@ -156,4 +157,17 @@ func (that *Express) isFile(file string) error {
 		return err
 	}
 	return nil
+}
+
+func (that *Express) GetAttachments() []map[string]string {
+	ts := []map[string]string{}
+	attachments := that.Mailer.Mail.Attachments
+	for _, t := range attachments {
+		ts = append(ts, map[string]string{
+			t.Filename: "test1",
+			"path":     "www.baidu.com",
+		})
+	}
+
+	return ts
 }
