@@ -9,20 +9,21 @@ type Logger interface {
 	I(typ int, log string)
 }
 
-func D(tag string, l string) {
-	log("D", tag, l)
+func D(tag string, format string, p ...interface{}) {
+	log("D", tag, format, p)
 }
-func E(tag string, l string) {
-	log("E", tag, l)
+func E(tag string, format string, p ...interface{}) {
+	log("E", tag, format, p)
 }
 func Err(tag string, err error) {
 	log("E", tag, err.Error())
 }
-func I(tag string, l string) {
-	log("I", tag, l)
+func I(tag string, format string, p ...interface{}) {
+	log("I", tag, format, p)
 }
 
-func log(level string, tag string, log string) {
-	l := fmt.Sprintf("%s/%s: %s", level, tag, log)
+func log(level string, tag string, log string, p ...interface{}) {
+	lo := fmt.Sprintf(log, p)
+	l := fmt.Sprintf("%s/%s: %s", level, tag, lo)
 	fmt.Println(l)
 }
