@@ -25,16 +25,16 @@ func (that *dispatcher) Launch() {
 	for _, worker := range that.workers {
 		worker.Initialize(that.handleFuncMap)
 	}
-	that.broker.Launch()
 	that.broker.StartConsuming(func(tasks []*Task) {
 		that.onTaskArrive(tasks)
 	})
+	that.broker.Launch()
 }
 
 func (that *dispatcher) onTaskArrive(tasks []*Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
-			log.D("dispatcher",
+			log.D("dispatcher/onTaskArrive",
 				"dispatch task: name=%s, state=%s, id=%s", task.Name, task.StateName(), task.Id)
 			err := worker.Process(task)
 			if err != nil {

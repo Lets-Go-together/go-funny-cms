@@ -15,10 +15,15 @@ type CronWorker struct {
 
 func (that *CronWorker) Process(task *Task) error {
 
-	log.D("worker", "process task: "+task.String())
-	if task.State == TaskStateStarting || task.State == TaskStateRebooting || task.State == TaskStateInitialize {
+	log.D("worker/Process", "process task: "+task.String())
+
+	if task.State == TaskStateStarting || task.State == TaskStateRebooting ||
+		task.State == TaskStateInitialize || task.State == TaskStateRunning {
+
 		return that.startTask(task)
+
 	} else if task.State == TaskSateStopping || task.State == TaskStateDeleting {
+
 		return that.stopTask(task)
 	}
 	return nil

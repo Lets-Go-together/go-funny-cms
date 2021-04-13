@@ -20,10 +20,11 @@ func New() *Scheduler {
 
 func (that *Scheduler) Launch() {
 	that.dispatcher.Launch()
+	that.broker.RestoreTask()
 }
 
 func (that *Scheduler) RegisterTask(taskName string, handleFunc TaskHandleFunc) {
-	if err := that.dispatcher.handleFuncMap.SetHandleFunc(taskName, handleFunc); err != nil {
+	if err := that.taskHandleFuncMap.SetHandleFunc(taskName, handleFunc); err != nil {
 		panic(err)
 	}
 }
@@ -37,7 +38,7 @@ func (that *Scheduler) StopTask(taskId int) {
 }
 
 func (that *Scheduler) StartTask(taskId int) {
-
+	that.broker.StartTask(taskId)
 }
 
 func (that *Scheduler) QueryTaskById(taskId uint64) []Task {

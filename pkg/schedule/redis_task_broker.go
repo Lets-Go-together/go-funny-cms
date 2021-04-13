@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	keyTaskCron = "SCHEDULE:TASKS"
+	keyTaskCron     = "SCHEDULE:TASKS"
+	fieldTaskIdIncr = "id_increment"
 )
 
 type RedisTaskBroker struct {
@@ -27,7 +28,10 @@ func NewRedisTaskBroker() TaskBroker {
 }
 
 func (that *RedisTaskBroker) Launch() {
-	that.redis = config.Redis
+	exist, _ := that.redis.HExists(keyTaskCron, fieldTaskIdIncr).Result()
+	if !exist {
+		that.redis.HSet(keyTaskCron, fieldTaskIdIncr, 0)
+	}
 }
 
 func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
@@ -38,18 +42,23 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 		for {
 			r, err := that.redis.HGetAll(keyTaskCron).Result()
 			if err != nil {
-				log.Err("broker", err)
+				log.Err("broker/StartConsuming", err)
 				// Process err
 				continue
 			}
 
 			var tasks []*Task
-			for _, item := range r {
+			for k, item := range r {
+				if k == fieldTaskIdIncr {
+					continue
+				}
+
 				var task Task
+				log.D("broker/StartConsuming", item)
 
 				if err = json.Unmarshal([]byte(item), &task); err != nil {
 					// Process err
-					log.Err("broker", err)
+					log.Err("broker/StartConsuming", err)
 					continue
 				}
 
@@ -58,27 +67,32 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 					task.broker = &s
 					task.init()
 					tasks = append(tasks, &task)
-					log.D("broker", "task consume: "+task.String())
+					log.D("broker/StartConsuming", "task consume: "+task.String())
 				}
 			}
 
 			if nil != tasks && 0 != len(tasks) {
 				taskObserverFunc(tasks)
-				log.D("broker", "task count: "+strconv.Itoa(len(tasks)))
+				log.D("broker/StartConsuming", "task count: "+strconv.Itoa(len(tasks)))
 			}
+
 			time.Sleep(time.Second * 3)
 		}
 	}(taskObserverFunc)
 }
 
 func (that *RedisTaskBroker) AddTask(task *Task) *Task {
-	log.D("broker", "add task: "+task.String())
+	log.D("broker/AddTask", "add task: "+task.String())
 	task.executeInfo.CreateNow()
+	incr, er := that.redis.HIncrBy(keyTaskCron, fieldTaskIdIncr, 1).Result()
+	if er != nil {
+		panic(er)
+	}
+	task.Id = int(incr)
 	j, err := json.Marshal(task)
 	if err != nil {
 		panic(err)
 	}
-	task.Id = time.Now().Nanosecond()
 	id := strconv.Itoa(task.Id)
 	_, r := that.redis.HSet(keyTaskCron, id, string(j)).Result()
 	if r != nil {
@@ -88,7 +102,7 @@ func (that *RedisTaskBroker) AddTask(task *Task) *Task {
 }
 
 func (that *RedisTaskBroker) UpdateTask(task *Task) {
-	log.D("broker", "update task: "+task.String())
+	log.D("broker/UpdateTask", "update task: "+task.String())
 	j, err := json.Marshal(task)
 	if err != nil {
 		panic(err)
@@ -104,18 +118,22 @@ func (that *RedisTaskBroker) RestoreTask() {
 
 	idTaskMap, err := that.redis.HGetAll(keyTaskCron).Result()
 	if err != nil {
-		log.Err("broker", err)
+		log.Err("broker/RestoreTask", err)
 	}
 
-	for _, item := range idTaskMap {
+	for k, item := range idTaskMap {
+		if k == fieldTaskIdIncr {
+			continue
+		}
 		var task *Task
 
 		if err = json.Unmarshal([]byte(item), &task); err != nil {
-			log.Err("broker", err)
+			log.Err("broker/RestoreTask", err)
 			continue
 		}
 		var s TaskBroker = that
 		task.broker = &s
+		task.executeInfo = &ExecuteInfo{}
 
 		if task.State == TaskSateStopping || task.State == TaskStateStopped {
 			task.State = TaskStateStopped
@@ -131,7 +149,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 			that.taskProcessor([]*Task{task})
 		}
 
-		log.D("broker", "task restore: name=%taskState, current_state=%d", task.Name, task.State)
+		log.D("broker/RestoreTask", "task restore: name=%taskState, current_state=%d", task.Name, task.State)
 	}
 }
 
