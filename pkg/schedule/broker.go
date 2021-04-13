@@ -8,6 +8,7 @@ type TaskBroker interface {
 	StartConsuming(tasks TaskProcessor)
 	UpdateTask(info *Task)
 	StopTask(id int)
+	StartTask(id int)
 	AddTask(info *Task) *Task
 	QueryAllTask() []*Task
 	QueryTaskByState(state TaskState) []*Task
