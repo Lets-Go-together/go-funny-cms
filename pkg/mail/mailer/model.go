@@ -17,6 +17,7 @@ type MailerModel struct {
 	Status      int       `json:"status"`
 	Mailer      string    `json:"mailer"`
 	SendAt      string    `json:"send_at"`
+	SubmitterId int       `json:"submitter_id"`
 	CreatedAt   time.Time `json:"created_at" gorm:"-,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"-,omitempty"`
 }

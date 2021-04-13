@@ -86,7 +86,7 @@ func (that *Express) SetLoggerFile(filename string) error {
 // GetEvent 重设Event
 func (that *Express) GetEvent() Event {
 	if that.Event == nil {
-		that.defaultEvent()
+		_ = that.defaultEvent()
 	}
 	return that.Event
 }

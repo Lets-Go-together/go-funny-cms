@@ -5,6 +5,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
+	"gocms/example/task"
 	"gocms/pkg/auth"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
@@ -67,11 +68,18 @@ func InitApp() *cli.App {
 				},
 			},
 			{
-				Name:    "schedule-exam",
-				Aliases: []string{"sch-exam"},
-				Usage:   "启动一个测试任务分发",
+				Name:  "schedule-run",
+				Usage: "-",
 				Action: func(c *cli.Context) error {
-					backup.DispatchTestProcess()
+					task.SchedlueRun()
+					return nil
+				},
+			},
+			{
+				Name:  "express-run",
+				Usage: "-",
+				Action: func(c *cli.Context) error {
+					task.ExpressRun()
 					return nil
 				},
 			},
