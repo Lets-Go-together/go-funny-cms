@@ -8,16 +8,17 @@ import (
 )
 
 type MailerModel struct {
-	ID          int                 `json:"id"`
-	Title       string              `json:"title"`
-	Recipient   string              `json:"recipient"`
-	Subject     string              `json:"subject"`
-	Content     string              `json:"content"`
-	Attachments []map[string]string `json:"attachments"`
-	Status      int                 `json:"status"`
-	Mailer      string              `json:"mailer"`
-	CreatedAt   time.Time           `json:"created_at" gorm:"-,omitempty"`
-	UpdatedAt   time.Time           `json:"updated_at" gorm:"-,omitempty"`
+	ID          int       `json:"id"`
+	Title       string    `json:"title"`
+	Recipient   string    `json:"recipient"`
+	Subject     string    `json:"subject"`
+	Content     string    `json:"content"`
+	Attachments string    `json:"attachments"`
+	Status      int       `json:"status"`
+	Mailer      string    `json:"mailer"`
+	SendAt      string    `json:"send_at"`
+	CreatedAt   time.Time `json:"created_at" gorm:"-,omitempty"`
+	UpdatedAt   time.Time `json:"updated_at" gorm:"-,omitempty"`
 }
 
 func (MailerModel) TableName() string {

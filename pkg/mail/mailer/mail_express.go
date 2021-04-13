@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jordan-wright/email"
+	"gocms/pkg/logger"
 	"net/smtp"
 	"os"
 	"time"
@@ -111,13 +112,13 @@ func (that *Express) pipe(err error, email *email.Email) error {
 		"to":     string(mailJson),
 		"result": "",
 	}
-	fmt.Println(result, err)
 	if err == nil {
 		event.Success("Success")
 		return err
 	}
 
 	result["result"] = "发送失败, err: " + err.Error()
+	logger.Info("info", result)
 	event.Failed("Error")
 	return err
 }

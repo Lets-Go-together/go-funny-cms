@@ -90,6 +90,8 @@ func InitApp() *cli.App {
 					}
 					task := mailer.NewTaskExpress()
 					task.Dispatch(express)
+
+					mailer.ExpressRun()
 					return nil
 				},
 			},

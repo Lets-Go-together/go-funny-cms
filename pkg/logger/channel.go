@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -12,7 +13,8 @@ import (
 // --------------
 
 func Info(title string, content interface{}) {
-	handle("Info", title, content)
+	c, _ := json.Marshal(content)
+	handle("Info", title, string(c))
 }
 
 func Error(title string, content interface{}) {

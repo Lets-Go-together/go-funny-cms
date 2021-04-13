@@ -1,10 +1,11 @@
 package mailer
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/jordan-wright/email"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
+	"net/textproto"
 	"sync"
 	"time"
 )
@@ -18,7 +19,7 @@ const (
 
 type TaskExpress struct{}
 
-func Run() {
+func ExpressRun() {
 	express := &TaskExpress{}
 	for true {
 		express.load()
@@ -43,7 +44,6 @@ func (that TaskExpress) Dispatch(express *Express) error {
 		return nil
 	}
 
-	fmt.Println(r.Error.Error())
 	return nil
 }
 
@@ -58,16 +58,17 @@ func (that TaskExpress) parse(express *Express) *MailerModel {
 		Recipient:   help.ToJson(r),
 		Subject:     express.Mailer.Mail.Subject,
 		Content:     string(express.Mailer.Mail.HTML),
-		Attachments: express.GetAttachments(),
+		Attachments: help.ToJson(express.GetAttachments()),
 		Status:      TASK_WAIT,
 		Mailer:      help.ToJson(express.Mailer),
+		SendAt:      that.GetSendAt(express.Options.Delay),
 	}
 
 	return model
 }
 
 func (that TaskExpress) load() {
-	list := that.GetQueryTask()
+	list := that.GetQueryTask(1)
 	wg := sync.WaitGroup{}
 	for _, m := range list {
 		express := that.forParse(&m)
@@ -78,14 +79,21 @@ func (that TaskExpress) load() {
 	wg.Wait()
 }
 
+// 获取发送时间
+func (that TaskExpress) GetSendAt(duration time.Duration) string {
+	return time.Now().Add(duration).Format("2006-01-02 15:04:05")
+}
+
 func (that TaskExpress) GetQueryTask(status ...int) []MailerModel {
-	statues := []int{}
-	if len(status) > 0 {
-		statues = status
-	}
 
 	list := []MailerModel{}
-	config.Db.Model(&MailerModel{}).Where("status in (?)", statues).Scan(&list)
+	query := config.Db.Model(&MailerModel{})
+
+	if len(status) > 0 {
+		query.Where("status in (?)", status).Scan(&list)
+	} else {
+		query.Scan(&list)
+	}
 
 	return list
 }
@@ -109,12 +117,16 @@ func (that TaskExpress) ok(id int, status int) {
 
 func (that TaskExpress) forParse(m *MailerModel) *Express {
 	express := NewMailerExpress()
+	mailer := &Mailer{}
+	recipient := &Recipient{}
+	json.Unmarshal([]byte(m.Mailer), &mailer)
+	json.Unmarshal([]byte(m.Recipient), &recipient)
 	express.Mailer.Mail = &email.Email{
-		//To: m.Recipient.To,
-		//From: m.Mailer.Username,
-		//Subject: m.Subject,
-		//HTML: []byte(m.Content),
-		//Headers: textproto.MIMEHeader{},
+		To:      recipient.To,
+		From:    mailer.Username,
+		Subject: m.Subject,
+		HTML:    []byte(m.Content),
+		Headers: textproto.MIMEHeader{},
 	}
 
 	return express
