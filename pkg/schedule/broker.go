@@ -1,15 +1,15 @@
 package schedule
 
-type TaskProsessor func([]*Task)
+type TaskProcessor func([]*Task)
 
 type TaskBroker interface {
 	Launch()
 	RestoreTask()
-	StartConsuming(tasks TaskProsessor)
+	StartConsuming(tasks TaskProcessor)
 	UpdateTask(info *Task)
 	StopTask(id int)
-	AddTask(info *Task)
+	AddTask(info *Task) *Task
 	QueryAllTask() []*Task
-	QueryTypeByState(state int) []*Task
-	QueryTaskById(taskId uint64) []*Task
+	QueryTaskByState(state TaskState) []*Task
+	QueryTaskById(taskId int) *Task
 }

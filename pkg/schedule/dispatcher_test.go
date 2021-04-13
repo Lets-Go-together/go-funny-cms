@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"strconv"
 	"testing"
 	"time"
 )
@@ -20,20 +21,17 @@ func TestNew(t *testing.T) {
 			scheduler.Launch()
 
 			// 注册任务
-			scheduler.RegisterTask("email", func(context *Context) *TaskResult {
+			scheduler.RegisterTask("email", func(context *Context) error {
 				t.Log("Task execute...")
 				// do something
-				return &TaskResult{Success: true, Message: ""}
+				return nil
 			})
 
 			// 新建任务
-			task := Task{
-				Name:     "email", // 固定的, 必须注册过
-				Desc:     "test task",
-				CronExpr: "* * * * * ?",
-			}
+			task := NewTask("email", "test task", "* * * * * ?")
 			// 查询任务
-			scheduler.AddTask(&task)
+			task = scheduler.AddTask(task)
+			t.Log("Task added:" + strconv.Itoa(task.Id))
 			//scheduler.QueryAllTask()
 			//scheduler.QueryTaskById(1)
 			//scheduler.StopTask(1)

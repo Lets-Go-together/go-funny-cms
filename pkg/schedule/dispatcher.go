@@ -34,7 +34,8 @@ func (that *dispatcher) Launch() {
 func (that *dispatcher) onTaskArrive(tasks []*Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
-			log.D("dispatcher", "dispatch task: "+task.Name)
+			log.D("dispatcher",
+				"dispatch task: name=%s, state=%s, id=%s", task.Name, task.StateName(), task.Id)
 			err := worker.Process(task)
 			if err != nil {
 				panic(err)

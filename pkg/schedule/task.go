@@ -1,52 +1,125 @@
 package schedule
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"math"
+	"time"
 )
 
-type TaskState int
+type TaskState uint8
 
 const (
-	TaskStateUnknown TaskState = iota
+	TaskStateInitialize TaskState = iota
 	TaskStateStarting
 	TaskSateStopping
 	TaskStateRebooting
-	TaskStateUpdating
 
 	TaskStateRunning
 	TaskStateStopped
 	TaskStateDeleting
 )
 
-type TaskType int8
+var taskStateStrMap = map[TaskState]string{
+	TaskStateInitialize: "TaskStateInitialize",
+	TaskStateStarting:   "TaskStateStarting",
+	TaskSateStopping:    "TaskSateStopping",
+	TaskStateRebooting:  "askStateRebooting",
+	TaskStateRunning:    "TaskStateRunning",
+	TaskStateStopped:    "TaskStateStopped",
+	TaskStateDeleting:   "TaskStateDeleting",
+}
 
-type TaskHandleFunc func(ctx *Context) *TaskResult
+type TaskType uint8
+
+type TaskHandleFunc func(ctx *Context) error
+
+type ExecuteInfo struct {
+	CreateAt           int64 `json:"create_at"`
+	StopAt             int64 `json:"stop_at"`
+	LastExecuteAt      int64 `json:"last_executed_at"`
+	LastSuccess        int64 `json:"last_success"`
+	LastFail           int64 `json:"last_fail"`
+	AverageSpanTimeSec int64 `json:"average_span_time_sec"`
+	TotalSpanTimeSec   int64 `json:"total_span_time"`
+	TotalExecute       uint  `json:"total_execute"`
+	TotalSuccess       uint  `json:"total_success"`
+}
+
+func (that *ExecuteInfo) CreateNow() {
+	that.CreateAt = that.getNow()
+}
+
+func (that *ExecuteInfo) StopNow() {
+	that.StopAt = that.getNow()
+}
+func (that *ExecuteInfo) ExecuteNow() {
+	that.LastExecuteAt = that.getNow()
+	that.TotalExecute += 1
+}
+
+func (that *ExecuteInfo) SuccessNow() {
+	that.LastSuccess = that.getNow()
+	that.TotalSpanTimeSec += that.getNow() - that.LastExecuteAt
+	that.TotalSuccess += 1
+}
+
+func (that *ExecuteInfo) FailNow() {
+	that.LastFail = that.getNow()
+	that.TotalSpanTimeSec += that.getNow() - that.LastExecuteAt
+	that.TotalSuccess += 1
+}
+
+func (that *ExecuteInfo) getNow() int64 {
+	return time.Now().UnixNano()
+}
 
 type Task struct {
+	Id         int       `json:"id"`
 	TaskId     int       `json:"task_id"`
 	Name       string    `json:"name"`
 	State      TaskState `json:"state"`
 	Desc       string    `json:"desc"`
 	CronExpr   string    `json:"cron_expr"`
-	Timeout    int       `json:"cron_timeout"`
-	RetryTimes int8      `json:"retry_times"`
+	Timeout    uint16    `json:"cron_timeout"`
+	RetryTimes uint8     `json:"retry_times"`
 	Type       *TaskType `json:"type"`
 
-	context *Context
-	broker  *TaskBroker
+	executeInfo *ExecuteInfo
+	context     *Context
+	broker      *TaskBroker
 }
 
-func (that *Task) Execute(context *Context) *TaskResult {
-	return nil
+func NewTask(name string, desc string, cronExpr string) *Task {
+	return &Task{
+		Name:       name,
+		Desc:       desc,
+		State:      TaskStateInitialize,
+		CronExpr:   cronExpr,
+		Timeout:    math.MaxUint16,
+		RetryTimes: 0,
+
+		executeInfo: &ExecuteInfo{},
+	}
+}
+
+func (that *Task) StateName() string {
+	return taskStateStrMap[that.State]
 }
 
 func (that *Task) Context() *Context {
 	return nil
 }
 
-func (that *Task) Log(tag string, log string) {
+func (that *Task) Log(log string) {
 
+}
+
+func (that *Task) init() {
+	if that.executeInfo == nil {
+		that.executeInfo = &ExecuteInfo{}
+	}
 }
 
 func (that *Task) ChangeState(state TaskState) error {
@@ -67,17 +140,27 @@ func (that *Task) String() string {
 func (that *Task) StateInChange() bool {
 	return that.State == TaskStateStarting ||
 		that.State == TaskSateStopping ||
-		that.State == TaskStateUnknown ||
+		that.State == TaskStateInitialize ||
 		that.State == TaskStateRebooting
 }
 
 type Context struct {
-	retryTimes int
+	Task           Task
+	Retry          uint8
+	RetryRemaining uint8
 }
 
 type TaskResult struct {
-	Success bool
-	Message string
+	Success        bool
+	Message        string
+	RetryRemaining uint8
+
+	logs bytes.Buffer
+}
+
+func (that *TaskResult) Log(log string) {
+	that.logs.WriteString(log)
+	that.logs.WriteString("\n")
 }
 
 type TaskHandleFuncMap struct {
@@ -100,15 +183,4 @@ func (that *TaskHandleFuncMap) SetHandleFunc(task string, handleFunc TaskHandleF
 
 func (that *TaskHandleFuncMap) GetHandleFunc(task string) TaskHandleFunc {
 	return that.funcMap[task]
-}
-
-type ExecuteInfo struct {
-	CreateAt           uint64 `json:"create_at"`
-	StopAt             uint64 `json:"stop_at"`
-	LastExecutedAt     uint64 `json:"last_executed_at"`
-	LastSuccess        uint64 `json:"last_success"`
-	AverageSpanTimeSec uint64 `json:"average_s"`
-	TotalSpanTimeSec   uint64 `json:"total_span_time"`
-	TotalExecute       int    `json:"total_execute"`
-	TotalSuccess       int    `json:"total_success"`
 }

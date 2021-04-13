@@ -8,7 +8,7 @@ type Scheduler struct {
 
 func New() *Scheduler {
 
-	broker := &RedisTaskBroker{}
+	broker := NewRedisTaskBroker()
 	handleFuncMap := newTaskHandleFuncMap()
 	d := newDispatcher(broker, handleFuncMap)
 	return &Scheduler{
@@ -28,8 +28,8 @@ func (that *Scheduler) RegisterTask(taskName string, handleFunc TaskHandleFunc) 
 	}
 }
 
-func (that *Scheduler) AddTask(info *Task) {
-	that.broker.AddTask(info)
+func (that *Scheduler) AddTask(info *Task) *Task {
+	return that.broker.AddTask(info)
 }
 
 func (that *Scheduler) StopTask(taskId int) {
