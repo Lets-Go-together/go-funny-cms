@@ -148,10 +148,24 @@ func (that *RedisTaskBroker) StopTask(id int) {
 		panic(err)
 	}
 
-	err = task.ChangeState(TaskSateStopping)
+	task.State = TaskSateStopping
+	that.UpdateTask(&task)
+}
+
+func (that *RedisTaskBroker) StartTask(id int) {
+
+	j, err := that.redis.HGet(keyTaskCron, strconv.Itoa(id)).Result()
 	if err != nil {
 		panic(err)
 	}
+
+	var task Task
+	err = json.Unmarshal([]byte(j), &task)
+	if err != nil {
+		panic(err)
+	}
+	task.State = TaskStateStarting
+	that.UpdateTask(&task)
 }
 
 func (that *RedisTaskBroker) QueryTaskByState(state TaskState) []*Task {
