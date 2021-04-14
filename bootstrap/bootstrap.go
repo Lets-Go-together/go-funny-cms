@@ -20,7 +20,6 @@ func Run(params ...interface{}) {
 		routes.RegisterApiRoutes(router)
 	}
 	config.Router = router
-
 	if len(params) > 0 {
 		if cast.ToBool(params[0]) == true {
 			return

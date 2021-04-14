@@ -18,20 +18,19 @@ func TestNew(t *testing.T) {
 
 			// 初始化
 			var scheduler = New()
-			scheduler.Launch()
-
 			// 注册任务
 			scheduler.RegisterTask("email", func(context *Context) error {
-				t.Log("Task execute...")
+				t.Log("Task execute..." + strconv.Itoa(context.Task.Id))
 				// do something
 				return nil
 			})
+			scheduler.Launch()
 
 			// 新建任务
 			task := NewTask("email", "test task", "* * * * * ?")
-			// 查询任务
+			// 添加任务并立即执行
 			task = scheduler.AddTask(task)
-			t.Log("Task added:" + strconv.Itoa(task.Id))
+			//t.Log("Task added:" + strconv.Itoa(task.Id))
 			//scheduler.QueryAllTask()
 			//scheduler.QueryTaskById(1)
 			//scheduler.StopTask(1)

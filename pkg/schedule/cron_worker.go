@@ -7,6 +7,7 @@ import (
 	"gocms/pkg/schedule/log"
 )
 
+// CronWorker 为 cron.Cron 现实的一个执行器
 type CronWorker struct {
 	cron           *cron.Cron
 	tasks          map[int]*cron.EntryID
@@ -15,10 +16,17 @@ type CronWorker struct {
 
 func (that *CronWorker) Process(task *Task) error {
 
-	log.D("worker", "process task: "+task.String())
-	if task.State == TaskStateStarting || task.State == TaskStateRebooting || task.State == TaskStateInitialize {
+	log.D("worker/Process", "process task: "+task.String())
+
+	if task.State == TaskStateStarting || task.State == TaskStateRebooting ||
+		task.State == TaskStateInitialize || task.State == TaskStateRunning {
+		// 当任务状态为更变为执行时
+
 		return that.startTask(task)
+
 	} else if task.State == TaskSateStopping || task.State == TaskStateDeleting {
+		// 需要停止任务
+
 		return that.stopTask(task)
 	}
 	return nil

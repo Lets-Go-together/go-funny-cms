@@ -10,6 +10,8 @@ import (
 	"github.com/wumansgy/goEncrypt"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"reflect"
 	"time"
@@ -49,7 +51,7 @@ func GetOffset(page int, pageSize int) int {
 }
 
 // 获取当前时间
-func getCurrentTimestamp() string {
+func GetCurrentTimestamp() string {
 	return time.Now().Format("2006-01-02")
 }
 
@@ -107,4 +109,28 @@ func Dectrypt(text string) (string, error) {
 func ToJson(v interface{}) string {
 	r, _ := json.Marshal(v)
 	return string(r)
+}
+
+func GetUrl(url string) string {
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		return ""
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return ""
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return ""
+	}
+	r := string(body)
+
+	return r
 }

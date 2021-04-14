@@ -1,4 +1,4 @@
-package mailer
+package mail
 
 import (
 	"encoding/json"
@@ -47,8 +47,8 @@ func NewMailerExpress() *Express {
 	return express
 }
 
-// SetOptions 设置基础配置
-func (that *Express) SetOptions(options Options) error {
+// UpdateOptions 设置基础配置
+func (that *Express) UpdateOptions(options Options) error {
 	if len(options.LoggerFile) > 0 {
 		that.Options.LoggerFile = options.LoggerFile
 	}
@@ -58,7 +58,7 @@ func (that *Express) SetOptions(options Options) error {
 	}
 
 	if options.Event != nil {
-		that.SetEvent(options.Event)
+		that.UpdateEvent(options.Event)
 	}
 
 	return nil
@@ -70,17 +70,9 @@ func (that *Express) SendNow() error {
 	return that.Mailer.Mail.Send(addr, smtp.PlainAuth("", that.Mailer.Username, that.Mailer.Password, that.Mailer.Host))
 }
 
-// setEvent 支持重置Event
-func (that *Express) SetEvent(e Event) {
+// UpdateEvent 支持重置Event
+func (that *Express) UpdateEvent(e Event) {
 	that.Event = e
-}
-
-// SetLoggerFile 设置日志文件
-func (that *Express) SetLoggerFile(filename string) error {
-	if e := that.isFile(that.Options.LoggerFile); e != nil {
-		return e
-	}
-	return nil
 }
 
 // GetEvent 重设Event
@@ -89,6 +81,14 @@ func (that *Express) GetEvent() Event {
 		_ = that.defaultEvent()
 	}
 	return that.Event
+}
+
+// SetLoggerFile 设置日志文件
+func (that *Express) SetLoggerFile(filename string) error {
+	if e := that.isFile(that.Options.LoggerFile); e != nil {
+		return e
+	}
+	return nil
 }
 
 // GetLoggerFile 支持重置Event
@@ -148,7 +148,7 @@ func (that *Express) defaultEvent() error {
 		e = &DingTalk{}
 	}
 
-	that.SetEvent(e)
+	that.UpdateEvent(e)
 	return nil
 }
 

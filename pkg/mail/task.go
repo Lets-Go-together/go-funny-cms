@@ -1,4 +1,4 @@
-package mailer
+package mail
 
 import (
 	"encoding/json"
@@ -16,6 +16,14 @@ const (
 	TASK_COMPLETED = 3
 	TASK_FAILED    = 4
 )
+
+type TaskWarp interface {
+	UpdateState(id int, state int)
+	QueryTaskByState(state int) []Express
+	QueryTaskByTag(tag string) []Express
+	QueryTaskByEmail(tag string) []Express
+	AddTask(express Express) error
+}
 
 type TaskExpress struct{}
 

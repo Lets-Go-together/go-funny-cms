@@ -4,8 +4,10 @@ import (
 	"gocms/pkg/schedule/log"
 )
 
+// dispatcher 表示任务调度者, 负责接收从 TaskBroker 发布的任务, 并分发给执行者 Worker
 type dispatcher struct {
-	broker        TaskBroker
+	broker TaskBroker
+	// 任务执行者, 暂时只有一个 cron 实现的执行者
 	workers       []Worker
 	handleFuncMap *TaskHandleFuncMap
 }
@@ -25,17 +27,17 @@ func (that *dispatcher) Launch() {
 	for _, worker := range that.workers {
 		worker.Initialize(that.handleFuncMap)
 	}
-	that.broker.Launch()
 	that.broker.StartConsuming(func(tasks []*Task) {
 		that.onTaskArrive(tasks)
 	})
+	that.broker.Launch()
 }
 
 func (that *dispatcher) onTaskArrive(tasks []*Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
-			log.D("dispatcher",
-				"dispatch task: name=%s, state=%s, id=%s", task.Name, task.StateName(), task.Id)
+			log.D("dispatcher/onTaskArrive",
+				"dispatch task: ", "name=", task.Name, ", state=", task.StateName(), ", id=", task.Id)
 			err := worker.Process(task)
 			if err != nil {
 				panic(err)

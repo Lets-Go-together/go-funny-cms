@@ -5,7 +5,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
-	"gocms/example/task"
 	"gocms/pkg/auth"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
@@ -61,45 +60,9 @@ func InitApp() *cli.App {
 			{
 				Name:    "schedule",
 				Aliases: []string{"sch"},
-				Usage:   "启动一个任务处理",
+				Usage:   "任务后台运行（常驻进程）",
 				Action: func(c *cli.Context) error {
-					backup.InitSchedule()
-					return nil
-				},
-			},
-			{
-				Name:  "schedule-run",
-				Usage: "-",
-				Action: func(c *cli.Context) error {
-					task.SchedlueRun()
-					return nil
-				},
-			},
-			{
-				Name:  "express-run",
-				Usage: "-",
-				Action: func(c *cli.Context) error {
-					task.ExpressRun()
-					return nil
-				},
-			},
-			{
-				Name:  "email-test",
-				Usage: "测试邮件发送",
-				Action: func(c *cli.Context) error {
-					express := mailer.NewMailerExpress()
-					express.Options.Delay = time.Minute
-					express.Mailer.Mail = &email.Email{
-						To:      []string{"chenf@surest.cn"},
-						From:    "Jordan Wright <2522257384@qq.com>",
-						Subject: "Awesome Subject",
-						HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
-						Headers: textproto.MIMEHeader{},
-					}
-					task := mailer.NewTaskExpress()
-					task.Dispatch(express)
-
-					mailer.ExpressRun()
+					task.Runing()
 					return nil
 				},
 			},
