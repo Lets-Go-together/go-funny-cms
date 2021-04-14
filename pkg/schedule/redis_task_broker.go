@@ -14,6 +14,7 @@ const (
 	fieldTaskIdIncr = "id_increment"
 )
 
+// RedisTaskBroker 是基于 Redis 实现的任务管理中间人
 type RedisTaskBroker struct {
 	redis         *redis.Client
 	taskProcessor TaskProcessor
@@ -133,7 +134,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 		}
 		var s TaskBroker = that
 		task.broker = &s
-		task.executeInfo = &ExecuteInfo{}
+		task.init()
 
 		if task.State == TaskSateStopping || task.State == TaskStateStopped {
 			task.State = TaskStateStopped
@@ -149,7 +150,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 			that.taskProcessor([]*Task{task})
 		}
 
-		log.D("broker/RestoreTask", "task restore: name=%taskState, current_state=%d", task.Name, task.State)
+		log.D("broker/RestoreTask", "task restore: name=", task.Name, ", current_state=", task.State)
 	}
 }
 
@@ -211,6 +212,10 @@ func (that *RedisTaskBroker) QueryTaskById(taskId int) *Task {
 		return nil
 	}
 	return &task
+}
+
+func (that *RedisTaskBroker) QueryTaskByName(name string) []*Task {
+	return []*Task{}
 }
 
 func (that *RedisTaskBroker) QueryAllTask() []*Task {

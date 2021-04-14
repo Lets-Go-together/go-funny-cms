@@ -27,9 +27,9 @@ func TestNew(t *testing.T) {
 			scheduler.Launch()
 
 			// 新建任务
-			//task := NewTask("email", "test task", "* * * * * ?")
-			// 查询任务
-			//task = scheduler.AddTask(task)
+			task := NewTask("email", "test task", "* * * * * ?")
+			// 添加任务并立即执行
+			task = scheduler.AddTask(task)
 			//t.Log("Task added:" + strconv.Itoa(task.Id))
 			//scheduler.QueryAllTask()
 			//scheduler.QueryTaskById(1)
