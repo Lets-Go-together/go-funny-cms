@@ -16,6 +16,8 @@ import (
 var scheduler = schedule.New()
 
 func Runing() {
+	CToSchedule()
+
 	scheduler.Launch()
 	time.Sleep(time.Hour)
 }
@@ -40,9 +42,6 @@ func CToSchedule() {
 	// 初始化的时候立即执行一下
 	scheduler.StartTask(task.Id)
 	scheduler.StartTask(t.Id)
-
-	scheduler.Launch()
-	time.Sleep(time.Hour)
 }
 
 func testMail() {

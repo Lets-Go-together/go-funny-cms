@@ -1,19 +1,15 @@
 package command
 
 import (
-	"github.com/jordan-wright/email"
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
+	"gocms/example/task"
 	"gocms/pkg/auth"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
-	"gocms/pkg/mail"
 	"gocms/pkg/pools"
-	"gocms/pkg/schedule/backup"
-	"net/textproto"
-	"time"
 )
 
 func init() {
@@ -60,38 +56,9 @@ func InitApp() *cli.App {
 			{
 				Name:    "schedule",
 				Aliases: []string{"sch"},
-				Usage:   "启动一个任务处理",
+				Usage:   "任务后台运行（常驻进程）",
 				Action: func(c *cli.Context) error {
-					backup.InitSchedule()
-					return nil
-				},
-			},
-			{
-				Name:    "schedule-exam",
-				Aliases: []string{"sch-exam"},
-				Usage:   "启动一个测试任务分发",
-				Action: func(c *cli.Context) error {
-					backup.DispatchTestProcess()
-					return nil
-				},
-			},
-			{
-				Name:  "email-test",
-				Usage: "测试邮件发送",
-				Action: func(c *cli.Context) error {
-					express := mail.NewMailerExpress()
-					express.Options.Delay = time.Minute
-					express.Mailer.Mail = &email.Email{
-						To:      []string{"chenf@surest.cn"},
-						From:    "Jordan Wright <2522257384@qq.com>",
-						Subject: "Awesome Subject",
-						HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
-						Headers: textproto.MIMEHeader{},
-					}
-					task := mail.NewTaskExpress()
-					task.Dispatch(express)
-
-					mail.ExpressRun()
+					task.Runing()
 					return nil
 				},
 			},
