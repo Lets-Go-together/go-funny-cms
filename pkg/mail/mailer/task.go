@@ -17,6 +17,12 @@ const (
 	TASK_FAILED    = 4
 )
 
+type TaskBroker interface {
+	UpdateState(id int, state int)
+	QueryTaskByState(state int) []Express
+	AddTask(express Express) error
+}
+
 type TaskExpress struct{}
 
 func ExpressRun() {
@@ -37,7 +43,6 @@ func (that TaskExpress) Dispatch(express *Express) error {
 	}
 
 	model := that.parse(express)
-
 	r := config.Db.Model(&model).Create(&model)
 
 	if r.RowsAffected > 0 {
