@@ -33,15 +33,15 @@ func CToSchedule() {
 		testMail()
 		return nil
 	})
-	task := schedule.NewTask("dingding", "每个小时执行操作 ....", "0 * * * * *")
+	task := schedule.NewTask("dingding", "每个小时执行操作 ....", "0 * * * * ?")
 	task = scheduler.AddTask(task)
 
-	t := schedule.NewTask("mail", "每9点执行操作 ....", "0 9 * * * *")
+	t := schedule.NewTask("mail", "每9点执行操作 ....", "0 9 * * * ?")
 	t = scheduler.AddTask(t)
 
 	// 初始化的时候立即执行一下
-	scheduler.StartTask(task.Id)
-	scheduler.StartTask(t.Id)
+	//scheduler.StartTask(task.Id)
+	//scheduler.StartTask(t.Id)
 }
 
 func testMail() {
@@ -76,7 +76,7 @@ func GetNews() string {
 	title := fmt.Sprintf("<h2>城市: %s | 星期几: %s | 天气: %s</h2>", result["city"], result["week"], fmt.Sprintf("%s%s%s", result["temp"], "-", result["temphigh"]))
 	content := "<ul>"
 	for _, i := range cresult {
-		content += "<li>" + i.Get("iname").String() + i.Get("ivalue").String() + i.Get("detail").String() + "</li>"
+		content += "<li>" + i.Get("iname").String() + " | " + i.Get("ivalue").String() + " | " + i.Get("detail").String() + "</li>"
 	}
 	content += "</ul>"
 	content = title + content
