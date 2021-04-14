@@ -8,7 +8,7 @@ import (
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/config"
 	"gocms/pkg/enum"
-	"gocms/pkg/mail/mailer"
+	"gocms/pkg/mail"
 	"gocms/pkg/response"
 	"gocms/wrap"
 )
@@ -21,9 +21,9 @@ var mailService = new(service.MailService)
 // 根据权限配置可选，如果当前用户存在查看全部用户邮件的权限即可放开查看所有人的权限
 func (m *MailController) List(c *wrap.ContextWrapper) {
 	id := admin.AuthUser.Id
-	model := &mailer.MailerModel{}
+	model := &mail.MailerModel{}
 	query := config.Db.Model(model)
-	list := []mailer.MailerModel{}
+	list := []mail.MailerModel{}
 
 	params := &validates.MailListQuery{}
 	c.ShouldBind(&params)
@@ -59,7 +59,7 @@ func (m *MailController) Send(c *wrap.ContextWrapper) {
 	params := validates.MailSendValidate{}
 	_ = c.ShouldBind(&params)
 
-	express := mailer.NewMailerExpress()
+	express := mail.NewMailerExpress()
 	express.Options.Delay = mailService.CalcuateDelayByNow(params.SendAt)
 	express.Mailer.Mail = &email.Email{
 		To:      params.To,
@@ -69,7 +69,7 @@ func (m *MailController) Send(c *wrap.ContextWrapper) {
 		Subject: params.Subject,
 		HTML:    mailService.GetHtmlForTemplate(params.HTML),
 	}
-	task := mailer.NewTaskExpress()
+	task := mail.NewTaskExpress()
 	if err := task.Dispatch(express); err != nil {
 		response.ErrorResponse(500, "邮件通道异常").WriteTo(c)
 		return
