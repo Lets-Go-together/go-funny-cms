@@ -15,6 +15,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 	permissionController := new(Admin.PermissionController)
 	roleController := new(Admin.RoleController)
 	menuController := new(Admin.MenuController)
+	notificationController := new(Admin.NotificationController)
 
 	rt :=
 		group("api",
@@ -55,6 +56,11 @@ func RegisterApiRoutes(engine *gin.Engine) {
 					put("/save", menuController.Save),
 					delete_("/delete", menuController.Destory),
 					get("/tree", menuController.Tree),
+				),
+				group("notify",
+					get("", notificationController.List),
+					post("read", notificationController.Readed),
+					put("store", notificationController.Store),
 				),
 			),
 			get("/qiniu", toolController.Qiniu),

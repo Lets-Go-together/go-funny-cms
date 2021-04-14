@@ -1,4 +1,4 @@
-package mailer
+package mail
 
 import "fmt"
 
@@ -9,10 +9,7 @@ const (
 
 // Event 邮件发送事件
 type Event interface {
-	// 成功事件
 	Success(v interface{}) error
-
-	// 失败事件
 	Failed(v interface{}) error
 }
 
@@ -23,7 +20,6 @@ func (t DingTalk) Success(v interface{}) error {
 	fmt.Println("钉钉通知: ", v)
 	return nil
 }
-
 func (t DingTalk) Failed(v interface{}) error {
 	return nil
 }
@@ -35,7 +31,6 @@ func (t Wechat) Success(v interface{}) error {
 	fmt.Println("Wechat通知 Ssccess: ", v)
 	return nil
 }
-
 func (t Wechat) Failed(v interface{}) error {
 	return nil
 }

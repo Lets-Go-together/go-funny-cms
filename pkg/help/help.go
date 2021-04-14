@@ -49,7 +49,7 @@ func GetOffset(page int, pageSize int) int {
 }
 
 // 获取当前时间
-func getCurrentTimestamp() string {
+func GetCurrentTimestamp() string {
 	return time.Now().Format("2006-01-02")
 }
 

@@ -108,3 +108,11 @@ func (*AdminService) UpdateOrCreate(adminModel admin.Admin, c *wrap.ContextWrapp
 
 	return true
 }
+
+// GetAllAdmins 获取所有的管理员
+func (*AdminService) GetAllAdmins(condigion map[string]interface{}, fields string) []admin.Admin {
+	list := []admin.Admin{}
+	config.Db.Model(&admin.Admin{}).Where(condigion).Select(fields).Scan(&list)
+
+	return list
+}

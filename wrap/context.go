@@ -2,6 +2,7 @@ package wrap
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"net/http"
 )
 
@@ -69,8 +70,8 @@ func (that *ContextWrapper) Query(key string) string {
 	return that.ctx.Query(key)
 }
 
-func (that *ContextWrapper) DefaultQuery(key string, def string) string {
-	return that.ctx.DefaultQuery(key, def)
+func (that *ContextWrapper) DefaultQuery(key string, def interface{}) string {
+	return that.ctx.DefaultQuery(key, cast.ToString(def))
 }
 
 func (that *ContextWrapper) Param(key string) string {

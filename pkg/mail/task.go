@@ -1,4 +1,4 @@
-package mailer
+package mail
 
 import (
 	"encoding/json"
@@ -17,9 +17,11 @@ const (
 	TASK_FAILED    = 4
 )
 
-type TaskBroker interface {
+type TaskWarp interface {
 	UpdateState(id int, state int)
 	QueryTaskByState(state int) []Express
+	QueryTaskByTag(tag string) []Express
+	QueryTaskByEmail(tag string) []Express
 	AddTask(express Express) error
 }
 
