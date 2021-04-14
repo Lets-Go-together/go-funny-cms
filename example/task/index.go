@@ -2,23 +2,15 @@ package task
 
 import (
 	"fmt"
-	"gocms/pkg/mail/mailer"
+	"github.com/blinkbean/dingtalk"
+	"github.com/jordan-wright/email"
+	"github.com/tidwall/gjson"
+	"gocms/pkg/help"
+	"gocms/pkg/logger"
+	"gocms/pkg/mail"
 	"gocms/pkg/schedule"
-)
-
-func main() {
-
-}
-
-func SchedlueRun() {
-	fmt.Println("启动成功 ! \n")
-	var scheduler = schedule.New()
-	scheduler.Launch()
-}
-
-func ExpressRun() {
-	fmt.Println("启动成功 ! \n")
-	mailer.ExpressRun()
+	"net/textproto"
+	"time"
 )
 
 var scheduler = schedule.New()

@@ -1,19 +1,15 @@
 package command
 
 import (
-	"github.com/jordan-wright/email"
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
+	"gocms/example/task"
 	"gocms/pkg/auth"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
-	"gocms/pkg/mail/mailer"
 	"gocms/pkg/pools"
-	"gocms/pkg/schedule/backup"
-	"net/textproto"
-	"time"
 )
 
 func init() {
