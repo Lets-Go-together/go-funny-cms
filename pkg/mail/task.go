@@ -75,7 +75,10 @@ func (that TaskExpress) parse(express *Express) *MailerModel {
 }
 
 func (that TaskExpress) load() {
-	list := that.GetQueryTask(1)
+	conditon := map[string]interface{}{
+		"status": []int{1},
+	}
+	list := that.GetQueryTask(conditon)
 	wg := sync.WaitGroup{}
 	for _, m := range list {
 		express := that.forParse(&m)
@@ -91,17 +94,12 @@ func (that TaskExpress) GetSendAt(duration time.Duration) string {
 	return time.Now().Add(duration).Format("2006-01-02 15:04:05")
 }
 
-func (that TaskExpress) GetQueryTask(status ...int) []MailerModel {
+func (that TaskExpress) GetQueryTask(condition interface{}) []MailerModel {
 
 	list := []MailerModel{}
 	query := config.Db.Model(&MailerModel{})
 
-	if len(status) > 0 {
-		query.Where("status in (?)", status).Scan(&list)
-	} else {
-		query.Scan(&list)
-	}
-
+	query.Where(condition).Scan(&list)
 	return list
 }
 
