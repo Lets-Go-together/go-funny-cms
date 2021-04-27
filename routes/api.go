@@ -65,6 +65,7 @@ func RegisterApiRoutes(engine *gin.Engine) {
 				),
 				group("mail",
 					get("", MailController.List),
+					get("mailer", MailController.Mailer),
 				),
 			),
 			get("/qiniu", toolController.Qiniu),

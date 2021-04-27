@@ -36,3 +36,10 @@ func (m *MailController) List(c *wrap.ContextWrapper) {
 func (m *MailController) Store(c *wrap.ContextWrapper) {
 
 }
+
+func (m *MailController) Mailer(c *wrap.ContextWrapper) {
+	mailers := config.GetMailerLabels()
+
+	response.SuccessResponse(mailers).WriteTo(c)
+	return
+}
