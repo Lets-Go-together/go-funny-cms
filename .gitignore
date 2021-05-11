@@ -1,3 +1,4 @@
 node_modules/
 pkg/schedule/.env
 .idea
+.env

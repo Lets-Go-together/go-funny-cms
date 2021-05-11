@@ -4,11 +4,11 @@ import (
 	"github.com/urfave/cli/v2"
 	"gocms/bootstrap"
 	"gocms/example/pkg1"
-	"gocms/example/task"
 	"gocms/pkg/auth"
 	"gocms/pkg/auth/rabc"
 	"gocms/pkg/casbin"
 	"gocms/pkg/config"
+	"gocms/pkg/mail"
 	"gocms/pkg/pools"
 )
 
@@ -54,11 +54,11 @@ func InitApp() *cli.App {
 				},
 			},
 			{
-				Name:    "schedule",
+				Name:    "express-run",
 				Aliases: []string{"sch"},
 				Usage:   "任务后台运行（常驻进程）",
 				Action: func(c *cli.Context) error {
-					task.Runing()
+					mail.ExpressRun()
 					return nil
 				},
 			},

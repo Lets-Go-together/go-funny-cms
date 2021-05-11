@@ -53,6 +53,13 @@ func GeneratePermissionNodes() {
 	}
 }
 
+func AllowPermission(account string, permission string, method string) bool {
+	if account == "admin" {
+		return true
+	}
+	return HasPermissionForUser(account, permission, method)
+}
+
 // GetPermissionNodes 获取全部权限节点
 // 参数为空的的时候：返回本地的路由中的权限节点
 // 否则返回数据库的

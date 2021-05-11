@@ -2,79 +2,78 @@ package controllers
 
 import (
 	"github.com/jordan-wright/email"
+	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
-	"gocms/app/models/admin"
-	"gocms/app/service"
-	"gocms/pkg/auth/rabc"
+	"gocms/app/models/mail_record"
+	"gocms/app/validates/validate"
 	"gocms/pkg/config"
-	"gocms/pkg/enum"
+	"gocms/pkg/help"
 	"gocms/pkg/mail"
 	"gocms/pkg/response"
 	"gocms/wrap"
+	"net/textproto"
 )
 
 type MailController struct{}
 
-var mailService = new(service.MailService)
-
-// List 查看发送邮件
-// 根据权限配置可选，如果当前用户存在查看全部用户邮件的权限即可放开查看所有人的权限
 func (m *MailController) List(c *wrap.ContextWrapper) {
-	id := admin.AuthUser.Id
-	model := &mail.MailerModel{}
-	query := config.Db.Model(model)
-	list := []mail.MailerModel{}
+	page := c.DefaultQuery("page", 1)
+	pageSize := c.DefaultQuery("pageSize", 10)
 
-	params := &validates.MailListQuery{}
-	c.ShouldBind(&params)
+	model := &mail_record.MailRecord{}
+	models := []mail_record.MailRecord{}
+	query := config.Db.Model(&model)
+	query = query.Limit(pageSize).Offset(page).Scan(&models)
 
-	if b := rabc.HasPermissionForUser(admin.AuthUser.Account, "showAllEmails", enum.PMETHODANY); b == false {
-		query.Where(map[string]interface{}{"submitter_id": id})
+	mailIds := []int{}
+	for _, model := range models {
+		mailIds = append(mailIds, cast.ToInt(model.ID))
 	}
 
-	if params.SubmitterId > 0 {
-		query.Where(map[string]interface{}{"submitter_id": params.SubmitterId})
+	condition := map[string]interface{}{
+		"id": mailIds,
 	}
-
-	if len(params.Email) > 0 {
-		query.Where(map[string]interface{}{"email": params.Email})
-	}
-	if params.Status > 0 {
-		query.Where(map[string]interface{}{"status": params.Status})
-
-	}
-	if len(params.StartAt) > 0 {
-		query.Where("send_at BETWEEN ? and ?", params.StartAt, params.EndAt)
-
-	}
-
-	query.Scan(&list)
-
-	response.SuccessResponse(list).WriteTo(c)
+	mailsModel := mail.NewTaskExpress().GetQueryTask(condition)
+	response.SuccessResponse(mailsModel).WriteTo(c)
 	return
 }
 
-// Send 发送邮件
-func (m *MailController) Send(c *wrap.ContextWrapper) {
-	params := validates.MailSendValidate{}
+// Store 处理邮件发送
+func (m *MailController) Store(c *wrap.ContextWrapper) {
+	var params validates.EmailValidate
 	_ = c.ShouldBind(&params)
 
-	express := mail.NewMailerExpress()
-	express.Options.Delay = mailService.CalcuateDelayByNow(params.SendAt)
-	express.Mailer.Mail = &email.Email{
-		To:      params.To,
-		Bcc:     params.Bcc,
-		Cc:      params.Cc,
-		From:    "Jordan Wright <2522257384@qq.com>", // 这个地方有异议 先写死
-		Subject: params.Subject,
-		HTML:    mailService.GetHtmlForTemplate(params.HTML),
-	}
-	task := mail.NewTaskExpress()
-	if err := task.Dispatch(express); err != nil {
-		response.ErrorResponse(500, "邮件通道异常").WriteTo(c)
+	if !validate.WithResponseMsg(params, c) {
 		return
 	}
 
+	for _, to := range params.Emails {
+		express := mail.NewMailerExpress()
+		express.Mailer.Mail = &email.Email{
+			To:      []string{to},
+			Subject: params.Subject,
+			HTML:    []byte(params.Content),
+			Headers: textproto.MIMEHeader{},
+		}
+		express.Attachments = params.Attachments
+		SendAt := help.ParseTime(params.SendAt)
+		express.Options.SendAt = SendAt
+
+		task := mail.NewTaskExpress()
+		err := task.Dispatch(express)
+		if err != nil {
+			response.ErrorResponse(501, err.Error()).WriteTo(c)
+			return
+		}
+	}
+
 	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+func (m *MailController) Mailer(c *wrap.ContextWrapper) {
+	mailers := config.GetMailerLabels()
+
+	response.SuccessResponse(mailers).WriteTo(c)
 	return
 }

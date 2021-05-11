@@ -7,10 +7,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/wumansgy/goEncrypt"
 	"gocms/pkg/config"
 	"gocms/pkg/logger"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"reflect"
@@ -133,4 +135,36 @@ func GetUrl(url string) string {
 	r := string(body)
 
 	return r
+}
+
+func CheckFileIsExist(filename string) bool {
+	exist := true
+	if _, err := os.Stat(filename); err != nil {
+		exist = false
+	}
+	return exist
+}
+
+func WriteFileToTemp(filename string, contentByte []byte) string {
+	filename = fmt.Sprintf("./%s/%s", "storage/temp", filename)
+	err := ioutil.WriteFile(filename, contentByte, 0666)
+	logger.PanicError(err, "WriteFileToTemp", false)
+
+	filename = mime.QEncoding.Encode("UTF-8", filename)
+	return filename
+}
+
+func Now() time.Time {
+	timelocal := time.FixedZone("UTC", 8*3600)
+	return time.Now().In(timelocal)
+}
+
+func ParseTime(ct string) time.Time {
+	var t time.Time
+	if len(ct) == 0 {
+		t = Now()
+	} else {
+		t, _ = time.ParseInLocation(TimeLayut, ct, time.Local)
+	}
+	return t
 }
