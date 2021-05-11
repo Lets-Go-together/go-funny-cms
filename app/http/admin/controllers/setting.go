@@ -16,7 +16,7 @@ type SettingController struct{}
 
 // bindEmail 账号绑定Email
 func (s SettingController) bindEmail(c *wrap.ContextWrapper) {
-	var params validates.EmailValidate
+	var params validates.EmailBindValidate
 	c.ShouldBind(&params)
 
 	if !validate.WithResponseMsg(params, c, "Email 参数错误") {
