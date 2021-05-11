@@ -24,7 +24,7 @@ func GerateAdminUser(account string) {
 		return
 	}
 
-	p := "12345678"
+	p := "123456"
 	password := CreatePassword(p)
 	adminModel := admin.Admin{
 		Account:  account,

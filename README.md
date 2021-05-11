@@ -2,112 +2,59 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Lets-Go-together/go-funny-cms)](https://goreportcard.com/report/github.com/Lets-Go-together/go-funny-cms)
 
-## 项目
+## 项目简介
 
-### 项目目录整体划分
+是一个简单版本使用`casbin` + `Golang` 开发的通用后台管理系统
 
-- app 核心目录 ，控制器、model 等都在这里
+项目结构参考了`Laravel`初始化目录结构，更加便于 phper 进行开发和学习
 
-- bootstrap:  辅助函数
+目前采用的技术栈如下
 
-- config:  配置加载
+- golang
+- gin
+- gorm(等)
+- vue + design-vue
+- casbin
 
-- pkg:  配置加载service
+采用前后端分离的开发方式
 
-- public:  静态文件
+## 目前支持功能
 
-- resources: 资源文件/前端项目
+- 后台账号管理
+- 用户权限控制
+- 自动权限路由生成
+- RABC + ABC权限控制
+- 自定义控制菜单栏
 
-- .air.toml:  监听
+## 目录结构
 
-- .env: 配置
+目前此系统未集成什么功能，非常便于二次开发进行，目录结构清晰
 
-- .env.example: 辅助配置参考
+    - app :应用模块 （在次同级别目录，你可以同样创建app2目录）
+        - http :api 接口操作相关
+            - admin : 根据应用内模块区分
+                - controler : 控制器层
+                - validate : 关于reuqest 和 验证器都走这里
+            - index : 例如客户端api 模块
+                - 同上...
+            - middleware : 用于中间件管理（可参考api 中间件的使用）
 
-### 前端后台
+        - models : 模型
+        - service: 字如其名 （service层）
+        - validates: 验证器的二次封装
+    - ... 中间的没什么好介绍的
+    - pkg : 自定义创建的一些包，便于二次开发和提取
 
-    # 参考至
-    git clone https://github.com/vueComponent/ant-design-vue-pro.git
-    
-目录地址: `resource/front`
-    
-编译:
-    
-    # 项目根目录
-    
-    npm install
-    npm run server
-    
-### 前端客户端
+## 我的未来
 
-目录地址: `resource/views`
-    
+由于时间的关系或者我个人的关系，需要去做一些更重要更值得做的事情，所以就草草的收尾了这个项目，欢迎提出有趣的想法和见解，我们一起来个思想碰撞，我也在致力于做一些自己的产品。
 
-### 相关包备注
+以上这个项目，如果有有趣的想法，欢迎一起讨论，再基础上继续开发
 
-    github.com/cheggaaa/pb/v3 进度条
-    
-### 第一次操作
-
-    cp .env.example .env
-    go build main.go && ./main generate-jwt
-    # 或者
-    go run main.go generate-jwt
-    :按提示操作
-    
-    # 开发环境配置
-    # 安装air
-    # 根目录运行
-    air
-    
-### 进度
-
-**11-21**: 
-
-    jwt、响应、日志、db等操作基本完成
-    
-**11-24**
-
-    配置jwt密钥生成
-    
-**11-25**
-
-    # 创建账户
-    > go run main.go create-admin-user -h
-    > go run main.go create-admin-user  --account [你的账户名称]
-    
-    # 登陆
-    > air
-    curl --location --request POST '127.0.0.1:8082/api/admin/login' \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --data-urlencode 'account=chenf' \
-    --data-urlencode 'password=123456'
-
-**11-27**
-
-    # 新增中间件
-    
-    # 新增配置
-    # 默认秒
-    # pkg/auth/jwt.go:25
-    JWT_EXPIRE_AT=10
-    
-    # 前端登陆注销对接完成
-
-**研究一下项目要写什么东西**
-
-参考项目
-
-- 
-
-### 资源路由定义
-
-！遵从这个范式
-
-![资源路由定义](https://images2015.cnblogs.com/blog/1128628/201703/1128628-20170321171908565-765352970.png)
+我们都"不止于此" ~
 
 
-### 线上地址
+### 线上地址演示
 
     https://admin-go.surest.cn
     账号: surest

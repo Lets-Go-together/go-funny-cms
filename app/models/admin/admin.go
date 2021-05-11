@@ -19,7 +19,7 @@ type Admin struct {
 	Phone       string            `validate:"required" json:"phone"`
 	Avatar      string            `validate:"required,url" json:"avatar"`
 	Roles       []string          `json:"roles" gorm:"-"`
-	RoleIds     base.IntJson      `json:"role_ids"`
+	RoleIds     base.IntJson      `json:"role_ids" gorm:"-"`
 	Menus       []menu.MenuRouter `json:"menus" gorm:"-"`
 }
 
