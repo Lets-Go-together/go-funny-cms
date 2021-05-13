@@ -17,6 +17,7 @@ const (
 	TASK_RUNING    = 2
 	TASK_COMPLETED = 3
 	TASK_FAILED    = 4
+	TASK_DELETE    = 5
 )
 
 type TaskWarp interface {
@@ -84,7 +85,7 @@ func (that *TaskExpress) load() {
 	wg := sync.WaitGroup{}
 	for _, m := range list {
 		if that.allowSend(m) {
-			express := that.forParse(&m)
+			express := that.ForParse(&m)
 			wg.Add(1)
 			go func(express *Express, id int) {
 				express.Send(express, id)
@@ -110,7 +111,7 @@ func (that *TaskExpress) GetQueryTask(condition interface{}) []MailerModel {
 	return list
 }
 
-func (that *TaskExpress) forParse(m *MailerModel) *Express {
+func (that *TaskExpress) ForParse(m *MailerModel) *Express {
 	express := NewMailerExpress()
 	mailer := &Mailer{}
 	var attachments []interface{}

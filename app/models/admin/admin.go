@@ -33,7 +33,7 @@ type AuthAdmin struct {
 	RoleIds     []int               `json:"role_ids" `
 	Avatar      string              `json:"avatar"`
 	Roles       []string            `json:"roles"`
-	Menus       []menu.MenuRouter   `json:"menus"`
+	Menus       []menu.MenuRouter   `json:"menus",omitempty`
 	Permissions []map[string]string `json:"permissions"`
 }
 

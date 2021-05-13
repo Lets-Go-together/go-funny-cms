@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gocms/app/models/admin"
+	"gocms/app/models/menu"
 	"gocms/pkg/auth"
-	"gocms/pkg/auth/rabc"
 	"gocms/pkg/logger"
 	"gocms/pkg/response"
 )
@@ -28,19 +28,16 @@ func Authenticate(c *gin.Context) {
 		c.Abort()
 	}
 
+	menus := admin.GetMenus(adminUser.Roles, adminUser.Account)
+	fmt.Println(len(menus))
+	adminUser.Menus = make([]menu.MenuRouter, len(menus))
+	for k, menu := range menus {
+		adminUser.Menus[k] = menu
+	}
+
 	adminUser.Roles = admin.GetRoles(adminUser.Account)
-	adminUser.Menus = admin.GetMenus(adminUser.Roles, adminUser.Account)
 	adminUser.Permissions = admin.GetPermissions(adminUser.Account)
 	admin.AuthUser = adminUser
-
-	fmt.Println(adminUser)
-	// 权限检查
-	permission := c.FullPath()
-	method := c.Request.Method
-	if !rabc.AllowPermission(adminUser.Account, permission, method) {
-		response.ErrorResponse(403, "您没有权限操作").WriteTo(c)
-		c.Abort()
-	}
 
 	c.Next()
 }

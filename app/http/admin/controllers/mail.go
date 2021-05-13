@@ -4,7 +4,6 @@ import (
 	"github.com/jordan-wright/email"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
-	"gocms/app/models/mail_record"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
@@ -19,22 +18,20 @@ type MailController struct{}
 func (m *MailController) List(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", 1)
 	pageSize := c.DefaultQuery("pageSize", 10)
+	keyword := c.DefaultQuery("keyword", "")
+	total := 0
 
-	model := &mail_record.MailRecord{}
-	models := []mail_record.MailRecord{}
-	query := config.Db.Model(&model)
-	query = query.Limit(pageSize).Offset(page).Scan(&models)
+	list := []mail.MailerModel{}
+	query := config.Db.Model(&mail.MailerModel{})
 
-	mailIds := []int{}
-	for _, model := range models {
-		mailIds = append(mailIds, cast.ToInt(model.ID))
+	if len(keyword) > 0 {
+		query = query.Where("name like ?", "%"+keyword+"%")
 	}
 
-	condition := map[string]interface{}{
-		"id": mailIds,
-	}
-	mailsModel := mail.NewTaskExpress().GetQueryTask(condition)
-	response.SuccessResponse(mailsModel).WriteTo(c)
+	query.Limit(pageSize).Offset(page).Scan(&list)
+	query.Count(&total)
+
+	response.SuccessResponse(list).WriteTo(c)
 	return
 }
 
@@ -75,5 +72,34 @@ func (m *MailController) Mailer(c *wrap.ContextWrapper) {
 	mailers := config.GetMailerLabels()
 
 	response.SuccessResponse(mailers).WriteTo(c)
+	return
+}
+
+// 重新发送
+func (m *MailController) Resend(c *wrap.ContextWrapper) {
+	id := c.DefaultQuery("id", 0)
+
+	mailModel := mail.MailerModel{}
+	config.Db.Model(mailModel).Find(&mailModel, id)
+
+	task := mail.NewTaskExpress()
+	express := task.ForParse(&mailModel)
+
+	express.Send(express, cast.ToInt(id))
+
+	response.SuccessResponse().WriteTo(c)
+	return
+}
+
+// 重新发送
+func (m *MailController) Delete(c *wrap.ContextWrapper) {
+	id := c.DefaultQuery("id", 0)
+
+	mailModel := mail.MailerModel{}
+	config.Db.Model(mailModel).Where("id = ?", id).Update(map[string]int{
+		"status": mail.TASK_DELETE,
+	})
+
+	response.SuccessResponse().WriteTo(c)
 	return
 }

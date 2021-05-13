@@ -183,7 +183,6 @@ func (that *Express) HandleAttachments() {
 		filename := val["filename"].(string)
 		go func(url string, group *sync.WaitGroup) {
 			mimeType := mime.TypeByExtension(filepath.Ext(filename))
-			fmt.Println(mimeType)
 			a, _ := that.Mailer.Mail.Attach(bytes.NewBufferString(help.GetUrl(url)), filename, fmt.Sprintf("%s; charset=utf-8", mimeType))
 			attachmentsWrapper = append(attachmentsWrapper, a)
 			wg.Done()
@@ -203,7 +202,6 @@ func (that *Express) complete(id int) {
 }
 func (that *Express) failed(id int, err error) {
 	that.ok(id, TASK_FAILED)
-
 	config.Db.Model(&MailerModel{}).Where("id = ?", id).Update(map[string]string{
 		"remark": err.Error(),
 	})
@@ -223,10 +221,9 @@ func (that *Express) Send(express *Express, id int) error {
 	that.runing(id)
 	err := that.SendNow()
 
-	//err = that.pipe(err, that.Mailer.Mail)
-	fmt.Println("err", err)
+	err = that.pipe(err, that.Mailer.Mail)
 
-	if err != nil {
+	if err == nil {
 		that.complete(id)
 	} else {
 		that.failed(id, err)
