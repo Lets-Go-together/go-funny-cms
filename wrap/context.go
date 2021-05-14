@@ -41,55 +41,63 @@ type ContextWrapper struct {
 	//*gin.Context
 
 	// TODO 2021-1-25 屏蔽实际 Context, 便于控制修改需要暴露的接口和屏蔽不必要的接口, 利于规范代码
-	ctx *gin.Context
+	Ctx *gin.Context
 }
 
-func Context(ctx *gin.Context) *ContextWrapper {
+func Context(Ctx *gin.Context) *ContextWrapper {
 	return &ContextWrapper{
-		ctx: ctx,
+		Ctx: Ctx,
 	}
 }
 
 func (that *ContextWrapper) ResponseJson(json interface{}) {
-	that.ctx.JSON(http.StatusAccepted, &json)
+	that.Ctx.JSON(http.StatusAccepted, &json)
 }
 
 func (that *ContextWrapper) ResponseString(str string) {
-	that.ctx.String(http.StatusAccepted, str)
+	that.Ctx.String(http.StatusAccepted, str)
 }
 
 func (that *ContextWrapper) Unauthorized() {
-	that.ctx.AbortWithStatus(http.StatusUnauthorized)
+	that.Ctx.AbortWithStatus(http.StatusUnauthorized)
 }
 
 func (that *ContextWrapper) Forbidden() {
-	that.ctx.AbortWithStatus(http.StatusForbidden)
+	that.Ctx.AbortWithStatus(http.StatusForbidden)
 }
 
 func (that *ContextWrapper) Query(key string) string {
-	return that.ctx.Query(key)
+	return that.Ctx.Query(key)
 }
 
 func (that *ContextWrapper) DefaultQuery(key string, def interface{}) string {
-	return that.ctx.DefaultQuery(key, cast.ToString(def))
+	return that.Ctx.DefaultQuery(key, cast.ToString(def))
 }
 
 func (that *ContextWrapper) Param(key string) string {
-	return that.ctx.Param(key)
+	return that.Ctx.Param(key)
 }
 
 func (that *ContextWrapper) JSON(code int, data interface{}) {
-	that.ctx.JSON(code, data)
+	that.Ctx.JSON(code, data)
 }
 
 func (that *ContextWrapper) BindJSON(i interface{}) error {
-	return that.ctx.BindJSON(i)
+	return that.Ctx.BindJSON(i)
 }
 
 func (that *ContextWrapper) ShouldBind(i interface{}) error {
-	return that.ctx.ShouldBind(i)
+	return that.Ctx.ShouldBind(i)
+}
+
+func (that *ContextWrapper) ShouldBindQuery(i interface{}) error {
+	return that.Ctx.ShouldBindQuery(i)
+}
+
+func (that *ContextWrapper) GetQueryArray(key string) ([]string, bool) {
+	return that.Ctx.GetQueryArray(key)
 }
 
 func (that *ContextWrapper) PostForm(key string) string {
-	return that.ctx.PostForm(key)
+	return that.Ctx.PostForm(key)
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/jordan-wright/email"
 	"github.com/spf13/cast"
 	"gocms/app/http/admin/validates"
+	"gocms/app/models/base"
 	"gocms/app/validates/validate"
 	"gocms/pkg/config"
 	"gocms/pkg/help"
@@ -19,6 +20,7 @@ func (m *MailController) List(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", 1)
 	pageSize := c.DefaultQuery("pageSize", 10)
 	keyword := c.DefaultQuery("keyword", "")
+	status, _ := c.Ctx.GetQueryArray("status[]")
 	total := 0
 
 	list := []mail.MailerModel{}
@@ -28,10 +30,18 @@ func (m *MailController) List(c *wrap.ContextWrapper) {
 		query = query.Where("name like ?", "%"+keyword+"%")
 	}
 
+	query = query.Where("status in (?)", status)
 	query.Limit(pageSize).Offset(page).Scan(&list)
 	query.Count(&total)
 
-	response.SuccessResponse(list).WriteTo(c)
+	data := base.Result{
+		Page:     cast.ToInt(page),
+		PageSize: cast.ToInt(pageSize),
+		List:     list,
+		Total:    total,
+	}
+
+	response.SuccessResponse(data).WriteTo(c)
 	return
 }
 
@@ -93,10 +103,11 @@ func (m *MailController) Resend(c *wrap.ContextWrapper) {
 
 // 重新发送
 func (m *MailController) Delete(c *wrap.ContextWrapper) {
-	id := c.DefaultQuery("id", 0)
+	params := IdParam{}
+	c.ShouldBind(&params)
 
 	mailModel := mail.MailerModel{}
-	config.Db.Model(mailModel).Where("id = ?", id).Update(map[string]int{
+	config.Db.Model(mailModel).Where("id = ?", params.Id).Update(map[string]int{
 		"status": mail.TASK_DELETE,
 	})
 

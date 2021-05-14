@@ -1,4 +1,0 @@
-INSERT INTO funy_cms.casbin_rule (id, p_type, v0, v1, v2, v3, v4, v5, created_at, updated_at, deleted_at) VALUES (113, 'g', '-', '测试角色', '', '', '', '', '2021-03-27 13:12:23', '2021-03-27 13:12:23', null);
-INSERT INTO funy_cms.casbin_rule (id, p_type, v0, v1, v2, v3, v4, v5, created_at, updated_at, deleted_at) VALUES (116, 'g', '-', '测试', '', '', '', '', '2021-03-27 13:15:41', '2021-03-27 13:15:41', null);
-INSERT INTO funy_cms.casbin_rule (id, p_type, v0, v1, v2, v3, v4, v5, created_at, updated_at, deleted_at) VALUES (132, 'g', '-', '运营', '', '', '', '', '2021-03-28 15:53:43', '2021-03-28 15:53:43', null);
-INSERT INTO funy_cms.casbin_rule (id, p_type, v0, v1, v2, v3, v4, v5, created_at, updated_at, deleted_at) VALUES (150, 'g', 'surest', '测试', '', '', '', '', '2021-05-13 16:32:02', '2021-05-13 16:32:02', null);

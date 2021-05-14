@@ -2,9 +2,15 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Lets-Go-together/go-funny-cms)](https://goreportcard.com/report/github.com/Lets-Go-together/go-funny-cms)
 
+## 项目地址
+    
+前端项目: https://github.com/Lets-Go-together/go-funny-cms-front
+后端项目: https://github.com/Lets-Go-together/go-funny-cms
+    
+    
 ## 项目简介
 
-是一个简单版本使用`casbin` + `Golang` 开发的通用后台管理系统
+是一个简单版本使用 `Casbin` + `Golang` 开发的通用后台权限管理系统
 
 项目结构参考了`Laravel`初始化目录结构，更加便于 phper 进行开发和学习
 
@@ -18,6 +24,35 @@
 
 采用前后端分离的开发方式
 
+## 快速安装
+
+    # 后端项目
+    > git clone git@github.com:Lets-Go-together/go-funny-cms.git
+    > cd go-funny-cms
+    > 导入sql: backups/funy_cms_20210514_153117.sql.gz
+    > cp .env .env.example
+    > go run main.go 
+    # 或者
+    > air
+
+    # 前端项目
+    > git clone git@github.com:Lets-Go-together/go-funny-cms-front.git
+    > cd go-funny-cms-front
+    > yarn install
+    > npm run dev
+
+## 配置邮件发送
+
+    # 后台运行
+    > go run main.go express-run
+
+
+## 额外命令
+
+参考
+
+    pkg/command/command.go
+
 ## 目前支持功能
 
 - 后台账号管理
@@ -25,6 +60,7 @@
 - 自动权限路由生成
 - RABC + ABC权限控制
 - 自定义控制菜单栏
+- 邮件发送与处理
 
 ## 目录结构
 

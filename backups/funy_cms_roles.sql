@@ -1,1 +1,0 @@
-INSERT INTO funy_cms.roles (id, name, description, created_at, updated_at, deleted_at, status, menu_ids) VALUES (20, '测试', '测试', '2021-03-27 13:15:41', '2021-05-13 16:42:55', null, 1, '[]');
