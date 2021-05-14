@@ -27,7 +27,7 @@
 ## 快速安装
 
     # 后端项目
-    > git clone git@github.com:Lets-Go-together/go-funny-cms.git
+    > https://github.com/Lets-Go-together/go-funny-cms.git
     > cd go-funny-cms
     > 导入sql: backups/funy_cms_20210514_153117.sql.gz
     > cp .env .env.example
@@ -36,7 +36,7 @@
     > air
 
     # 前端项目
-    > git clone git@github.com:Lets-Go-together/go-funny-cms-front.git
+    > https://github.com/Lets-Go-together/go-funny-cms-front.git
     > cd go-funny-cms-front
     > yarn install
     > npm run dev
