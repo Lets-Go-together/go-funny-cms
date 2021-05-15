@@ -1,13 +1,24 @@
-## Go-Funny-CMS
+## Golang 通用后台权限管理系统 (Go-Funny-CMS )
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Lets-Go-together/go-funny-cms)](https://goreportcard.com/report/github.com/Lets-Go-together/go-funny-cms)
 
+
+### 线上地址演示
+
+    https://admin-go.surest.cn
+    账号: surest
+    密码: 123456
+
+## 预览
+
+![图片描述...](https://cdn.surest.cn/FuZGBSxkTbk_eS4OPM5FYqLZ6bQV)
+
 ## 项目地址
-    
+
 前端项目: https://github.com/Lets-Go-together/go-funny-cms-front
 后端项目: https://github.com/Lets-Go-together/go-funny-cms
-    
-    
+
+
 ## 项目简介
 
 是一个简单版本使用 `Casbin` + `Golang` 开发的通用后台权限管理系统
@@ -89,9 +100,3 @@
 
 我们都"不止于此" ~
 
-
-### 线上地址演示
-
-    https://admin-go.surest.cn
-    账号: surest
-    密码: 123456
