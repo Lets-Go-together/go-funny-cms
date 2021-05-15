@@ -19,6 +19,7 @@ type MailController struct{}
 func (m *MailController) List(c *wrap.ContextWrapper) {
 	page := c.DefaultQuery("page", 1)
 	pageSize := c.DefaultQuery("pageSize", 10)
+	offset := help.GetOffset(cast.ToInt(page), cast.ToInt(pageSize))
 	keyword := c.DefaultQuery("keyword", "")
 	status, _ := c.Ctx.GetQueryArray("status[]")
 	total := 0
@@ -31,7 +32,7 @@ func (m *MailController) List(c *wrap.ContextWrapper) {
 	}
 
 	query = query.Where("status in (?)", status)
-	query.Limit(pageSize).Offset(page).Scan(&list)
+	query.Limit(pageSize).Offset(offset).Scan(&list)
 	query.Count(&total)
 
 	data := base.Result{
