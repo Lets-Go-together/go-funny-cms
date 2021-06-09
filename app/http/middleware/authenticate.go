@@ -28,15 +28,15 @@ func Authenticate(c *gin.Context) {
 		c.Abort()
 	}
 
+	adminUser.Roles = admin.GetRoles(adminUser.Account)
+	adminUser.Permissions = admin.GetPermissions(adminUser.Account)
 	menus := admin.GetMenus(adminUser.Roles, adminUser.Account)
-	fmt.Println(len(menus))
+	fmt.Println(adminUser)
 	adminUser.Menus = make([]menu.MenuRouter, len(menus))
 	for k, menu := range menus {
 		adminUser.Menus[k] = menu
 	}
 
-	adminUser.Roles = admin.GetRoles(adminUser.Account)
-	adminUser.Permissions = admin.GetPermissions(adminUser.Account)
 	admin.AuthUser = adminUser
 
 	c.Next()
