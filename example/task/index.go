@@ -33,12 +33,16 @@ func CToSchedule() {
 		testMail()
 		return nil
 	})
+	var err error
 	task := schedule.NewTask("dingding", "每个小时执行操作 ....", "0 * * * * ?")
-	task = scheduler.AddTask(task)
+	task, err = scheduler.AddTask(task)
 
 	t := schedule.NewTask("mail", "每9点执行操作 ....", "0 9 * * * ?")
-	t = scheduler.AddTask(t)
+	t, err = scheduler.AddTask(t)
 
+	if err != nil {
+
+	}
 	// 初始化的时候立即执行一下
 	//scheduler.StartTask(task.Id)
 	//scheduler.StartTask(t.Id)
