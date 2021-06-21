@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"gocms/pkg/schedule/log"
 	"math"
+	"regexp"
 	"time"
 )
 
@@ -19,7 +22,7 @@ const (
 	// 任务启动中
 	TaskStateStarting
 	// 任务停止中
-	TaskSateStopping
+	TaskStateStopping
 	// 任务重启中
 	TaskStateRebooting
 	// 任务正在删除
@@ -29,10 +32,14 @@ const (
 	TaskStateStopped
 )
 
+func (that TaskState) String() string {
+	return taskStateStrMap[that]
+}
+
 var taskStateStrMap = map[TaskState]string{
 	TaskStateInitialize: "TaskStateInitialize",
 	TaskStateStarting:   "TaskStateStarting",
-	TaskSateStopping:    "TaskSateStopping",
+	TaskStateStopping:   "TaskStateStopping",
 	TaskStateRebooting:  "askStateRebooting",
 	TaskStateRunning:    "TaskStateRunning",
 	TaskStateStopped:    "TaskStateStopped",
@@ -137,11 +144,6 @@ func NewTask(name string, desc string, cronExpr string) *Task {
 	}
 }
 
-// 获取任务状态对应的名称
-func (that *Task) StateName() string {
-	return taskStateStrMap[that.State]
-}
-
 func (that *Task) Context() *Context {
 	return nil
 }
@@ -159,6 +161,7 @@ func (that *Task) init() {
 
 // 改变任务状态, 并通知分发该任务的中间人 TaskBroker 更新到数据源.
 func (that *Task) ChangeState(state TaskState) error {
+	log.D("task/ChangeState", "task:", that.Name, ",state:", state)
 	that.State = state
 	b := *that.broker
 	b.UpdateTask(that)
@@ -176,9 +179,18 @@ func (that *Task) String() string {
 // 获取任务是否正在改变状态.
 func (that *Task) StateInChange() bool {
 	return that.State == TaskStateStarting ||
-		that.State == TaskSateStopping ||
+		that.State == TaskStateStopping ||
 		that.State == TaskStateInitialize ||
 		that.State == TaskStateRebooting
+}
+
+func (that *Task) NeedStart() bool {
+	return that.State == TaskStateStarting || that.State == TaskStateRebooting ||
+		that.State == TaskStateInitialize || that.State == TaskStateRunning
+}
+
+func (that *Task) NeedStop() bool {
+	return that.State == TaskStateStopping || that.State == TaskStateDeleting
 }
 
 // Context 表示执行一次任务执行上下文信息, 主要在 TaskHandleFunc 中使用
@@ -206,23 +218,43 @@ func (that *TaskResult) Log(log string) {
 
 // TaskHandleFuncMap 表示任务名称对应的处理函数 TaskHandleFunc, 包装了一个 map
 type TaskHandleFuncMap struct {
-	funcMap map[string]TaskHandleFunc
+	allPattern map[string]int
+	regMap     map[*regexp.Regexp]TaskHandleFunc
 }
 
 func newTaskHandleFuncMap() *TaskHandleFuncMap {
 	return &TaskHandleFuncMap{
-		funcMap: map[string]TaskHandleFunc{},
+		allPattern: map[string]int{},
+		regMap:     map[*regexp.Regexp]TaskHandleFunc{},
 	}
 }
 
-func (that *TaskHandleFuncMap) SetHandleFunc(task string, handleFunc TaskHandleFunc) (err error) {
-	if that.funcMap[task] != nil {
-		err = errors.New("type already exist")
+func (that *TaskHandleFuncMap) SetHandleFunc(pattern string, handleFunc TaskHandleFunc) (err error) {
+	if that.allPattern[pattern] != 0 {
+		err = errors.New(fmt.Sprintf("task handler for %s already exist", pattern))
 	}
-	that.funcMap[task] = handleFunc
+	var re *regexp.Regexp
+	re, err = regexp.Compile(pattern)
+	if err != nil {
+		return
+	}
+	that.regMap[re] = handleFunc
+	that.allPattern[pattern] = 1
+
+	//hf := that.funcMap[pattern]
+	//that.funcMap[pattern] = append(hf, handleFunc)
 	return
 }
 
-func (that *TaskHandleFuncMap) GetHandleFunc(task string) TaskHandleFunc {
-	return that.funcMap[task]
+// taskName 任务名称
+// 返回所有与该名称匹配的 TaskHandleFunc
+func (that *TaskHandleFuncMap) GetHandleFunc(taskName string) []TaskHandleFunc {
+
+	var res []TaskHandleFunc
+	for r, f := range that.regMap {
+		if r.MatchString(taskName) {
+			res = append(res, f)
+		}
+	}
+	return res
 }

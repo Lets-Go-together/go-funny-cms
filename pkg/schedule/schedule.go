@@ -28,13 +28,14 @@ func (that *Scheduler) Launch() {
 }
 
 // 注册任务并指定改任务的执行函数 TaskHandleFunc
-func (that *Scheduler) RegisterTask(taskName string, handleFunc TaskHandleFunc) {
-	if err := that.taskHandleFuncMap.SetHandleFunc(taskName, handleFunc); err != nil {
+// pattern: 正则表达式
+func (that *Scheduler) RegisterTask(pattern string, handleFunc TaskHandleFunc) {
+	if err := that.taskHandleFuncMap.SetHandleFunc(pattern, handleFunc); err != nil {
 		panic(err)
 	}
 }
 
-func (that *Scheduler) AddTask(info *Task) *Task {
+func (that *Scheduler) AddTask(info *Task) (*Task, error) {
 	return that.broker.AddTask(info)
 }
 

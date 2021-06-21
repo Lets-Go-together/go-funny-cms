@@ -18,15 +18,12 @@ func (that *CronWorker) Process(task *Task) error {
 
 	log.D("worker/Process", "process task: "+task.String())
 
-	if task.State == TaskStateStarting || task.State == TaskStateRebooting ||
-		task.State == TaskStateInitialize || task.State == TaskStateRunning {
+	if task.NeedStart() {
 		// 当任务状态为更变为执行时
-
 		return that.startTask(task)
 
-	} else if task.State == TaskSateStopping || task.State == TaskStateDeleting {
+	} else if task.NeedStop() {
 		// 需要停止任务
-
 		return that.stopTask(task)
 	}
 	return nil
@@ -34,7 +31,7 @@ func (that *CronWorker) Process(task *Task) error {
 
 func (that *CronWorker) startTask(task *Task) error {
 	handleFunc := that.taskHandleFunc.GetHandleFunc(task.Name)
-	if handleFunc == nil {
+	if handleFunc == nil || len(handleFunc) == 0 {
 		return errors.New(fmt.Sprintf("no TaskHandleFunc for task '%s'", task.Name))
 	}
 
@@ -46,7 +43,13 @@ func (that *CronWorker) startTask(task *Task) error {
 		}
 	Retry:
 		retry++
-		err := handleFunc(ctx)
+		var err error
+		for _, taskHandleFunc := range handleFunc {
+			err = taskHandleFunc(ctx)
+			if err != nil {
+				break
+			}
+		}
 		ctx.Retry = retry
 		ctx.RetryRemaining = task.RetryTimes - retry
 		if err == nil {
@@ -69,13 +72,18 @@ func (that *CronWorker) startTask(task *Task) error {
 	return err
 }
 
-func (that *CronWorker) stopTask(task *Task) error {
+func (that *CronWorker) stopTask(task *Task) (err error) {
 	entryId := that.tasks[task.Id]
-	if entryId == nil {
-		return errors.New("task not in cron: " + task.String())
+	if entryId != nil {
+		err = task.ChangeState(TaskStateStopped)
+		if err != nil {
+			return
+		}
+		that.cron.Remove(*entryId)
+	} else {
+		err = errors.New("task not in cron: " + task.String())
 	}
-	that.cron.Remove(*entryId)
-	return nil
+	return
 }
 
 func (that *CronWorker) Start() {

@@ -33,7 +33,7 @@ func (that *MySQLTaskBroker) StartTask(id int) {
 	panic("implement me")
 }
 
-func (that *MySQLTaskBroker) AddTask(info *Task) *Task {
+func (that *MySQLTaskBroker) AddTask(info *Task) (*Task, error) {
 	panic("implement me")
 }
 

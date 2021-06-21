@@ -23,7 +23,7 @@ type TaskBroker interface {
 	// 启动指定 id 的任务
 	StartTask(id int)
 	// 添加任务到任务清单
-	AddTask(info *Task) *Task
+	AddTask(info *Task) (*Task, error)
 	// 查询所有任务
 	QueryAllTask() []*Task
 	// 查询所有指定状态的任务

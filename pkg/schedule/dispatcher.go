@@ -37,10 +37,10 @@ func (that *dispatcher) onTaskArrive(tasks []*Task) {
 	for _, task := range tasks {
 		for _, worker := range that.workers {
 			log.D("dispatcher/onTaskArrive",
-				"dispatch task: ", "name=", task.Name, ", state=", task.StateName(), ", id=", task.Id)
+				"dispatch task: ", "name=", task.Name, ", state=", task.State, ", id=", task.Id)
 			err := worker.Process(task)
 			if err != nil {
-				panic(err)
+				log.E("dispatcher/onTaskArrive", err)
 			}
 			// dispatch to other worker.
 			break

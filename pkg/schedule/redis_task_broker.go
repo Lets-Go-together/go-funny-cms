@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/go-redis/redis"
 	"gocms/pkg/config"
 	"gocms/pkg/schedule/log"
@@ -11,7 +12,7 @@ import (
 
 const (
 	keyTaskCron     = "SCHEDULE:TASKS"
-	fieldTaskIdIncr = "id_increment"
+	taskIdIncrement = "id_increment"
 )
 
 // RedisTaskBroker 是基于 Redis 实现的任务管理中间人
@@ -29,9 +30,10 @@ func NewRedisTaskBroker() TaskBroker {
 }
 
 func (that *RedisTaskBroker) Launch() {
-	exist, _ := that.redis.HExists(keyTaskCron, fieldTaskIdIncr).Result()
+	exist, _ := that.redis.HExists(keyTaskCron, taskIdIncrement).Result()
 	if !exist {
-		that.redis.HSet(keyTaskCron, fieldTaskIdIncr, 0)
+		// 初始化任务 ID 自增键
+		that.redis.HSet(keyTaskCron, taskIdIncrement, 0)
 	}
 }
 
@@ -41,7 +43,8 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 	go func(taskObserverFunc TaskProcessor) {
 
 		for {
-			r, err := that.redis.HGetAll(keyTaskCron).Result()
+			taskResult, err := that.redis.HGetAll(keyTaskCron).Result()
+			that.removeKeyIncrement(taskResult)
 			if err != nil {
 				log.Err("broker/StartConsuming", err)
 				// Process err
@@ -49,13 +52,10 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 			}
 
 			var tasks []*Task
-			for k, item := range r {
-				if k == fieldTaskIdIncr {
-					continue
-				}
+			for _, item := range taskResult {
 
 				var task Task
-				log.D("broker/StartConsuming", item)
+				// log.I("broker/StartConsuming", item)
 
 				if err = json.Unmarshal([]byte(item), &task); err != nil {
 					// Process err
@@ -68,13 +68,13 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 					task.broker = &s
 					task.init()
 					tasks = append(tasks, &task)
-					log.D("broker/StartConsuming", "task consume: "+task.String())
+					log.I("broker/StartConsuming", "task consume: "+task.String())
 				}
 			}
 
 			if nil != tasks && 0 != len(tasks) {
 				taskObserverFunc(tasks)
-				log.D("broker/StartConsuming", "task count: "+strconv.Itoa(len(tasks)))
+				log.D("broker/StartConsuming", "task count:", strconv.Itoa(len(tasks)))
 			}
 
 			time.Sleep(time.Second * 3)
@@ -82,28 +82,28 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 	}(taskObserverFunc)
 }
 
-func (that *RedisTaskBroker) AddTask(task *Task) *Task {
+func (that *RedisTaskBroker) AddTask(task *Task) (*Task, error) {
 	log.D("broker/AddTask", "add task: "+task.String())
 	task.executeInfo.CreateNow()
-	incr, er := that.redis.HIncrBy(keyTaskCron, fieldTaskIdIncr, 1).Result()
+	incr, er := that.redis.HIncrBy(keyTaskCron, taskIdIncrement, 1).Result()
 	if er != nil {
-		panic(er)
+		return nil, er
 	}
 	task.Id = int(incr)
 	j, err := json.Marshal(task)
 	if err != nil {
-		panic(err)
+		return nil, er
 	}
 	id := strconv.Itoa(task.Id)
 	_, r := that.redis.HSet(keyTaskCron, id, string(j)).Result()
 	if r != nil {
-		panic(r)
+		return nil, er
 	}
-	return task
+	return task, nil
 }
 
 func (that *RedisTaskBroker) UpdateTask(task *Task) {
-	log.D("broker/UpdateTask", "update task: "+task.String())
+	log.D("broker/UpdateTask", "update task: name:", task.Name, ", id:", task.Id, ", state:", task.State)
 	j, err := json.Marshal(task)
 	if err != nil {
 		panic(err)
@@ -123,7 +123,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 	}
 
 	for k, item := range idTaskMap {
-		if k == fieldTaskIdIncr {
+		if k == taskIdIncrement {
 			continue
 		}
 		var task *Task
@@ -136,7 +136,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 		task.broker = &s
 		task.init()
 
-		if task.State == TaskSateStopping || task.State == TaskStateStopped {
+		if task.State == TaskStateStopping {
 			task.State = TaskStateStopped
 			that.UpdateTask(task)
 
@@ -150,7 +150,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 			that.taskProcessor([]*Task{task})
 		}
 
-		log.D("broker/RestoreTask", "task restore: name=", task.Name, ", current_state=", task.State)
+		log.D("broker/RestoreTask", "name:", task.Name, ", id:", task.Id, ", state:", task.State)
 	}
 }
 
@@ -167,7 +167,7 @@ func (that *RedisTaskBroker) StopTask(id int) {
 		panic(err)
 	}
 
-	task.State = TaskSateStopping
+	task.State = TaskStateStopping
 	that.UpdateTask(&task)
 }
 
@@ -208,7 +208,7 @@ func (that *RedisTaskBroker) QueryTaskById(taskId int) *Task {
 
 	var task Task
 	if err = json.Unmarshal([]byte(j), &task); err != nil {
-		log.Err("broker", err)
+		log.Err("broker/QueryTaskById", err)
 		return nil
 	}
 	return &task
@@ -221,8 +221,10 @@ func (that *RedisTaskBroker) QueryTaskByName(name string) []*Task {
 func (that *RedisTaskBroker) QueryAllTask() []*Task {
 
 	idTaskMap, err := that.redis.HGetAll(keyTaskCron).Result()
+	that.removeKeyIncrement(idTaskMap)
+
 	if err != nil {
-		log.Err("broker", err)
+		log.Err("broker/QueryAllTask", err)
 	}
 
 	var allTask []*Task
@@ -231,7 +233,8 @@ func (that *RedisTaskBroker) QueryAllTask() []*Task {
 		var task *Task
 
 		if err = json.Unmarshal([]byte(item), &task); err != nil {
-			log.Err("broker", err)
+			log.Err("broker/QueryAllTask", err)
+			log.Err("broker/QueryAllTask", errors.New(item))
 			continue
 		}
 		var s TaskBroker = that
@@ -241,4 +244,8 @@ func (that *RedisTaskBroker) QueryAllTask() []*Task {
 	}
 
 	return allTask
+}
+
+func (that *RedisTaskBroker) removeKeyIncrement(redisResult map[string]string) {
+	delete(redisResult, taskIdIncrement)
 }
