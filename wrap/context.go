@@ -1,6 +1,7 @@
 package wrap
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"net/http"
@@ -71,7 +72,11 @@ func (that *ContextWrapper) Query(key string) string {
 }
 
 func (that *ContextWrapper) DefaultQuery(key string, def interface{}) string {
-	return that.Ctx.DefaultQuery(key, cast.ToString(def))
+	ret := that.Ctx.DefaultQuery(key, cast.ToString(def))
+	if ret == "" {
+		return fmt.Sprintf("%s", def)
+	}
+	return ret
 }
 
 func (that *ContextWrapper) Param(key string) string {
