@@ -196,11 +196,11 @@ func (that *Task) StateInChange() bool {
 }
 
 func (that *Task) NeedStart() bool {
-	return that.State == TaskStateStarting || that.State == TaskStateRebooting || that.State == TaskStateRunning
+	return that.State == TaskStateStarting || that.State == TaskStateRunning
 }
 
 func (that *Task) NeedStop() bool {
-	return that.State == TaskStateStopping || that.State == TaskStateDeleting
+	return that.State == TaskStateStopping || that.State == TaskStateDeleting || that.State == TaskStateRebooting
 }
 
 // Context 表示执行一次任务执行上下文信息, 主要在 TaskHandleFunc 中使用

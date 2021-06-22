@@ -36,6 +36,7 @@ func (that *RedisTaskBroker) Launch() {
 	}
 }
 
+// TODO 2021年6月22日10:57:03 使用 chan 订阅 task 变动
 func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 	that.taskProcessor = taskObserverFunc
 
@@ -67,13 +68,13 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 					task.broker = &s
 					task.init()
 					tasks = append(tasks, &task)
-					log.I("broker/StartConsuming", "task consume: "+task.String())
+					log.I("broker/StartConsuming", "new task:"+task.String())
 				}
 			}
 
 			if nil != tasks && 0 != len(tasks) {
-				taskObserverFunc(tasks)
 				log.D("broker/StartConsuming", "task count:", strconv.Itoa(len(tasks)))
+				taskObserverFunc(tasks)
 			}
 
 			time.Sleep(time.Second * 3)

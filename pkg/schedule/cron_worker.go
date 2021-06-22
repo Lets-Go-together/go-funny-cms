@@ -19,12 +19,12 @@ func (that *CronWorker) Process(task *Task) error {
 	log.D("worker/Process", "process task: "+task.String())
 
 	if task.NeedStart() {
-		// 当任务状态为更变为执行时
 		return that.startTask(task)
 
 	} else if task.NeedStop() {
-		// 需要停止任务
-		return that.removeTask(task)
+		if err := that.removeTask(task); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -85,6 +85,9 @@ func (that *CronWorker) removeTask(task *Task) (err error) {
 	if task.State == TaskStateDeleting {
 		//err = task.ChangeState(TaskStateDeleted)
 		err = task.Delete()
+	} else if task.State == TaskStateRebooting {
+		err = task.ChangeState(TaskStateStarting)
+		task.executeInfo.StopNow()
 	} else {
 		err = task.ChangeState(TaskStateStopped)
 		task.executeInfo.StopNow()
