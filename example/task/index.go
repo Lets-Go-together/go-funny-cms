@@ -1,11 +1,13 @@
 package task
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/blinkbean/dingtalk"
 	"github.com/jordan-wright/email"
-	"github.com/tidwall/gjson"
-	"gocms/pkg/help"
+	"gocms/pkg/config"
+
+	//"github.com/tidwall/gjson"
+	//"gocms/pkg/help"
 	"gocms/pkg/logger"
 	"gocms/pkg/mail"
 	"gocms/pkg/schedule"
@@ -13,7 +15,7 @@ import (
 	"time"
 )
 
-var scheduler = schedule.New()
+var scheduler = schedule.New(config.Redis)
 
 func Runing() {
 	CToSchedule()
@@ -69,21 +71,22 @@ func testDing() {
 
 // 保持持续性 搞点有点用的通知吧
 func GetNews() string {
-	body := help.GetUrl("https://way.jd.com/jisuapi/weather?appkey=b9e5400562ec620c8b3224b9899a4b23&city=%E6%B7%B1%E5%9C%B3")
-	if len(body) == 0 {
-		return ""
-	}
-	result := gjson.Get(body, "result.result").Map()
-	c := gjson.Get(body, "result.result.index").String()
-	cresult := gjson.Parse(c).Array()
-
-	title := fmt.Sprintf("<h2>城市: %s | 星期几: %s | 天气: %s</h2>", result["city"], result["week"], fmt.Sprintf("%s%s%s", result["temp"], "-", result["temphigh"]))
-	content := "<ul>"
-	for _, i := range cresult {
-		content += "<li>" + i.Get("iname").String() + " | " + i.Get("ivalue").String() + " | " + i.Get("detail").String() + "</li>"
-	}
-	content += "</ul>"
-	content = title + content
-
-	return content
+	//body := help.GetUrl("https://way.jd.com/jisuapi/weather?appkey=b9e5400562ec620c8b3224b9899a4b23&city=%E6%B7%B1%E5%9C%B3")
+	//if len(body) == 0 {
+	//	return ""
+	//}
+	//result := gjson.Get(body, "result.result").Map()
+	//c := gjson.Get(body, "result.result.index").String()
+	//cresult := gjson.Parse(c).Array()
+	//
+	//title := fmt.Sprintf("<h2>城市: %s | 星期几: %s | 天气: %s</h2>", result["city"], result["week"], fmt.Sprintf("%s%s%s", result["temp"], "-", result["temphigh"]))
+	//content := "<ul>"
+	//for _, i := range cresult {
+	//	content += "<li>" + i.Get("iname").String() + " | " + i.Get("ivalue").String() + " | " + i.Get("detail").String() + "</li>"
+	//}
+	//content += "</ul>"
+	//content = title + content
+	//
+	//return content
+	return ""
 }

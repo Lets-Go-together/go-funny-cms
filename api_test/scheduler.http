@@ -1,0 +1,53 @@
+### 查询任务
+GET http://localhost/api/schedule/task?state=0
+
+### 添加任务
+PUT http://localhost/api/schedule/task
+Content-Type: application/json
+
+{
+  "task_name": "测试任务",
+  "desc": "每秒执行一次",
+  "cron_expr": "* * * * * ?"
+}
+
+### 删除任务
+DELETE http://localhost/api/schedule/task?id=19
+
+### 启动任务
+PATCH http://localhost/api/schedule/task
+Content-Type: application/json
+
+{
+  "id": 19,
+  "state": 1
+}
+
+### 暂停任务
+PATCH http://localhost/api/schedule/task
+Content-Type: application/json
+
+{
+  "id": 19,
+  "state": 2
+}
+
+### 重启任务
+PATCH http://localhost/api/schedule/task
+Content-Type: application/json
+
+{
+  "id": 19,
+  "state": 3
+}
+
+### 更新任务
+PATCH http://localhost/api/schedule/task
+Content-Type: application/json
+
+{
+  "id": 16,
+  "task_name": "测试任务",
+  "desc": "任务介绍",
+  "cron_expr": "* * * * * ?"
+}

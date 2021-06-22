@@ -17,9 +17,16 @@ func RegisterApiRoutes(engine *gin.Engine) {
 	menuController := new(Admin.MenuController)
 	notificationController := new(Admin.NotificationController)
 	MailController := new(Admin.MailController)
+	schedulerController := new(Admin.SchedulerController)
 
 	rt :=
 		group("api",
+			group("schedule",
+				get("task", schedulerController.List),
+				put("task", schedulerController.Add),
+				delete_("task", schedulerController.Delete),
+				patch("task", schedulerController.Update),
+			),
 			post("/login", authController.Login),
 			get("/pwd", toolController.Pwd),
 			use(middleware.Authenticate,
