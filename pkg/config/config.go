@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 	"gocms/pkg/logger"
+	"gocms/pkg/schedule"
 	"net/http"
 )
 
@@ -19,13 +20,15 @@ var (
 	Pool   *ants.Pool
 	Router *gin.Engine
 	// TODO 2021-1-25 移除: 并发情况?
-	Request  *http.Request
-	Enforcer *casbin.Enforcer
+	Request   *http.Request
+	Enforcer  *casbin.Enforcer
+	Scheduler *schedule.Scheduler
 )
 
 func init() {
 	InitViper()
 	InitDatabase()
+	InitScheduler()
 }
 
 func Initialize() {}
