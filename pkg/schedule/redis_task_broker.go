@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-redis/redis"
-	"gocms/pkg/config"
 	"gocms/pkg/schedule/log"
 	"strconv"
 	"time"
@@ -21,9 +20,9 @@ type RedisTaskBroker struct {
 	taskProcessor TaskProcessor
 }
 
-func NewRedisTaskBroker() TaskBroker {
+func NewRedisTaskBroker(client *redis.Client) TaskBroker {
 	var r TaskBroker = &RedisTaskBroker{
-		redis:         config.Redis,
+		redis:         client,
 		taskProcessor: nil,
 	}
 	return r
@@ -83,7 +82,7 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 }
 
 func (that *RedisTaskBroker) AddTask(task *Task) (*Task, error) {
-	log.D("broker/AddTask", "add task: "+task.String())
+	log.D("broker/AddTask", task.String())
 	task.executeInfo.CreateNow()
 	incr, er := that.redis.HIncrBy(keyTaskCron, taskIdIncrement, 1).Result()
 	if er != nil {
@@ -102,17 +101,30 @@ func (that *RedisTaskBroker) AddTask(task *Task) (*Task, error) {
 	return task, nil
 }
 
-func (that *RedisTaskBroker) UpdateTask(task *Task) {
+func (that *RedisTaskBroker) DeleteTask(id int) error {
+	task := that.QueryTaskById(id)
+	if task == nil {
+		return errors.New("task does not exist")
+	}
+	if task.State == TaskStateDeleting {
+		_, err := that.redis.HDel(keyTaskCron, strconv.Itoa(id)).Result()
+		return err
+	}
+	return task.ChangeState(TaskStateDeleting)
+}
+
+func (that *RedisTaskBroker) UpdateTask(task *Task) error {
 	log.D("broker/UpdateTask", "update task: name:", task.Name, ", id:", task.Id, ", state:", task.State)
 	j, err := json.Marshal(task)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	id := strconv.Itoa(task.Id)
 	_, r := that.redis.HSet(keyTaskCron, id, string(j)).Result()
 	if r != nil {
-		panic(r)
+		return r
 	}
+	return nil
 }
 
 func (that *RedisTaskBroker) RestoreTask() {
@@ -138,8 +150,10 @@ func (that *RedisTaskBroker) RestoreTask() {
 
 		if task.State == TaskStateStopping {
 			task.State = TaskStateStopped
-			that.UpdateTask(task)
-
+			err = that.UpdateTask(task)
+			if err != nil {
+				panic(err)
+			}
 		} else if task.State == TaskStateDeleting {
 			// delete
 			that.redis.HDel(keyTaskCron, strconv.Itoa(task.Id))
@@ -154,7 +168,7 @@ func (that *RedisTaskBroker) RestoreTask() {
 	}
 }
 
-func (that *RedisTaskBroker) StopTask(id int) {
+func (that *RedisTaskBroker) StopTask(id int) error {
 
 	j, err := that.redis.HGet(keyTaskCron, strconv.Itoa(id)).Result()
 	if err != nil {
@@ -168,10 +182,10 @@ func (that *RedisTaskBroker) StopTask(id int) {
 	}
 
 	task.State = TaskStateStopping
-	that.UpdateTask(&task)
+	return that.UpdateTask(&task)
 }
 
-func (that *RedisTaskBroker) StartTask(id int) {
+func (that *RedisTaskBroker) StartTask(id int) error {
 
 	j, err := that.redis.HGet(keyTaskCron, strconv.Itoa(id)).Result()
 	if err != nil {
@@ -184,7 +198,7 @@ func (that *RedisTaskBroker) StartTask(id int) {
 		panic(err)
 	}
 	task.State = TaskStateStarting
-	that.UpdateTask(&task)
+	return that.UpdateTask(&task)
 }
 
 func (that *RedisTaskBroker) QueryTaskByState(state TaskState) []*Task {
@@ -203,6 +217,7 @@ func (that *RedisTaskBroker) QueryTaskById(taskId int) *Task {
 	t := strconv.Itoa(taskId)
 	j, err := that.redis.HGet(keyTaskCron, t).Result()
 	if err != nil {
+		log.Err("broker/QueryTaskById", err)
 		return nil
 	}
 
@@ -211,10 +226,13 @@ func (that *RedisTaskBroker) QueryTaskById(taskId int) *Task {
 		log.Err("broker/QueryTaskById", err)
 		return nil
 	}
+	var b TaskBroker = that
+	task.broker = &b
 	return &task
 }
 
 func (that *RedisTaskBroker) QueryTaskByName(name string) []*Task {
+	// TODO 2021年6月21日16:07:21
 	return []*Task{}
 }
 

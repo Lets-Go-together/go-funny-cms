@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"fmt"
+	"gocms/pkg/config"
 	"strconv"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ func TestNew(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			// 初始化
-			var scheduler = New()
+			var scheduler = New(config.Redis)
 			// 注册任务
 			scheduler.RegisterTask("email", func(context *Context) error {
 				t.Log("Task execute...", context.Task.Name, strconv.Itoa(context.Task.Id))
@@ -42,7 +43,7 @@ func TestNew(t *testing.T) {
 	}
 }
 func TestRedisTaskBroker_QueryTaskByState(t *testing.T) {
-	scheduler := New()
+	scheduler := New(config.Redis)
 	scheduler.RegisterTask(".", func(ctx *Context) error {
 		t.Log("Execute: " + ctx.Task.Name)
 		return nil
@@ -63,7 +64,7 @@ func TestRedisTaskBroker_QueryTaskByState(t *testing.T) {
 }
 
 func TestScheduler_StopTask(t *testing.T) {
-	scheduler := New()
+	scheduler := New(config.Redis)
 	scheduler.RegisterTask(".", func(ctx *Context) error {
 		t.Log("Execute: " + ctx.Task.Name)
 		return nil
@@ -82,7 +83,7 @@ func TestScheduler_StopTask(t *testing.T) {
 }
 
 func TestScheduler_StartTask(t *testing.T) {
-	scheduler := New()
+	scheduler := New(config.Redis)
 	scheduler.RegisterTask(".", func(ctx *Context) error {
 		t.Log("Execute: " + ctx.Task.Name)
 		return nil
@@ -104,7 +105,7 @@ func TestScheduler_StartTask(t *testing.T) {
 func TestScheduler_AddTask(t *testing.T) {
 
 	n := "test_task_" + time.Now().Format("01-02_15_04_05")
-	scheduler := New()
+	scheduler := New(config.Redis)
 	scheduler.RegisterTask(".", func(ctx *Context) error {
 		t.Log("execute: " + ctx.Task.Name)
 		return nil
@@ -125,7 +126,7 @@ func TestScheduler_AddTask(t *testing.T) {
 
 func TestScheduler_QueryAllTask(t *testing.T) {
 
-	scheduler := New()
+	scheduler := New(config.Redis)
 	scheduler.RegisterTask("email", func(ctx *Context) error {
 		return nil
 	})

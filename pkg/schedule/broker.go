@@ -17,13 +17,15 @@ type TaskBroker interface {
 	// 开始订阅任务清单更新
 	StartConsuming(tasks TaskProcessor)
 	// 更新任务
-	UpdateTask(info *Task)
+	UpdateTask(info *Task) error
 	// 停止指定 id 的任务
-	StopTask(id int)
+	StopTask(id int) error
 	// 启动指定 id 的任务
-	StartTask(id int)
+	StartTask(id int) error
 	// 添加任务到任务清单
 	AddTask(info *Task) (*Task, error)
+
+	DeleteTask(id int) error
 	// 查询所有任务
 	QueryAllTask() []*Task
 	// 查询所有指定状态的任务

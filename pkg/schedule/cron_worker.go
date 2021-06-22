@@ -24,7 +24,7 @@ func (that *CronWorker) Process(task *Task) error {
 
 	} else if task.NeedStop() {
 		// 需要停止任务
-		return that.stopTask(task)
+		return that.removeTask(task)
 	}
 	return nil
 }
@@ -72,16 +72,22 @@ func (that *CronWorker) startTask(task *Task) error {
 	return err
 }
 
-func (that *CronWorker) stopTask(task *Task) (err error) {
+func (that *CronWorker) removeTask(task *Task) (err error) {
+
 	entryId := that.tasks[task.Id]
 	if entryId != nil {
-		err = task.ChangeState(TaskStateStopped)
-		if err != nil {
-			return
-		}
 		that.cron.Remove(*entryId)
-	} else {
+		log.D("worker/removeTask", "task stop success, name:", task.Name, ", id:", task.Id)
+	} else if task.State != TaskStateDeleting {
 		err = errors.New("task not in cron: " + task.String())
+		return
+	}
+	if task.State == TaskStateDeleting {
+		//err = task.ChangeState(TaskStateDeleted)
+		err = task.Delete()
+	} else {
+		err = task.ChangeState(TaskStateStopped)
+		task.executeInfo.StopNow()
 	}
 	return
 }

@@ -1,5 +1,7 @@
 package schedule
 
+import "github.com/go-redis/redis"
+
 // Scheduler 为任务队列的入口, 负责维护整个队列的对象
 type Scheduler struct {
 	// 任务执行分发调度器
@@ -10,9 +12,9 @@ type Scheduler struct {
 	taskHandleFuncMap *TaskHandleFuncMap
 }
 
-func New() *Scheduler {
+func New(client *redis.Client) *Scheduler {
 
-	broker := NewRedisTaskBroker()
+	broker := NewRedisTaskBroker(client)
 	handleFuncMap := newTaskHandleFuncMap()
 	d := newDispatcher(broker, handleFuncMap)
 	return &Scheduler{
@@ -35,6 +37,10 @@ func (that *Scheduler) RegisterTask(pattern string, handleFunc TaskHandleFunc) {
 	}
 }
 
+func (that *Scheduler) DeleteTask(id int) error {
+	return that.broker.DeleteTask(id)
+}
+
 func (that *Scheduler) AddTask(info *Task) (*Task, error) {
 	return that.broker.AddTask(info)
 }
@@ -43,16 +49,24 @@ func (that *Scheduler) QueryTaskByName(name string) []*Task {
 	return that.broker.QueryTaskByName(name)
 }
 
-func (that *Scheduler) StopTask(taskId int) {
-	that.broker.StopTask(taskId)
+func (that *Scheduler) QueryTaskByState(state TaskState) []*Task {
+	return that.broker.QueryTaskByState(state)
 }
 
-func (that *Scheduler) StartTask(taskId int) {
-	that.broker.StartTask(taskId)
+func (that *Scheduler) StopTask(taskId int) error {
+	return that.broker.StopTask(taskId)
+}
+
+func (that *Scheduler) StartTask(taskId int) error {
+	return that.broker.StartTask(taskId)
 }
 
 func (that *Scheduler) QueryTaskById(taskId int) *Task {
 	return that.broker.QueryTaskById(taskId)
+}
+
+func (that Scheduler) UpdateTask(task *Task) error {
+	return that.broker.UpdateTask(task)
 }
 
 func (that *Scheduler) QueryAllTask() []*Task {

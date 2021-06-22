@@ -16,19 +16,23 @@ type TaskState uint8
 // 所有的任务状态
 // 前五种状态为过渡状态, 表示正在从一个状态往另一个状态迁移, 正在等待 TaskBroker 分发.
 const (
-
-	// 新任务加入队列, 等待执行中
-	TaskStateInitialize TaskState = iota
-	// 任务启动中
+	none TaskState = iota
+	// 1 新任务加入队列, 等待执行中
+	TaskStateInitialize
+	// 2 任务启动中
 	TaskStateStarting
-	// 任务停止中
+	// 3 任务停止中
 	TaskStateStopping
-	// 任务重启中
+	// 4 任务重启中
 	TaskStateRebooting
-	// 任务正在删除
+	// 5 任务正在删除
 	TaskStateDeleting
+	// 6 已删除
+	TaskStateDeleted
 
+	// 7
 	TaskStateRunning
+	// 8
 	TaskStateStopped
 )
 
@@ -44,6 +48,7 @@ var taskStateStrMap = map[TaskState]string{
 	TaskStateRunning:    "TaskStateRunning",
 	TaskStateStopped:    "TaskStateStopped",
 	TaskStateDeleting:   "TaskStateDeleting",
+	TaskStateDeleted:    "TaskStateDeleted",
 }
 
 // 暂时无用
@@ -135,7 +140,7 @@ func NewTask(name string, desc string, cronExpr string) *Task {
 	return &Task{
 		Name:       name,
 		Desc:       desc,
-		State:      TaskStateInitialize,
+		State:      TaskStateStopped,
 		CronExpr:   cronExpr,
 		Timeout:    math.MaxUint16,
 		RetryTimes: 0,
@@ -164,8 +169,13 @@ func (that *Task) ChangeState(state TaskState) error {
 	log.D("task/ChangeState", "task:", that.Name, ",state:", state)
 	that.State = state
 	b := *that.broker
-	b.UpdateTask(that)
-	return nil
+	return b.UpdateTask(that)
+}
+
+func (that *Task) Delete() error {
+	log.D("task/Delete", "task:", that.Name, ",id:", that.Id)
+	b := *that.broker
+	return b.DeleteTask(that.Id)
 }
 
 func (that *Task) String() string {
@@ -181,12 +191,12 @@ func (that *Task) StateInChange() bool {
 	return that.State == TaskStateStarting ||
 		that.State == TaskStateStopping ||
 		that.State == TaskStateInitialize ||
-		that.State == TaskStateRebooting
+		that.State == TaskStateRebooting ||
+		that.State == TaskStateDeleting
 }
 
 func (that *Task) NeedStart() bool {
-	return that.State == TaskStateStarting || that.State == TaskStateRebooting ||
-		that.State == TaskStateInitialize || that.State == TaskStateRunning
+	return that.State == TaskStateStarting || that.State == TaskStateRebooting || that.State == TaskStateRunning
 }
 
 func (that *Task) NeedStop() bool {
