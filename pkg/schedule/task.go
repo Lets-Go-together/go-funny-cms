@@ -44,7 +44,7 @@ var taskStateStrMap = map[TaskState]string{
 	TaskStateInitialize: "TaskStateInitialize",
 	TaskStateStarting:   "TaskStateStarting",
 	TaskStateStopping:   "TaskStateStopping",
-	TaskStateRebooting:  "askStateRebooting",
+	TaskStateRebooting:  "TaskStateRebooting",
 	TaskStateRunning:    "TaskStateRunning",
 	TaskStateStopped:    "TaskStateStopped",
 	TaskStateDeleting:   "TaskStateDeleting",
@@ -106,6 +106,10 @@ func (that *ExecuteInfo) getNow() int64 {
 	return time.Now().UnixNano()
 }
 
+func (that *ExecuteInfo) Update() {
+
+}
+
 // Task 表示一个具体的任务
 type Task struct {
 	// 任务 Id 由调度器决定, 全局唯一
@@ -128,7 +132,7 @@ type Task struct {
 	Type *TaskType `json:"type"`
 
 	// 任务执行信息
-	executeInfo *ExecuteInfo
+	ExecuteInfo *ExecuteInfo
 	// 任务执行时的上下文
 	context *Context
 	// 创建该任务的中间人 TaskBroker
@@ -145,7 +149,7 @@ func NewTask(name string, desc string, cronExpr string) *Task {
 		Timeout:    math.MaxUint16,
 		RetryTimes: 0,
 
-		executeInfo: &ExecuteInfo{},
+		ExecuteInfo: &ExecuteInfo{},
 	}
 }
 
@@ -159,8 +163,8 @@ func (that *Task) Log(log string) {
 
 // 初始化任务, 反序列化任务时需要调用改函数.
 func (that *Task) init() {
-	if that.executeInfo == nil {
-		that.executeInfo = &ExecuteInfo{}
+	if that.ExecuteInfo == nil {
+		that.ExecuteInfo = &ExecuteInfo{}
 	}
 }
 
@@ -176,6 +180,13 @@ func (that *Task) Delete() error {
 	log.D("task/Delete", "task:", that.Name, ",id:", that.Id)
 	b := *that.broker
 	return b.DeleteTask(that.Id)
+}
+
+// Deprecated
+func (that *Task) Update() error {
+	log.D("task/Update", "task:", that.Name, ",id:", that.Id)
+	b := *that.broker
+	return b.UpdateTask(that)
 }
 
 func (that *Task) String() string {

@@ -10,8 +10,9 @@ import (
 // CronWorker 为 cron.Cron 现实的一个执行器
 type CronWorker struct {
 	cron           *cron.Cron
-	tasks          map[int]*cron.EntryID
+	idEntryIdMap   map[int]*cron.EntryID
 	taskHandleFunc *TaskHandleFuncMap
+	idTaskMap      map[int]*Task
 }
 
 func (that *CronWorker) Process(task *Task) error {
@@ -36,7 +37,6 @@ func (that *CronWorker) startTask(task *Task) error {
 	}
 
 	entryId, err := that.cron.AddFunc(task.CronExpr, func() {
-		task.executeInfo.ExecuteNow()
 		retry := uint8(0)
 		ctx := &Context{
 			Task: *task,
@@ -44,6 +44,7 @@ func (that *CronWorker) startTask(task *Task) error {
 	Retry:
 		retry++
 		var err error
+		task.ExecuteInfo.ExecuteNow()
 		for _, taskHandleFunc := range handleFunc {
 			err = taskHandleFunc(ctx)
 			if err != nil {
@@ -53,20 +54,21 @@ func (that *CronWorker) startTask(task *Task) error {
 		ctx.Retry = retry
 		ctx.RetryRemaining = task.RetryTimes - retry
 		if err == nil {
-			task.executeInfo.SuccessNow()
+			task.ExecuteInfo.SuccessNow()
 		} else {
+			task.ExecuteInfo.FailNow()
 			if ctx.RetryRemaining > 0 {
 				goto Retry
 			}
-			task.executeInfo.FailNow()
 		}
-		task.executeInfo.TotalExecute++
+		task.ExecuteInfo.Update()
 	})
 	if err != nil {
 		return err
 	}
 
-	that.tasks[task.Id] = &entryId
+	that.idTaskMap[task.Id] = task
+	that.idEntryIdMap[task.Id] = &entryId
 	//task.TaskId = int(entryId)
 	err = task.ChangeState(TaskStateRunning)
 	return err
@@ -74,11 +76,14 @@ func (that *CronWorker) startTask(task *Task) error {
 
 func (that *CronWorker) removeTask(task *Task) (err error) {
 
-	entryId := that.tasks[task.Id]
+	entryId := that.idEntryIdMap[task.Id]
 	if entryId != nil {
 		that.cron.Remove(*entryId)
+		delete(that.idEntryIdMap, task.Id)
+		delete(that.idTaskMap, task.Id)
+		task.ExecuteInfo.StopNow()
 		log.D("worker/removeTask", "task stop success, name:", task.Name, ", id:", task.Id)
-	} else if task.State != TaskStateDeleting {
+	} else if task.State != TaskStateDeleting && task.State != TaskStateRebooting {
 		err = errors.New("task not in cron: " + task.String())
 		return
 	}
@@ -87,10 +92,8 @@ func (that *CronWorker) removeTask(task *Task) (err error) {
 		err = task.Delete()
 	} else if task.State == TaskStateRebooting {
 		err = task.ChangeState(TaskStateStarting)
-		task.executeInfo.StopNow()
 	} else {
 		err = task.ChangeState(TaskStateStopped)
-		task.executeInfo.StopNow()
 	}
 	return
 }
@@ -103,9 +106,10 @@ func (that *CronWorker) Stop() {
 	that.cron.Stop()
 }
 
-func (that *CronWorker) Initialize(funcMap *TaskHandleFuncMap) {
+func (that *CronWorker) Launch(funcMap *TaskHandleFuncMap) {
 	that.taskHandleFunc = funcMap
 	that.cron = cron.New(cron.WithSeconds())
-	that.tasks = map[int]*cron.EntryID{}
+	that.idEntryIdMap = map[int]*cron.EntryID{}
+	that.idTaskMap = map[int]*Task{}
 	go that.cron.Run()
 }

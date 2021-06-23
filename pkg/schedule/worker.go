@@ -15,5 +15,5 @@ type Worker interface {
 	// 停止执行所有任务
 	Stop()
 	// 进行初始化工作
-	Initialize(handleFunMap *TaskHandleFuncMap)
+	Launch(handleFunMap *TaskHandleFuncMap)
 }

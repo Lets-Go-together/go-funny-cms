@@ -16,14 +16,19 @@ const (
 
 // RedisTaskBroker 是基于 Redis 实现的任务管理中间人
 type RedisTaskBroker struct {
-	redis         *redis.Client
-	taskProcessor TaskProcessor
+	redis                   *redis.Client
+	taskCh                  chan *Task
+	closeCh                 chan int
+	redisPollDurationSecond time.Duration
+	idTaskMap               map[int]*Task
 }
 
 func NewRedisTaskBroker(client *redis.Client) TaskBroker {
 	var r TaskBroker = &RedisTaskBroker{
-		redis:         client,
-		taskProcessor: nil,
+		redis:                   client,
+		taskCh:                  make(chan *Task),
+		closeCh:                 make(chan int),
+		redisPollDurationSecond: 3,
 	}
 	return r
 }
@@ -36,12 +41,10 @@ func (that *RedisTaskBroker) Launch() {
 	}
 }
 
-// TODO 2021年6月22日10:57:03 使用 chan 订阅 task 变动
-func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
-	that.taskProcessor = taskObserverFunc
+func (that *RedisTaskBroker) StartConsuming() (<-chan *Task, chan int) {
 
-	go func(taskObserverFunc TaskProcessor) {
-
+	go func() {
+		var taskBroker TaskBroker = that
 		for {
 			taskResult, err := that.redis.HGetAll(keyTaskCron).Result()
 			that.removeKeyIncrement(taskResult)
@@ -51,7 +54,6 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 				continue
 			}
 
-			var tasks []*Task
 			for _, item := range taskResult {
 
 				var task Task
@@ -64,27 +66,28 @@ func (that *RedisTaskBroker) StartConsuming(taskObserverFunc TaskProcessor) {
 				}
 
 				if task.StateInChange() {
-					var s TaskBroker = that
-					task.broker = &s
+					task.broker = &taskBroker
 					task.init()
-					tasks = append(tasks, &task)
-					log.I("broker/StartConsuming", "new task:"+task.String())
+					select {
+					case that.taskCh <- &task:
+						log.I("broker/StartConsuming", "new task:"+task.String())
+					case <-that.closeCh:
+						close(that.taskCh)
+						log.D("broker/StartConsuming", "task channel closed")
+						return
+					}
 				}
 			}
-
-			if nil != tasks && 0 != len(tasks) {
-				log.D("broker/StartConsuming", "task count:", strconv.Itoa(len(tasks)))
-				taskObserverFunc(tasks)
-			}
-
-			time.Sleep(time.Second * 3)
+			time.Sleep(time.Second * that.redisPollDurationSecond)
 		}
-	}(taskObserverFunc)
+	}()
+
+	return that.taskCh, that.closeCh
 }
 
 func (that *RedisTaskBroker) AddTask(task *Task) (*Task, error) {
 	log.D("broker/AddTask", task.String())
-	task.executeInfo.CreateNow()
+	task.ExecuteInfo.CreateNow()
 	incr, er := that.redis.HIncrBy(keyTaskCron, taskIdIncrement, 1).Result()
 	if er != nil {
 		return nil, er
@@ -121,6 +124,7 @@ func (that *RedisTaskBroker) UpdateTask(task *Task) error {
 		return err
 	}
 	id := strconv.Itoa(task.Id)
+	// TODO 2021年6月23日10:42:20 notify worker
 	_, r := that.redis.HSet(keyTaskCron, id, string(j)).Result()
 	if r != nil {
 		return r
@@ -161,8 +165,8 @@ func (that *RedisTaskBroker) RestoreTask() {
 
 		} else if task.State == TaskStateRunning || task.State == TaskStateStarting ||
 			task.State == TaskStateRebooting || task.State == TaskStateInitialize {
-			// run
-			that.taskProcessor([]*Task{task})
+			// restore
+			that.taskCh <- task
 		}
 
 		log.D("broker/RestoreTask", "name:", task.Name, ", id:", task.Id, ", state:", task.State)
@@ -229,6 +233,7 @@ func (that *RedisTaskBroker) QueryTaskById(taskId int) *Task {
 	}
 	var b TaskBroker = that
 	task.broker = &b
+	task.init()
 	return &task
 }
 
@@ -258,6 +263,7 @@ func (that *RedisTaskBroker) QueryAllTask() []*Task {
 		}
 		var s TaskBroker = that
 		task.broker = &s
+		task.init()
 
 		allTask = append(allTask, task)
 	}

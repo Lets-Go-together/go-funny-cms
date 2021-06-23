@@ -1,7 +1,7 @@
 package schedule
 
 type MySQLTaskBroker struct {
-	taskProcessor TaskProcessor
+	taskChan chan *Task
 }
 
 func (that *MySQLTaskBroker) Launch() {
@@ -12,28 +12,27 @@ func (that *MySQLTaskBroker) RestoreTask() {
 	panic("implement me")
 }
 
-func (that *MySQLTaskBroker) StartConsuming(taskProcessor TaskProcessor) {
-	that.taskProcessor = taskProcessor
-	go func(processor TaskProcessor) {
-		// read task from mysql
-
-		// notify to task processor
-	}(that.taskProcessor)
-}
-
-func (that *MySQLTaskBroker) UpdateTask(info *Task) {
+func (that *MySQLTaskBroker) StartConsuming() (ch <-chan *Task, close chan int) {
 	panic("implement me")
 }
 
-func (that *MySQLTaskBroker) StopTask(id int) {
+func (that *MySQLTaskBroker) UpdateTask(info *Task) error {
 	panic("implement me")
 }
 
-func (that *MySQLTaskBroker) StartTask(id int) {
+func (that *MySQLTaskBroker) StopTask(id int) error {
+	panic("implement me")
+}
+
+func (that *MySQLTaskBroker) StartTask(id int) error {
 	panic("implement me")
 }
 
 func (that *MySQLTaskBroker) AddTask(info *Task) (*Task, error) {
+	panic("implement me")
+}
+
+func (that *MySQLTaskBroker) DeleteTask(id int) error {
 	panic("implement me")
 }
 

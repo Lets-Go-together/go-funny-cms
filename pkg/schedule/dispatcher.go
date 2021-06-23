@@ -25,25 +25,31 @@ func newDispatcher(
 
 func (that *dispatcher) Launch() {
 	for _, worker := range that.workers {
-		worker.Initialize(that.handleFuncMap)
+		worker.Launch(that.handleFuncMap)
 	}
-	that.broker.StartConsuming(func(tasks []*Task) {
-		that.onTaskArrive(tasks)
-	})
+	ch, _ := that.broker.StartConsuming()
+	go func() {
+		for t := range ch {
+			that.onTaskArrive(t)
+		}
+	}()
+	//done <- 1
 	that.broker.Launch()
 }
 
-func (that *dispatcher) onTaskArrive(tasks []*Task) {
-	for _, task := range tasks {
-		for _, worker := range that.workers {
-			log.D("dispatcher/onTaskArrive",
-				"dispatch task: ", "name=", task.Name, ", state=", task.State, ", id=", task.Id)
-			err := worker.Process(task)
-			if err != nil {
-				log.E("dispatcher/onTaskArrive", err)
-			}
-			// dispatch to other worker.
-			break
+func (that *dispatcher) UpdateTask(task *Task) {
+
+}
+
+func (that *dispatcher) onTaskArrive(task *Task) {
+	for _, worker := range that.workers {
+		log.D("dispatcher/onTaskArrive",
+			"dispatch task: ", "name=", task.Name, ", state=", task.State, ", id=", task.Id)
+		err := worker.Process(task)
+		if err != nil {
+			log.E("dispatcher/onTaskArrive", err)
 		}
+		// dispatch to other worker.
+		break
 	}
 }

@@ -1,7 +1,5 @@
 package schedule
 
-type TaskProcessor func([]*Task)
-
 // TaskBroker 表示任务存储源与任务执行队列的中间人, 任务执行者从这订阅任务动态和更新查询任务.
 //
 // TaskBroker 负责以下内容:
@@ -15,7 +13,7 @@ type TaskBroker interface {
 	// 从数据源读取所有任务, 筛选出需要执行的任务并分发给 TaskProcessor
 	RestoreTask()
 	// 开始订阅任务清单更新
-	StartConsuming(tasks TaskProcessor)
+	StartConsuming() (ch <-chan *Task, close chan int)
 	// 更新任务
 	UpdateTask(info *Task) error
 	// 停止指定 id 的任务
