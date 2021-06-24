@@ -26,6 +26,9 @@ func (that *CronWorker) Process(task *Task) error {
 		if err := that.removeTask(task); err != nil {
 			return err
 		}
+	} else {
+		// task 状态不变, 信息更新的情况
+		that.idTaskMap[task.Id] = task
 	}
 	return nil
 }
@@ -36,7 +39,26 @@ func (that *CronWorker) startTask(task *Task) error {
 		return errors.New(fmt.Sprintf("no TaskHandleFunc for task '%s'", task.Name))
 	}
 
-	entryId, err := that.cron.AddFunc(task.CronExpr, func() {
+	entryId, err := that.cron.AddFunc(task.CronExpr, that.getCmd(task.Id))
+	if err != nil {
+		return err
+	}
+
+	that.idTaskMap[task.Id] = task
+	that.idEntryIdMap[task.Id] = &entryId
+	//task.TaskId = int(entryId)
+	err = task.ChangeState(TaskStateRunning)
+	return err
+}
+
+func (that *CronWorker) getCmd(id int) func() {
+
+	return func() {
+		// 运行中的 task 可能会更新, 每次运行都要重新获取一下
+		// TODO 2021年6月24日16:01:33 优化一下更新 task 时 worker 的同步方式
+		task := that.idTaskMap[id]
+		handleFunc := that.taskHandleFunc.GetHandleFunc(task.Name)
+
 		retry := uint8(0)
 		ctx := &Context{
 			Task: *task,
@@ -62,16 +84,7 @@ func (that *CronWorker) startTask(task *Task) error {
 			}
 		}
 		task.ExecuteInfo.Update()
-	})
-	if err != nil {
-		return err
 	}
-
-	that.idTaskMap[task.Id] = task
-	that.idEntryIdMap[task.Id] = &entryId
-	//task.TaskId = int(entryId)
-	err = task.ChangeState(TaskStateRunning)
-	return err
 }
 
 func (that *CronWorker) removeTask(task *Task) (err error) {

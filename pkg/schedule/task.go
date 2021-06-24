@@ -271,6 +271,7 @@ func (that *TaskHandleFuncMap) SetHandleFunc(pattern string, handleFunc TaskHand
 // 返回所有与该名称匹配的 TaskHandleFunc
 func (that *TaskHandleFuncMap) GetHandleFunc(taskName string) []TaskHandleFunc {
 
+	// TODO 缓存一下 name 对应的 handleFunc 避免每次匹配
 	var res []TaskHandleFunc
 	for r, f := range that.regMap {
 		if r.MatchString(taskName) {

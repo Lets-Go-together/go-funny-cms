@@ -38,7 +38,11 @@ func (that *dispatcher) Launch() {
 }
 
 func (that *dispatcher) UpdateTask(task *Task) {
-
+	for _, worker := range that.workers {
+		if err := worker.Process(task); err != nil {
+			log.E("dispatcher/UpdateTask", err)
+		}
+	}
 }
 
 func (that *dispatcher) onTaskArrive(task *Task) {

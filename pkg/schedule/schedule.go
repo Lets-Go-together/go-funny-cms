@@ -66,6 +66,8 @@ func (that *Scheduler) QueryTaskById(taskId int) *Task {
 }
 
 func (that Scheduler) UpdateTask(task *Task) error {
+	// TODO 2021年6月24日16:05:48 或许可以在数据库中再加一个更新中的 task 表
+	that.dispatcher.UpdateTask(task)
 	return that.broker.UpdateTask(task)
 }
 
