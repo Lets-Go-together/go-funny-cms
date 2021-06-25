@@ -125,9 +125,9 @@ type Task struct {
 	// 任务执行 cron 表达式
 	CronExpr string `json:"cron_expr"`
 	// 任务执行超时时长, 超过该时长则直接中断这次任务并断定执行结果为失败.
-	Timeout uint16 `json:"cron_timeout"`
+	Timeout int `json:"cron_timeout"`
 	// 任务失败后重试次数
-	RetryTimes uint8 `json:"retry_times"`
+	RetryTimes int `json:"retry_times"`
 	// 暂时无用
 	Type *TaskType `json:"type"`
 
@@ -218,16 +218,16 @@ func (that *Task) NeedStop() bool {
 type Context struct {
 	Task Task
 	// 任务重试次数
-	Retry uint8
+	Retry int
 	// 任务剩余重试次数
-	RetryRemaining uint8
+	RetryRemaining int
 }
 
 // TaskResult 表示执行一次任务的执行结果.
 type TaskResult struct {
 	Success        bool
 	Message        string
-	RetryRemaining uint8
+	RetryRemaining int
 
 	logs bytes.Buffer
 }

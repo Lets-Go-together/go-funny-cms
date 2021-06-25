@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"errors"
+	"fmt"
 	"gocms/app/http/admin/validates"
 	"gocms/pkg/config"
 	"gocms/pkg/response"
@@ -10,6 +12,15 @@ import (
 )
 
 type SchedulerController struct {
+}
+
+func init() {
+	config.Scheduler.RegisterTask("test_fail", TestTask)
+}
+
+func TestTask(ctx *schedule.Context) error {
+	fmt.Println("task execute")
+	return errors.New("FAILED")
 }
 
 // query param `state` see schedule.TaskState
@@ -38,6 +49,7 @@ func (*SchedulerController) List(c *wrap.ContextWrapper) {
 
 func (*SchedulerController) Add(c *wrap.ContextWrapper, param *validates.AddTaskParams) {
 	task := schedule.NewTask(param.TaskName, param.Desc, param.CronExpr)
+	task.RetryTimes = param.Retry
 	t, err := config.Scheduler.AddTask(task)
 	if err != nil {
 		response.ErrorResponse(100, err.Error()).WriteTo(c)

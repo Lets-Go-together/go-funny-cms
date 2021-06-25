@@ -59,7 +59,7 @@ func (that *CronWorker) getCmd(id int) func() {
 		task := that.idTaskMap[id]
 		handleFunc := that.taskHandleFunc.GetHandleFunc(task.Name)
 
-		retry := uint8(0)
+		retry := 0
 		ctx := &Context{
 			Task: *task,
 		}
@@ -80,6 +80,7 @@ func (that *CronWorker) getCmd(id int) func() {
 		} else {
 			task.ExecuteInfo.FailNow()
 			if ctx.RetryRemaining > 0 {
+				log.D("Worker/getCmd", "Task ", task.Name, "execute failed. retrying, remain:", ctx.RetryRemaining, "reason:", err.Error())
 				goto Retry
 			}
 		}

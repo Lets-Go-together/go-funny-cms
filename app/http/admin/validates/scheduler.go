@@ -10,6 +10,7 @@ type AddTaskParams struct {
 	TaskName string `json:"task_name" validate:"required"`
 	Desc     string `json:"desc" validate:"required"`
 	CronExpr string `json:"cron_expr" validate:"required"`
+	Retry    int    `json:"retry"`
 }
 
 func (that *AddTaskParams) Validate(ctx *wrap.ContextWrapper) bool {
